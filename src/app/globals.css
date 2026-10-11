@@ -1,0 +1,90 @@
+@import "tailwindcss";
+
+@theme inline {
+  --color-background: var(--background);
+  --color-foreground: var(--foreground);
+  --color-card: var(--card);
+  --color-card-foreground: var(--card-foreground);
+  --color-popover: var(--popover);
+  --color-popover-foreground: var(--popover-foreground);
+  --color-primary: var(--primary);
+  --color-primary-foreground: var(--primary-foreground);
+  --color-secondary: var(--secondary);
+  --color-secondary-foreground: var(--secondary-foreground);
+  --color-muted: var(--muted);
+  --color-muted-foreground: var(--muted-foreground);
+  --color-accent: var(--accent);
+  --color-accent-foreground: var(--accent-foreground);
+  --color-destructive: var(--destructive);
+  --color-destructive-foreground: var(--destructive-foreground);
+  --color-border: var(--border);
+  --color-input: var(--input);
+  --color-ring: var(--ring);
+  --font-sans: "Inter", "Segoe UI", Arial, Helvetica, sans-serif;
+}
+
+@layer base {
+  :root {
+    --background: #fbfaf5;
+    --foreground: #102018;
+    --card: #ffffff;
+    --card-foreground: #102018;
+    --popover: #ffffff;
+    --popover-foreground: #102018;
+    --primary: #0f3b2e;
+    --primary-foreground: #fffaf0;
+    --secondary: #f1ead6;
+    --secondary-foreground: #17251d;
+    --muted: #eee9dc;
+    --muted-foreground: #657064;
+    --accent: #c89b3c;
+    --accent-foreground: #15110a;
+    --destructive: #bd2c22;
+    --destructive-foreground: #ffffff;
+    --border: #ded6c2;
+    --input: #ded6c2;
+    --ring: #c89b3c;
+    --radius: 0.5rem;
+  }
+
+  * {
+    border-color: var(--border);
+  }
+
+  html {
+    scroll-behavior: smooth;
+  }
+
+  body {
+    min-height: 100vh;
+    background: var(--background);
+    color: var(--foreground);
+    font-family: var(--font-sans);
+  }
+
+  ::selection {
+    background: #d8b45f;
+    color: #102018;
+  }
+}
+
+@utility container-page {
+  margin-inline: auto;
+  width: min(1180px, calc(100% - 32px));
+}
+
+@utility premium-shadow {
+  box-shadow: 0 20px 55px rgba(15, 59, 46, 0.12);
+}
+
+@utility warehouse-hero {
+  background-image:
+    linear-gradient(90deg, rgba(11, 39, 31, 0.94), rgba(11, 39, 31, 0.72), rgba(11, 39, 31, 0.46)),
+    url("https://images.unsplash.com/photo-1586528116311-ad8dd3c8310d?auto=format&fit=crop&w=1800&q=80");
+  background-position: center;
+  background-size: cover;
+}
+
+@utility gold-line {
+  background: linear-gradient(90deg, transparent, #c89b3c, transparent);
+}
