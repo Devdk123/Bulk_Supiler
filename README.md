@@ -12,6 +12,14 @@ Premium full-stack wholesale supplier website for bulk products such as spices, 
 - Next.js API routes
 - Responsive SEO-ready pages
 
+## Storefront Features
+
+- Search the wholesale catalog by product, category, minimum order quantity or packing.
+- Narrow results by category and clear filters when no products match.
+- Use the keyboard-friendly mobile navigation on smaller screens.
+- Follow the three-step order flow to request a quote and confirm delivery.
+- Get clear feedback if an order enquiry cannot reach the server.
+
 ## Install
 
 ```bash
