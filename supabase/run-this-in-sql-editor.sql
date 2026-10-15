@@ -29,23 +29,3 @@ create table if not exists public.orders (
 create index if not exists orders_status_idx on public.orders(status);
 create index if not exists orders_created_at_idx on public.orders(created_at desc);
 create index if not exists orders_city_idx on public.orders(city);
-
-insert into public.products (name, slug, price, moq, quality, packing, image_url, active)
-values
-  ('Haldi Powder', 'haldi-powder', '₹120/kg', '20kg', 'Pure / Grade A', '5kg / 10kg bags', 'https://images.unsplash.com/photo-1615485500704-8e990f9900f7?auto=format&fit=crop&w=1100&q=85', true),
-  ('Mirchi Powder', 'mirchi-powder', '₹180/kg', '20kg', 'Deep color / Grade A', '5kg / 10kg bags', 'https://images.unsplash.com/photo-1588252303782-cb80119abd6d?auto=format&fit=crop&w=1100&q=85', true),
-  ('Dhania Powder', 'dhania-powder', '₹135/kg', '20kg', 'Fresh ground / Grade A', '5kg / 10kg bags', 'https://images.unsplash.com/photo-1599909533730-b255e0b88d7a?auto=format&fit=crop&w=1100&q=85', true),
-  ('Chaat Masala', 'chaat-masala', '₹210/kg', '10kg', 'Premium blend', '1kg / 5kg packs', 'https://images.unsplash.com/photo-1596040033229-a9821ebd058d?auto=format&fit=crop&w=1100&q=85', true),
-  ('Kasturi Methi', 'kasturi-methi', '₹260/kg', '10kg', 'Aroma rich', '500g / 1kg packs', 'https://images.unsplash.com/photo-1567892737950-30c4db37cd89?auto=format&fit=crop&w=1100&q=85', true),
-  ('Kali Mirch', 'kali-mirch', '₹620/kg', '10kg', 'Whole / bold size', '5kg / 10kg bags', 'https://images.unsplash.com/photo-1608039755401-742074f0548d?auto=format&fit=crop&w=1100&q=85', true),
-  ('Agarbatti / Dhoop', 'agarbatti-dhoop', '₹28/box', '50 pieces', 'Long burning', 'Carton packing', 'https://images.unsplash.com/photo-1608571423902-eed4a5ad8108?auto=format&fit=crop&w=1100&q=85', true),
-  ('Tea Patti', 'tea-patti', '₹190/kg', '25kg', 'Strong blend', '10kg / 25kg bags', 'https://images.unsplash.com/photo-1564890369478-c89ca6d9cde9?auto=format&fit=crop&w=1100&q=85', true),
-  ('Machis', 'machis', '₹11/bundle', '100 bundles', 'Standard safety match', 'Bundle / carton', 'https://images.unsplash.com/photo-1528063905561-70463e97c095?auto=format&fit=crop&w=1100&q=85', true)
-on conflict (slug) do update set
-  name = excluded.name,
-  price = excluded.price,
-  moq = excluded.moq,
-  quality = excluded.quality,
-  packing = excluded.packing,
-  image_url = excluded.image_url,
-  active = excluded.active;

@@ -12,7 +12,9 @@ export function formatDate(value: string) {
   }).format(new Date(value));
 }
 
-export function buildWhatsAppLink(message: string) {
-  const number = process.env.NEXT_PUBLIC_WHATSAPP_NUMBER || "919839450586";
+export function buildWhatsAppLink(message: string, contactNumber?: string | null) {
+  const configured = contactNumber === undefined ? process.env.NEXT_PUBLIC_WHATSAPP_NUMBER : contactNumber;
+  const number = configured?.replace(/\D/g, "");
+  if (!number || number.length < 10 || number.length > 15) return null;
   return `https://wa.me/${number}?text=${encodeURIComponent(message)}`;
 }

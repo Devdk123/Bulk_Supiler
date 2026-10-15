@@ -17,6 +17,22 @@ export type Order = {
   created_at: string;
 };
 
+export function getSupabasePublic() {
+  const url = process.env.NEXT_PUBLIC_SUPABASE_URL?.replace(/\/rest\/v1\/?$/, "").replace(/\/$/, "");
+  const key = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY;
+
+  if (!url || !key) {
+    throw new Error("Missing NEXT_PUBLIC_SUPABASE_URL or NEXT_PUBLIC_SUPABASE_ANON_KEY. Add them to .env and restart Next.js.");
+  }
+
+  return createClient(url, key, {
+    auth: {
+      persistSession: false,
+      autoRefreshToken: false
+    }
+  });
+}
+
 export function getSupabaseAdmin() {
   const url = process.env.NEXT_PUBLIC_SUPABASE_URL?.replace(/\/rest\/v1\/?$/, "").replace(/\/$/, "");
   const serviceRoleKey = process.env.SUPABASE_SERVICE_ROLE_KEY;
@@ -27,7 +43,7 @@ export function getSupabaseAdmin() {
       !serviceRoleKey ? "SUPABASE_SERVICE_ROLE_KEY" : ""
     ].filter(Boolean);
 
-    throw new Error(`Missing Supabase environment variable(s): ${missing.join(", ")}. Add them to .env.local and restart Next.js.`);
+    throw new Error(`Missing Supabase environment variable(s): ${missing.join(", ")}. Add them to .env and restart Next.js.`);
   }
 
   return createClient(url, serviceRoleKey, {

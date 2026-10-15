@@ -1,16 +1,21 @@
 import type { Metadata } from "next";
-import { MapPin, MessageCircle, Phone, Timer, Truck } from "lucide-react";
+import { MessageCircle, Phone } from "lucide-react";
 import { ContactForm } from "@/components/contact-form";
 import { SectionHeading } from "@/components/section-heading";
 import { Button } from "@/components/ui/button";
 import { buildWhatsAppLink } from "@/lib/utils";
+import { getPublicBusinessSettings } from "@/lib/business-settings";
 
 export const metadata: Metadata = {
   title: "Contact",
   description: "Contact The Bulk Supplier for wholesale product rates and bulk orders."
 };
 
-export default function ContactPage() {
+export default async function ContactPage() {
+  const settings = await getPublicBusinessSettings();
+  const whatsappLink = buildWhatsAppLink("Hello The Bulk Supplier, I want to discuss a wholesale quote.", settings.whatsapp_number);
+  const whatsappNumber = settings.contact_phone?.replace(/\D/g, "");
+
   return (
     <section className="py-14">
       <div className="container-page grid gap-10 lg:grid-cols-[0.9fr_1.1fr]">
@@ -20,24 +25,28 @@ export default function ContactPage() {
             title="Talk to us for wholesale pricing"
             description="Share your product list, city and expected quantity. We will help with rate, packing and delivery details."
           />
-          <div className="mt-8 grid gap-4">
-            <Info icon={Phone} label="Mobile number" value="+91 98394 50586" />
-            <Info icon={MessageCircle} label="WhatsApp number" value="+91 98394 50586" />
-            <Info icon={MapPin} label="Godown address" value="The Bulk Supplier Godown, India" />
-            <Info icon={Timer} label="Timing" value="9 AM - 7 PM" />
-            <Info icon={Truck} label="Delivery area" value="Bulk supply and transport support across India" />
-          </div>
-          <Button asChild variant="gold" size="lg" className="mt-8">
-            <a
-              href={buildWhatsAppLink("Hello The Bulk Supplier, I want to discuss a wholesale order.")}
-              target="_blank"
-              rel="noopener noreferrer"
-            >
-              <MessageCircle className="h-5 w-5" /> Chat on WhatsApp
-            </a>
-          </Button>
+          {whatsappNumber ? (
+            <div className="mt-8 grid gap-4">
+              <Info icon={Phone} label="Phone / WhatsApp" value={`+${whatsappNumber}`} />
+            </div>
+          ) : null}
+          {settings.contact_email || settings.business_address || settings.business_hours || settings.delivery_coverage ? (
+            <div className="mt-4 grid gap-3">
+              {settings.contact_email ? <p><strong>Email:</strong> {settings.contact_email}</p> : null}
+              {settings.business_address ? <p><strong>Address:</strong> {settings.business_address}</p> : null}
+              {settings.business_hours ? <p><strong>Hours:</strong> {settings.business_hours}</p> : null}
+              {settings.delivery_coverage ? <p><strong>Delivery coverage:</strong> {settings.delivery_coverage}</p> : null}
+            </div>
+          ) : null}
+          {whatsappLink ? (
+            <Button asChild variant="gold" size="lg" className="mt-8">
+              <a href={whatsappLink} target="_blank" rel="noreferrer">
+                <MessageCircle className="h-5 w-5" /> Chat on WhatsApp
+              </a>
+            </Button>
+          ) : null}
         </div>
-        <ContactForm />
+        <ContactForm whatsappNumber={settings.whatsapp_number} />
       </div>
     </section>
   );

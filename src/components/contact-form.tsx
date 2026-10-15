@@ -9,7 +9,7 @@ import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
 import { buildWhatsAppLink } from "@/lib/utils";
 
-export function ContactForm() {
+export function ContactForm({ whatsappNumber }: { whatsappNumber: string }) {
   const [form, setForm] = useState({ name: "", phone: "", message: "" });
   const [error, setError] = useState("");
 
@@ -19,12 +19,13 @@ export function ContactForm() {
       setError("Please enter a valid name, 10 digit phone number and message.");
       return;
     }
+    const link = buildWhatsAppLink(`Contact enquiry\nName: ${form.name}\nPhone: ${form.phone}\nMessage: ${form.message}`, whatsappNumber);
+    if (!link) {
+      setError("WhatsApp contact is not configured. Please use the bulk quote form instead.");
+      return;
+    }
     setError("");
-    window.open(
-      buildWhatsAppLink(`Contact enquiry\nName: ${form.name}\nPhone: ${form.phone}\nMessage: ${form.message}`),
-      "_blank",
-      "noopener,noreferrer"
-    );
+    window.open(link, "_blank", "noopener,noreferrer");
   }
 
   return (

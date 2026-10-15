@@ -2,178 +2,315 @@
 
 import { useMemo, useState } from "react";
 import { useSearchParams } from "next/navigation";
-import { CheckCircle2, Loader2, MessageCircle } from "lucide-react";
+import { CheckCircle2, Loader2, MessageCircle, Plus, Send, Trash2 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Textarea } from "@/components/ui/textarea";
 import type { Product } from "@/lib/products";
 import { buildWhatsAppLink } from "@/lib/utils";
-import { paymentMethods } from "@/lib/validation";
 
-type FormState = {
-  customer_name: string;
+type QuoteForm = {
+  business_name: string;
+  contact_person: string;
   phone: string;
-  whatsapp: string;
-  product_name: string;
-  quantity: string;
-  address: string;
+  email: string;
   city: string;
-  payment_method: string;
+  state: string;
+  pin_code: string;
+  gstin: string;
+  delivery_requirements: string;
   message: string;
 };
 
-const initialState: FormState = {
-  customer_name: "",
+type QuoteLine = {
+  product_id: string;
+  variant_id: string;
+  quantity: string;
+};
+
+type SavedEnquiry = {
+  reference: string;
+  created: boolean;
+  notificationWarning: string | null;
+};
+
+const initialForm: QuoteForm = {
+  business_name: "",
+  contact_person: "",
   phone: "",
-  whatsapp: "",
-  product_name: "",
-  quantity: "",
-  address: "",
+  email: "",
   city: "",
-  payment_method: "",
+  state: "",
+  pin_code: "",
+  gstin: "",
+  delivery_requirements: "",
   message: ""
 };
 
-export function OrderForm({ products }: { products: Product[] }) {
+export function OrderForm({ products, whatsappNumber }: { products: Product[]; whatsappNumber: string }) {
   const searchParams = useSearchParams();
-  const selectedProduct = searchParams.get("product") || "";
-  const [form, setForm] = useState<FormState>({ ...initialState, product_name: selectedProduct });
+  const initialProduct = searchParams.get("product") || "";
+  const [form, setForm] = useState(initialForm);
+  const [items, setItems] = useState<QuoteLine[]>(() =>
+    products.some((product) => product.id === initialProduct)
+      ? [{ product_id: initialProduct, variant_id: "", quantity: "" }]
+      : []
+  );
   const [errors, setErrors] = useState<Record<string, string>>({});
   const [loading, setLoading] = useState(false);
-  const [successLink, setSuccessLink] = useState("");
+  const [formError, setFormError] = useState("");
+  const [savedEnquiry, setSavedEnquiry] = useState<SavedEnquiry | null>(null);
+  const [whatsappLink, setWhatsappLink] = useState<string | null>(null);
+  const [requestId, setRequestId] = useState("");
 
-  const message = useMemo(
-    () =>
-      [
-        "New bulk order enquiry",
-        `Name: ${form.customer_name}`,
-        `Phone: ${form.phone}`,
-        `WhatsApp: ${form.whatsapp}`,
-        `Product: ${form.product_name}`,
-        `Quantity: ${form.quantity}`,
-        `City: ${form.city}`,
-        `Payment: ${form.payment_method}`,
-        `Address: ${form.address}`,
-        form.message ? `Message: ${form.message}` : ""
-      ]
-        .filter(Boolean)
-        .join("\n"),
-    [form]
-  );
+  const whatsappMessage = useMemo(() => {
+    const lines = items.map((item) => {
+      const product = products.find((entry) => entry.id === item.product_id);
+      const variant = product?.variants.find((entry) => entry.id === item.variant_id);
+      return `${product?.name || "Product"}${variant ? ` - ${variant.name}` : ""}: ${item.quantity}${variant?.unit || product?.unit ? ` ${variant?.unit || product?.unit}` : ""}`;
+    });
+    return [
+      "Wholesale quote enquiry",
+      savedEnquiry ? `Reference: ${savedEnquiry.reference}` : "",
+      `Business: ${form.business_name}`,
+      `Contact: ${form.contact_person}`,
+      `Phone: ${form.phone}`,
+      ...lines,
+      form.city && form.state ? `Location: ${form.city}, ${form.state}` : ""
+    ].filter(Boolean).join("\n");
+  }, [form, items, products, savedEnquiry]);
 
-  function updateField(name: keyof FormState, value: string) {
+  function updateForm(name: keyof QuoteForm, value: string) {
     setForm((current) => ({ ...current, [name]: value }));
     setErrors((current) => ({ ...current, [name]: "" }));
+    setSavedEnquiry(null);
+    setWhatsappLink(null);
+    setRequestId("");
+  }
+
+  function updateLine(index: number, patch: Partial<QuoteLine>) {
+    setItems((current) => current.map((item, position) => position === index ? { ...item, ...patch } : item));
+    setSavedEnquiry(null);
+    setWhatsappLink(null);
+    setRequestId("");
+  }
+
+  function addProduct() {
+    const selectedIds = new Set(items.map((item) => item.product_id));
+    const nextProduct = products.find((product) => !selectedIds.has(product.id));
+    if (nextProduct) {
+      setItems((current) => [...current, { product_id: nextProduct.id, variant_id: "", quantity: "" }]);
+    }
+  }
+
+  function removeProduct(index: number) {
+    setItems((current) => current.filter((_, position) => position !== index));
+    setSavedEnquiry(null);
+    setWhatsappLink(null);
+    setRequestId("");
   }
 
   async function onSubmit(event: React.FormEvent<HTMLFormElement>) {
     event.preventDefault();
     setLoading(true);
     setErrors({});
-    setSuccessLink("");
+    setFormError("");
+
+    const id = requestId || window.crypto.randomUUID();
+    setRequestId(id);
 
     try {
-      const response = await fetch("/api/orders", {
+      const response = await fetch("/api/enquiries", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify(form)
+        body: JSON.stringify({
+          ...form,
+          client_request_id: id,
+          items: items.map((item) => ({
+            product_id: item.product_id,
+            variant_id: item.variant_id || null,
+            quantity: Number(item.quantity)
+          }))
+        })
       });
 
       const data = await response.json();
-
       if (!response.ok) {
-        setErrors(data.fieldErrors || { form: data.error || "Unable to submit order. Please try again." });
+        setErrors(data.fieldErrors || {});
+        setFormError(data.error || "Unable to save the enquiry. Please try again.");
         return;
       }
 
-      const link = buildWhatsAppLink(message);
-      setSuccessLink(link);
-      window.open(link, "_blank", "noopener,noreferrer");
-      setForm(initialState);
+      const saved = {
+        reference: data.enquiry.reference,
+        created: data.enquiry.created,
+        notificationWarning: data.notificationWarning || null
+      };
+      setSavedEnquiry(saved);
+      setWhatsappLink(buildWhatsAppLink(
+        `Wholesale quote enquiry\nReference: ${saved.reference}\n${whatsappMessage}`,
+        whatsappNumber
+      ));
     } catch {
-      setErrors({ form: "Unable to reach the server. Check your connection and try again." });
+      setFormError("Network error. Your enquiry was not confirmed as saved. Please retry.");
     } finally {
       setLoading(false);
     }
   }
 
+  if (savedEnquiry) {
+    return (
+      <Card className="premium-shadow">
+        <CardContent className="p-6 md:p-8">
+          <div role="status" className="rounded-lg border border-green-300 bg-green-50 p-5 text-green-900">
+            <div className="flex items-center gap-2 font-bold">
+              <CheckCircle2 className="h-5 w-5" /> {savedEnquiry.created ? "Enquiry saved" : "Enquiry already received"}
+            </div>
+            <p className="mt-2">Reference: <span className="font-bold">{savedEnquiry.reference}</span></p>
+            <p className="mt-2 text-sm">Your enquiry is recorded for follow-up. No order or payment is confirmed at this stage.</p>
+            {savedEnquiry.notificationWarning ? <p className="mt-3 text-sm font-semibold text-amber-900">{savedEnquiry.notificationWarning}</p> : null}
+          </div>
+          <div className="mt-5 flex flex-wrap gap-3">
+            {whatsappLink ? (
+              <Button asChild variant="gold">
+                <a href={whatsappLink} target="_blank" rel="noreferrer">
+                  <MessageCircle className="h-4 w-4" /> Continue on WhatsApp
+                </a>
+              </Button>
+            ) : null}
+            <Button type="button" variant="outline" onClick={() => {
+              setSavedEnquiry(null);
+              setItems([]);
+              setForm(initialForm);
+              setRequestId("");
+            }}>
+              Start another enquiry
+            </Button>
+          </div>
+        </CardContent>
+      </Card>
+    );
+  }
+
   return (
     <Card className="premium-shadow">
       <CardContent className="p-6 md:p-8">
-        {errors.form ? <p className="mb-5 rounded-md bg-red-50 p-3 text-sm font-semibold text-red-700">{errors.form}</p> : null}
-        {successLink ? (
-          <div className="mb-6 rounded-md border border-green-200 bg-green-50 p-4 text-green-800">
-            <div className="flex items-center gap-2 font-bold">
-              <CheckCircle2 className="h-5 w-5" /> Order enquiry saved successfully.
+        {formError ? <p role="alert" className="mb-5 rounded-md bg-red-50 p-3 text-sm font-semibold text-red-700">{formError}</p> : null}
+
+        <form onSubmit={onSubmit} className="grid gap-7">
+          <fieldset className="grid gap-4">
+            <legend className="mb-2 text-lg font-bold text-primary">Products and quantities</legend>
+            {products.length === 0 ? (
+              <p className="rounded-md border border-dashed p-5 text-sm text-muted-foreground">
+                There are no published products to select yet. Please check back later or contact the business.
+              </p>
+            ) : (
+              <>
+                {items.map((item, index) => {
+                  const product = products.find((entry) => entry.id === item.product_id);
+                  if (!product) return null;
+                  const availableProducts = products.filter((entry) =>
+                    entry.id === item.product_id || !items.some((selected, selectedIndex) =>
+                      selectedIndex !== index && selected.product_id === entry.id
+                    )
+                  );
+                  const variants = product.variants;
+
+                  return (
+                    <div key={`${item.product_id}-${index}`} className="grid gap-3 rounded-lg border p-4 sm:grid-cols-[1.3fr_1fr_0.7fr_auto] sm:items-end">
+                      <Field label="Product" error={errors.items}>
+                        <select
+                          aria-label="Product"
+                          value={item.product_id}
+                          onChange={(event) => updateLine(index, { product_id: event.target.value, variant_id: "" })}
+                          className="h-11 w-full rounded-md border bg-background px-3 text-sm"
+                        >
+                          {availableProducts.map((entry) => (
+                            <option key={entry.id} value={entry.id}>{entry.brandName ? `${entry.brandName} - ` : ""}{entry.name}</option>
+                          ))}
+                        </select>
+                      </Field>
+                      <Field label="Variant / pack">
+                        <select
+                          aria-label="Variant or pack"
+                          value={item.variant_id}
+                          onChange={(event) => updateLine(index, { variant_id: event.target.value })}
+                          className="h-11 w-full rounded-md border bg-background px-3 text-sm"
+                        >
+                          <option value="">Standard product option</option>
+                          {variants.map((variant) => (
+                            <option key={variant.id} value={variant.id}>
+                              {variant.name}{variant.pack_size ? ` - ${variant.pack_size}` : ""}
+                            </option>
+                          ))}
+                        </select>
+                      </Field>
+                      <Field label="Quantity">
+                        <Input
+                          type="number"
+                          min="0.001"
+                          step="any"
+                          inputMode="decimal"
+                          value={item.quantity}
+                          onChange={(event) => updateLine(index, { quantity: event.target.value })}
+                          aria-label={`Quantity for ${product.name}`}
+                        />
+                      </Field>
+                      <Button type="button" variant="outline" size="icon" aria-label={`Remove ${product.name}`} onClick={() => removeProduct(index)}>
+                        <Trash2 className="h-4 w-4" />
+                      </Button>
+                      {product.moq ? <p className="text-xs text-muted-foreground sm:col-span-4">Configured minimum: {product.moq}</p> : null}
+                    </div>
+                  );
+                })}
+                <Button type="button" variant="outline" className="w-fit" onClick={addProduct} disabled={items.length >= products.length || items.length >= 30}>
+                  <Plus className="h-4 w-4" /> Add product
+                </Button>
+              </>
+            )}
+          </fieldset>
+
+          <fieldset className="grid gap-4">
+            <legend className="mb-2 text-lg font-bold text-primary">Business contact</legend>
+            <div className="grid gap-4 sm:grid-cols-2">
+              <Field label="Business name" error={errors.business_name}>
+                <Input value={form.business_name} onChange={(event) => updateForm("business_name", event.target.value)} autoComplete="organization" />
+              </Field>
+              <Field label="Contact person" error={errors.contact_person}>
+                <Input value={form.contact_person} onChange={(event) => updateForm("contact_person", event.target.value)} autoComplete="name" />
+              </Field>
+              <Field label="Mobile number" error={errors.phone}>
+                <Input value={form.phone} onChange={(event) => updateForm("phone", event.target.value)} inputMode="numeric" autoComplete="tel" maxLength={10} />
+              </Field>
+              <Field label="Email (optional)" error={errors.email}>
+                <Input type="email" value={form.email} onChange={(event) => updateForm("email", event.target.value)} autoComplete="email" />
+              </Field>
+              <Field label="City" error={errors.city}>
+                <Input value={form.city} onChange={(event) => updateForm("city", event.target.value)} autoComplete="address-level2" />
+              </Field>
+              <Field label="State" error={errors.state}>
+                <Input value={form.state} onChange={(event) => updateForm("state", event.target.value)} autoComplete="address-level1" />
+              </Field>
+              <Field label="PIN code" error={errors.pin_code}>
+                <Input value={form.pin_code} onChange={(event) => updateForm("pin_code", event.target.value)} inputMode="numeric" autoComplete="postal-code" maxLength={6} />
+              </Field>
+              <Field label="GSTIN (optional)" error={errors.gstin}>
+                <Input value={form.gstin} onChange={(event) => updateForm("gstin", event.target.value.toUpperCase())} maxLength={15} />
+              </Field>
             </div>
-            <a className="mt-3 inline-flex text-sm font-semibold underline" href={successLink} target="_blank" rel="noopener noreferrer">
-              Open WhatsApp message again
-            </a>
-          </div>
-        ) : null}
+          </fieldset>
 
-        <form onSubmit={onSubmit} className="grid gap-5">
-          <div className="grid gap-5 md:grid-cols-2">
-            <Field label="Customer name" error={errors.customer_name}>
-              <Input value={form.customer_name} onChange={(event) => updateField("customer_name", event.target.value)} placeholder="Your name" />
-            </Field>
-            <Field label="Phone number" error={errors.phone}>
-              <Input value={form.phone} onChange={(event) => updateField("phone", event.target.value)} inputMode="numeric" placeholder="10 digit mobile" />
-            </Field>
-            <Field label="WhatsApp number" error={errors.whatsapp}>
-              <Input value={form.whatsapp} onChange={(event) => updateField("whatsapp", event.target.value)} inputMode="numeric" placeholder="10 digit WhatsApp" />
-            </Field>
-            <Field label="Product" error={errors.product_name}>
-              <Select value={form.product_name} onValueChange={(value) => updateField("product_name", value)}>
-                <SelectTrigger>
-                  <SelectValue placeholder="Select product" />
-                </SelectTrigger>
-                <SelectContent>
-                  {products.map((product) => (
-                    <SelectItem key={product.slug} value={product.name}>
-                      {product.name}
-                    </SelectItem>
-                  ))}
-                </SelectContent>
-              </Select>
-            </Field>
-            <Field label="Quantity" error={errors.quantity}>
-              <Input value={form.quantity} onChange={(event) => updateField("quantity", event.target.value)} placeholder="Example: 25kg / 100 boxes" />
-            </Field>
-            <Field label="Delivery city" error={errors.city}>
-              <Input value={form.city} onChange={(event) => updateField("city", event.target.value)} placeholder="City" />
-            </Field>
-          </div>
-
-          <Field label="Delivery address" error={errors.address}>
-            <Textarea value={form.address} onChange={(event) => updateField("address", event.target.value)} placeholder="Full delivery address" />
+          <Field label="Delivery / transport requirements" error={errors.delivery_requirements}>
+            <Textarea value={form.delivery_requirements} onChange={(event) => updateForm("delivery_requirements", event.target.value)} maxLength={1000} />
           </Field>
-
-          <Field label="Payment method" error={errors.payment_method}>
-            <Select value={form.payment_method} onValueChange={(value) => updateField("payment_method", value)}>
-              <SelectTrigger>
-                <SelectValue placeholder="Select payment method" />
-              </SelectTrigger>
-              <SelectContent>
-                {paymentMethods.map((method) => (
-                  <SelectItem key={method} value={method}>
-                    {method}
-                  </SelectItem>
-                ))}
-              </SelectContent>
-            </Select>
+          <Field label="Additional notes" error={errors.message}>
+            <Textarea value={form.message} onChange={(event) => updateForm("message", event.target.value)} maxLength={2000} />
           </Field>
-
-          <Field label="Extra message" error={errors.message}>
-            <Textarea value={form.message} onChange={(event) => updateField("message", event.target.value)} placeholder="Quality, packing or delivery notes" />
-          </Field>
-
-          <Button type="submit" variant="gold" size="lg" disabled={loading}>
-            {loading ? <Loader2 className="h-5 w-5 animate-spin" /> : <MessageCircle className="h-5 w-5" />}
-            Submit & Open WhatsApp
+          <Button type="submit" variant="gold" size="lg" disabled={loading || products.length === 0 || items.length === 0}>
+            {loading ? <Loader2 className="h-5 w-5 animate-spin" /> : <Send className="h-5 w-5" />}
+            Submit quote request
           </Button>
         </form>
       </CardContent>
@@ -181,12 +318,13 @@ export function OrderForm({ products }: { products: Product[] }) {
   );
 }
 
-function Field({ label, error, children }: { label: string; error?: string; children: React.ReactNode }) {
+function Field({ label, error, children }: { label: string; error?: string | string[]; children: React.ReactNode }) {
+  const message = Array.isArray(error) ? error[0] : error;
   return (
     <div className="grid gap-2">
       <Label>{label}</Label>
       {children}
-      {error ? <p className="text-sm font-medium text-red-700">{error}</p> : null}
+      {message ? <p className="text-sm font-medium text-red-700">{message}</p> : null}
     </div>
   );
 }

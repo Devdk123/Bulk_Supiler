@@ -1,7 +1,6 @@
 import { NextResponse } from "next/server";
+import { isAdminRequest } from "@/lib/admin-auth";
 import { getSupabaseAdmin } from "@/lib/supabase";
-import { orderSchema } from "@/lib/validation";
-import { isWhatsAppCloudConfigured, sendWhatsAppText } from "@/lib/whatsapp-cloud";
 
 function formatSupabaseError(message: string) {
   if (message.toLowerCase().includes("could not find the table")) {
@@ -11,71 +10,11 @@ function formatSupabaseError(message: string) {
   return message;
 }
 
-function isAdminRequest(request: Request) {
-  const expected = process.env.ADMIN_PASSWORD;
-  const provided = request.headers.get("x-admin-password");
-  return Boolean(expected && provided && expected === provided);
-}
-
-export async function POST(request: Request) {
-  try {
-    const body = await request.json();
-    const parsed = orderSchema.safeParse(body);
-
-    if (!parsed.success) {
-      return NextResponse.json(
-        {
-          error: "Please check the form details.",
-          fieldErrors: parsed.error.flatten().fieldErrors
-        },
-        { status: 400 }
-      );
-    }
-
-    const supabase = getSupabaseAdmin();
-    const { data, error } = await supabase
-      .from("orders")
-      .insert({
-        ...parsed.data,
-        message: parsed.data.message || null,
-        status: "New"
-      })
-      .select()
-      .single();
-
-    if (error) {
-      return NextResponse.json({ error: formatSupabaseError(error.message) }, { status: 500 });
-    }
-
-    let whatsappCloud = null;
-
-    if (isWhatsAppCloudConfigured()) {
-      const orderMessage = [
-        "New bulk order enquiry",
-        `Name: ${parsed.data.customer_name}`,
-        `Phone: ${parsed.data.phone}`,
-        `WhatsApp: ${parsed.data.whatsapp}`,
-        `Product: ${parsed.data.product_name}`,
-        `Quantity: ${parsed.data.quantity}`,
-        `City: ${parsed.data.city}`,
-        `Payment: ${parsed.data.payment_method}`,
-        `Address: ${parsed.data.address}`,
-        parsed.data.message ? `Message: ${parsed.data.message}` : ""
-      ]
-        .filter(Boolean)
-        .join("\n");
-
-      whatsappCloud = await sendWhatsAppText({
-        to: process.env.WHATSAPP_NOTIFY_TO || process.env.NEXT_PUBLIC_WHATSAPP_NUMBER || "919839450586",
-        body: orderMessage
-      });
-    }
-
-    return NextResponse.json({ order: data, whatsappCloud }, { status: 201 });
-  } catch (error) {
-    const message = error instanceof Error ? error.message : "Unable to submit order.";
-    return NextResponse.json({ error: message }, { status: 500 });
-  }
+export async function POST() {
+  return NextResponse.json(
+    { error: "Direct orders are no longer accepted. Submit a wholesale quotation request instead." },
+    { status: 410 }
+  );
 }
 
 export async function GET(request: Request) {
@@ -86,11 +25,19 @@ export async function GET(request: Request) {
   try {
     const { searchParams } = new URL(request.url);
     const status = searchParams.get("status");
-    const search = searchParams.get("search");
+    const allowedStatuses = ["New", "Contacted", "Confirmed", "Delivered", "Cancelled"];
+    const search = (searchParams.get("search") || "")
+      .slice(0, 80)
+      .replace(/[%,.*()\\"]/g, " ")
+      .trim();
+    const requestedLimit = Number(searchParams.get("limit") || 50);
+    const requestedOffset = Number(searchParams.get("offset") || 0);
+    const limit = Number.isInteger(requestedLimit) ? Math.min(Math.max(requestedLimit, 1), 100) : 50;
+    const offset = Number.isInteger(requestedOffset) ? Math.max(requestedOffset, 0) : 0;
     const supabase = getSupabaseAdmin();
     let query = supabase.from("orders").select("*").order("created_at", { ascending: false });
 
-    if (status && status !== "All") {
+    if (status && allowedStatuses.includes(status)) {
       query = query.eq("status", status);
     }
 
@@ -100,18 +47,16 @@ export async function GET(request: Request) {
       );
     }
 
-    const { data, error } = await query;
+    const { data, error } = await query.range(offset, offset + limit - 1);
 
     if (error) {
       return NextResponse.json({ error: formatSupabaseError(error.message) }, { status: 500 });
     }
 
-    return NextResponse.json({ orders: data || [] });
+    const orders = data || [];
+    return NextResponse.json({ orders, hasMore: orders.length === limit }, { headers: { "Cache-Control": "no-store" } });
   } catch (error) {
     const message = error instanceof Error ? error.message : "Unable to fetch orders.";
-    return NextResponse.json({
-      orders: [],
-      warning: `Supabase is not reachable right now (${message}). Orders will appear after the database connection works.`
-    });
+    return NextResponse.json({ error: message }, { status: 500 });
   }
 }

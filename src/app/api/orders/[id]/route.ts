@@ -1,4 +1,5 @@
 import { NextResponse } from "next/server";
+import { isAdminRequest } from "@/lib/admin-auth";
 import { getSupabaseAdmin } from "@/lib/supabase";
 import { orderStatuses } from "@/lib/validation";
 
@@ -8,12 +9,6 @@ function formatSupabaseError(message: string) {
   }
 
   return message;
-}
-
-function isAdminRequest(request: Request) {
-  const expected = process.env.ADMIN_PASSWORD;
-  const provided = request.headers.get("x-admin-password");
-  return Boolean(expected && provided && expected === provided);
 }
 
 export async function PATCH(request: Request, context: { params: Promise<{ id: string }> }) {

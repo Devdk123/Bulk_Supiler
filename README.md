@@ -12,14 +12,6 @@ Premium full-stack wholesale supplier website for bulk products such as spices, 
 - Next.js API routes
 - Responsive SEO-ready pages
 
-## Storefront Features
-
-- Search the wholesale catalog by product, category, minimum order quantity or packing.
-- Narrow results by category and clear filters when no products match.
-- Use the keyboard-friendly mobile navigation on smaller screens.
-- Follow the three-step order flow to request a quote and confirm delivery.
-- Get clear feedback if an order enquiry cannot reach the server.
-
 ## Install
 
 ```bash
@@ -28,35 +20,37 @@ npm install
 
 ## Environment Variables
 
-Copy `.env.example` to `.env.local` and fill in the values:
+Copy `.env.example` to `.env` and fill in the values:
 
 ```bash
 NEXT_PUBLIC_SUPABASE_URL=
 NEXT_PUBLIC_SUPABASE_ANON_KEY=
 SUPABASE_SERVICE_ROLE_KEY=
 ADMIN_PASSWORD=
-NEXT_PUBLIC_WHATSAPP_NUMBER=919839450586
+ADMIN_SESSION_SECRET=
+NEXT_PUBLIC_SITE_URL=https://bulksupiler.in
+NEXT_PUBLIC_WHATSAPP_NUMBER=918849263377
 META_GRAPH_API_VERSION=v25.0
 WHATSAPP_PHONE_NUMBER_ID=
 WHATSAPP_ACCESS_TOKEN=
-WHATSAPP_NOTIFY_TO=919839450586
+WHATSAPP_NOTIFY_TO=918849263377
 ```
 
-Keep `SUPABASE_SERVICE_ROLE_KEY` private. It is used only by server-side API routes.
+Set `ADMIN_SESSION_SECRET` to a cryptographically random value of at least 32 characters, and use a strong `ADMIN_PASSWORD`. Keep `SUPABASE_SERVICE_ROLE_KEY`, `ADMIN_PASSWORD`, `ADMIN_SESSION_SECRET`, and `WHATSAPP_ACCESS_TOKEN` private. They are used only by server-side routes.
 
 ## Supabase Setup
 
 1. Create a Supabase project.
-2. Open the Supabase SQL editor.
-3. Run `supabase/run-this-in-sql-editor.sql` in the Supabase SQL Editor.
-4. Add the project URL and keys to `.env.local`.
+2. Run the existing base setup in `supabase/run-this-in-sql-editor.sql` if the project does not already have the `products` and `orders` tables.
+3. Apply the versioned migration at `supabase/migrations/20261015154037_wholesale_platform.sql`. It preserves existing product/order rows, but sets pre-existing catalogue rows to draft by default; review and republish only verified entries in Admin.
+4. Add the project URL and keys to `.env`.
 
-Tables created:
+The base schema creates:
 
 - `products`
 - `orders`
 
-The public site uses local product data for fast placeholder catalog rendering. The `products` table is ready for future CMS/admin expansion.
+The versioned migration adds brands, categories, product variants/images/price tiers, enquiries and enquiry items, business settings, RLS policies, and the public product-image bucket. Never run schema setup or migrations against production without checking the current schema and taking a database backup.
 
 ## Run Locally
 
@@ -71,49 +65,43 @@ Open `http://localhost:3000`.
 Visit:
 
 ```text
-/admin
+/about/admin
 ```
 
-Enter the value from `ADMIN_PASSWORD`.
+Enter the value from `ADMIN_PASSWORD`. Admin API calls use a signed, HTTP-only session cookie; the password is not sent with each API request.
 
-Admin features:
-
-- View orders from Supabase
-- Search orders
-- Filter by status
-- Update status
-- Export CSV
-- Empty state when no orders exist
+Admin features include product, brand, category and public business-settings management; image uploads; quote-enquiry search/status updates; legacy-order history; and CSV/XLSX catalogue import/export.
 
 ## Order Flow
 
-The order form validates user input, saves the order to Supabase, then opens a pre-filled WhatsApp message to:
+The quote form validates buyer details and selected published products, saves an idempotent multi-item enquiry, and offers a follow-up through the configured WhatsApp number:
 
 ```text
-+91 9839450586
++91 884 926 3377
 ```
 
-If `WHATSAPP_PHONE_NUMBER_ID` and `WHATSAPP_ACCESS_TOKEN` are configured, the API also sends an optional WhatsApp Cloud API text notification to `WHATSAPP_NOTIFY_TO`.
+When `WHATSAPP_PHONE_NUMBER_ID` and `WHATSAPP_ACCESS_TOKEN` are configured, the API can also send a WhatsApp Cloud API notification to `WHATSAPP_NOTIFY_TO`. Existing order records are retained and available read-only in Admin; new requests use the quotation flow.
 
 ## Deploy on Vercel
 
-1. Push the project to GitHub.
-2. Import the repository in Vercel.
-3. Add all environment variables in Vercel Project Settings.
-4. Deploy.
-5. Confirm `/order` can write to Supabase and `/admin` can read orders.
+1. Import the repository in Vercel.
+2. Add the variables from `.env.example` in Vercel Project Settings -> Environment Variables. Vercel does not read this local `.env` file during deployment.
+3. Set `NEXT_PUBLIC_SITE_URL` to `https://bulksupiler.in`; add that domain to the Vercel project and configure DNS as Vercel instructs.
+4. Apply the Supabase base schema if needed, then the versioned migration. Do not deploy the updated app before the migration is applied.
+5. Deploy and test an admin login, product publish, image upload, catalogue display, and saved enquiry.
 
 ## Connect a Custom Domain
 
-1. In Vercel, open Project Settings -> Domains.
-2. Add your domain.
-3. Update DNS records as Vercel instructs.
-4. After DNS propagation, set the domain as production.
-5. Update `metadataBase`, `sitemap.ts`, and `robots.ts` if the final domain differs from `thebulksupplier.in`.
+1. In Vercel, open Project Settings -> Domains and add `bulksupiler.in`.
+2. Update DNS records as Vercel instructs.
+3. After DNS propagation, keep `NEXT_PUBLIC_SITE_URL=https://bulksupiler.in` for Production and redeploy.
 
 ## Production Notes
 
-- Use Supabase Row Level Security.
-- Never expose the service role key in browser code.
-- Replace placeholder product images with owned product/godown images before launch.
-- Consider adding rate limiting to `/api/orders` for public traffic.
+- The product catalogue starts empty: create accurate products in Admin; drafts are private until explicitly published.
+- Public product access is RLS-limited to published records. Enquiries and admin data are only accessed by server routes using the service-role key.
+- Product-image uploads are limited to JPEG, PNG, and WebP files up to 5 MB.
+- Admin login and quote-submission attempts are throttled per server process. For reliable distributed rate limiting on Vercel, configure a persistent rate-limit service before high-traffic production use.
+- Vercel does not read `.env`; copy the variable names from `.env.example` into the Vercel project's Environment Variables and set production secrets there. Never commit `.env`.
+- The project uses an additive migration. Review it and back up the database before applying it; the migration has not been applied automatically.
+- Confirm Vercel Domain ownership/DNS and Supabase project settings before calling the site production-ready.

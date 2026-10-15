@@ -1,166 +1,91 @@
+import { getSupabasePublic } from "@/lib/supabase";
+
+export type ProductVariant = {
+  id: string;
+  name: string;
+  unit: string | null;
+  pack_size: string | null;
+  units_per_carton: number | null;
+  moq_quantity: number | null;
+  order_increment: number | null;
+  active: boolean;
+};
+
+export type ProductImage = {
+  id: string;
+  image_url: string;
+  alt_text: string | null;
+  sort_order: number;
+};
+
+export type ProductPriceTier = {
+  variant_id: string | null;
+  minimum_quantity: number;
+  unit_price: number;
+  currency: string;
+  price_unit: string | null;
+};
+
 export type Product = {
+  id: string;
   name: string;
   slug: string;
-  price: string;
-  moq: string;
-  quality: string;
-  packing: string;
-  imageUrl: string;
-  badge?: string;
+  price: string | null;
+  moq: string | null;
+  quality: string | null;
+  packing: string | null;
+  imageUrl: string | null;
+  sku: string | null;
+  description: string | null;
+  variant: string | null;
+  unit: string | null;
+  packSize: string | null;
+  brandName: string | null;
+  categoryName: string | null;
+  stockStatus: string;
+  quoteOnly: boolean;
+  variants: ProductVariant[];
+  images: ProductImage[];
+  priceTiers: ProductPriceTier[];
 };
 
 export type ProductRecord = Product & {
-  id: string;
   active: boolean;
+  status: "draft" | "published" | "archived";
   created_at: string;
 };
 
-type ProductSeed = {
+type ProductRow = {
+  id: string;
   name: string;
-  category: string;
-  imageUrl?: string;
-  moq?: string;
-  packing?: string;
-  badge?: string;
+  slug: string;
+  price: string | null;
+  moq: string | null;
+  quality: string | null;
+  packing: string | null;
+  image_url: string | null;
+  active: boolean;
+  created_at: string;
+  status: ProductRecord["status"];
+  sku: string | null;
+  description: string | null;
+  variant: string | null;
+  unit: string | null;
+  pack_size: string | null;
+  units_per_carton: number | null;
+  moq_quantity: number | null;
+  order_increment: number | null;
+  price_amount: number | null;
+  price_currency: string | null;
+  price_unit: string | null;
+  quote_only: boolean;
+  stock_status: string;
+  brand: { name: string } | { name: string }[] | null;
+  category: { name: string } | { name: string }[] | null;
+  variants: ProductVariant[];
+  images: ProductImage[];
+  price_tiers: ProductPriceTier[];
 };
-
-const productSeeds: ProductSeed[] = [
-  ...[
-    "Rice",
-    "Wheat",
-    "Flour (Atta)",
-    "Maida",
-    "Suji",
-    "Besan",
-    "Pulses (Dal)",
-    "Sugar",
-    "Salt",
-    "Jaggery (Gud)",
-    "Dry Fruits",
-    "Nuts",
-    "Poha",
-    "Vermicelli",
-    "Oats",
-    "Corn Flour"
-  ].map((name) => ({ name, category: "Grocery & Food", moq: "25kg", packing: "Loose / bag packing" })),
-  {
-    name: "Turmeric Powder",
-    category: "Spices (Masala)",
-    imageUrl: "/images/Haldi-Powder.webp",
-    moq: "20kg",
-    packing: "5kg / 10kg bags",
-    badge: "Best seller"
-  },
-  {
-    name: "Red Chilli Powder",
-    category: "Spices (Masala)",
-    imageUrl: "/images/Chilli-powder.jpeg",
-    moq: "20kg",
-    packing: "5kg / 10kg bags"
-  },
-  {
-    name: "Coriander Powder",
-    category: "Spices (Masala)",
-    imageUrl: "/images/dhaniya-powder.png",
-    moq: "20kg",
-    packing: "5kg / 10kg bags"
-  },
-  ...[
-    "Cumin Powder",
-    "Garam Masala",
-    "Black Pepper",
-    "Mustard Seeds",
-    "Fenugreek Seeds",
-    "Fennel Seeds",
-    "Cardamom",
-    "Cloves",
-    "Cinnamon",
-    "Bay Leaf",
-    "Asafoetida (Hing)",
-    "Kitchen King Masala"
-  ].map((name) => ({
-    name,
-    category: "Spices (Masala)",
-    imageUrl: name === "Black Pepper" ? "/images/kaali-mirch.jpeg" : undefined,
-    moq: "10kg",
-    packing: "1kg / 5kg packs"
-  })),
-  { name: "Chaat Masala", category: "Spices (Masala)", imageUrl: "/images/chat-masala.jpg", moq: "10kg", packing: "1kg / 5kg packs" },
-  { name: "Pav Bhaji Masala", category: "Spices (Masala)", moq: "10kg", packing: "1kg / 5kg packs" },
-  { name: "Biryani Masala", category: "Spices (Masala)", moq: "10kg", packing: "1kg / 5kg packs" },
-  ...[
-    "Mustard Oil",
-    "Sunflower Oil",
-    "Soybean Oil",
-    "Groundnut Oil",
-    "Coconut Oil",
-    "Rice Bran Oil",
-    "Palm Oil",
-    "Olive Oil",
-    "Sesame Oil",
-    "Cottonseed Oil"
-  ].map((name) => ({ name, category: "Edible Oils", moq: "12 litres", packing: "1L / 5L / tin packing" })),
-  ...["Tea", "Coffee", "Green Tea", "Soft Drinks", "Fruit Juice", "Energy Drinks", "Packaged Water"].map((name) => ({
-    name,
-    category: "Beverages",
-    imageUrl: name === "Tea" ? "/images/tea-patti.jpeg" : undefined,
-    moq: "1 carton",
-    packing: "Carton packing"
-  })),
-  ...["Chips", "Namkeen", "Biscuits", "Cookies", "Chocolates", "Candy", "Instant Noodles", "Popcorn"].map((name) => ({
-    name,
-    category: "Snacks & Namkeen",
-    moq: "1 carton",
-    packing: "Carton packing"
-  })),
-  ...[
-    "Soap",
-    "Shampoo",
-    "Hair Oil",
-    "Face Wash",
-    "Toothpaste",
-    "Toothbrush",
-    "Talcum Powder",
-    "Deodorant",
-    "Perfume",
-    "Hand Wash",
-    "Sanitizer"
-  ].map((name) => ({ name, category: "Personal Care", moq: "1 carton", packing: "Carton packing" })),
-  ...[
-    "Detergent Powder",
-    "Detergent Liquid",
-    "Dishwash Bar",
-    "Dishwash Liquid",
-    "Floor Cleaner",
-    "Toilet Cleaner",
-    "Glass Cleaner",
-    "Phenyl",
-    "Bleaching Powder"
-  ].map((name) => ({ name, category: "Cleaning Products", moq: "1 carton", packing: "Carton / bulk packing" })),
-  ...[
-    "Agarbatti",
-    "Dhoop Sticks",
-    "Dhoop Cones",
-    "Camphor (Kapoor)",
-    "Cotton Wicks",
-    "Diyas",
-    "Ghee",
-    "Puja Oil",
-    "Incense Holders",
-    "Havan Samagri",
-    "Kumkum",
-    "Roli",
-    "Chandan Powder",
-    "Kalash",
-    "Puja Thali"
-  ].map((name) => ({
-    name,
-    category: "Pooja Items",
-    imageUrl: ["Agarbatti", "Dhoop Sticks", "Dhoop Cones"].includes(name) ? "/images/agarbatti.jpeg" : undefined,
-    moq: "50 pieces",
-    packing: "Carton packing"
-  }))
-];
 
 function slugify(value: string) {
   return value
@@ -170,83 +95,104 @@ function slugify(value: string) {
     .replace(/^-|-$/g, "");
 }
 
-function externalImageUrl(name: string, category: string) {
-  const label = encodeURIComponent(`${name}\n${category}`);
-
-  return `https://placehold.co/640x480/f8edd7/51351a/png?font=montserrat&text=${label}`;
-}
-
-export const products: Product[] = productSeeds.map((product) => ({
-  name: product.name,
-  slug: slugify(product.name),
-  price: "Contact for rate",
-  moq: product.moq || "Bulk only",
-  quality: product.category,
-  packing: product.packing || "Bulk packing",
-  imageUrl: product.imageUrl || externalImageUrl(product.name, product.category),
-  badge: product.badge
-}));
-
-export const productNames = products.map((product) => product.name);
-
-export function productImageUrl(name: string, category: string) {
-  return externalImageUrl(name, category);
+export function productImageUrl() {
+  return "/images/product-placeholder.svg";
 }
 
 export function productSlug(value: string) {
   return slugify(value);
 }
 
-type ProductRow = {
-  id: string;
-  name: string;
-  slug: string;
-  price: string;
-  moq: string;
-  quality: string;
-  packing: string;
-  image_url: string | null;
-  active: boolean;
-  created_at: string;
-};
+function formatPrice(row: ProductRow) {
+  if (row.quote_only || row.price_amount === null) {
+    return null;
+  }
 
-function mapProductRow(row: ProductRow): ProductRecord {
+  const amount = new Intl.NumberFormat("en-IN", {
+    maximumFractionDigits: 2
+  }).format(row.price_amount);
+  return `${row.price_currency || "INR"} ${amount}${row.price_unit ? ` / ${row.price_unit}` : ""}`;
+}
+
+function formatMoq(row: ProductRow) {
+  if (row.moq_quantity === null || !row.unit) {
+    return null;
+  }
+
+  return `${row.moq_quantity} ${row.unit}`;
+}
+
+function mapProductRow(row: ProductRow): Product {
+  const brand = Array.isArray(row.brand) ? row.brand[0] : row.brand;
+  const category = Array.isArray(row.category) ? row.category[0] : row.category;
   return {
     id: row.id,
     name: row.name,
     slug: row.slug,
-    price: row.price,
-    moq: row.moq,
+    price: formatPrice(row),
+    moq: formatMoq(row),
     quality: row.quality,
-    packing: row.packing,
-    imageUrl: row.image_url || productImageUrl(row.name, row.quality),
-    active: row.active,
-    created_at: row.created_at
+    packing: row.pack_size || row.packing,
+    imageUrl: row.image_url,
+    sku: row.sku,
+    description: row.description,
+    variant: row.variant,
+    unit: row.unit,
+    packSize: row.pack_size,
+    brandName: brand?.name || null,
+    categoryName: category?.name || row.quality,
+    stockStatus: row.stock_status,
+    quoteOnly: row.quote_only || row.price_amount === null,
+    variants: (row.variants || []).filter((variant) => variant.active),
+    images: row.images || [],
+    priceTiers: row.price_tiers || []
   };
 }
 
-export async function getStoreProducts(options: { includeInactive?: boolean; limit?: number } = {}) {
-  try {
-    const { getSupabaseAdmin } = await import("@/lib/supabase");
-    const supabase = getSupabaseAdmin();
-    let query = supabase.from("products").select("*").order("created_at", { ascending: false });
+const storeProductSelect = `
+  id, name, slug, price, moq, quality, packing, image_url, active, created_at,
+  status, sku, description, variant, unit, pack_size, units_per_carton,
+  moq_quantity, order_increment, price_amount, price_currency, price_unit,
+  quote_only, stock_status, brand:brands(name), category:categories(name),
+  variants:product_variants(id, name, unit, pack_size, units_per_carton, moq_quantity, order_increment, active),
+  images:product_images(id, image_url, alt_text, sort_order),
+  price_tiers:product_price_tiers(variant_id, minimum_quantity, unit_price, currency, price_unit)
+`;
 
-    if (!options.includeInactive) {
-      query = query.eq("active", true);
-    }
+export async function getStoreProducts(options: { limit?: number } = {}) {
+  const supabase = getSupabasePublic();
+  let query = supabase
+    .from("products")
+    .select(storeProductSelect)
+    .eq("status", "published")
+    .eq("active", true)
+    .order("created_at", { ascending: false });
 
-    if (options.limit) {
-      query = query.limit(options.limit);
-    }
-
-    const { data, error } = await query;
-
-    if (error || !data?.length) {
-      return products.slice(0, options.limit);
-    }
-
-    return (data as ProductRow[]).map(mapProductRow);
-  } catch {
-    return products.slice(0, options.limit);
+  if (options.limit) {
+    query = query.limit(options.limit);
   }
+
+  const { data, error } = await query;
+  if (error) {
+    throw new Error(`Unable to load published products: ${error.message}`);
+  }
+
+  return ((data || []) as ProductRow[]).map(mapProductRow);
+}
+
+export async function getStoreProductBySlug(slug: string) {
+  const supabase = getSupabasePublic();
+  const { data, error } = await supabase
+    .from("products")
+    .select(storeProductSelect)
+    .eq("slug", slug)
+    .eq("status", "published")
+    .eq("active", true)
+    .maybeSingle();
+
+  if (error) {
+    throw new Error(`Unable to load product details: ${error.message}`);
+  }
+
+  return data ? mapProductRow(data as ProductRow) : null;
 }
