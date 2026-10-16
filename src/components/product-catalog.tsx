@@ -27,8 +27,6 @@ export function ProductCatalog({ products }: { products: Product[] }) {
     });
   }, [products, query, selectedCategory]);
 
-  const hasFilters = query.trim().length > 0 || selectedCategory !== "All products";
-
   return (
     <>
       <div className="mt-8 rounded-xl border bg-white p-5 premium-shadow">
