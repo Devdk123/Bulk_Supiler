@@ -33,6 +33,13 @@ export default async function RootLayout({ children }: Readonly<{ children: Reac
         />
       </head>
       <body className="antialiased">
+        {!businessSettings.databaseAvailable ? (
+          <div className="border-b border-amber-300 bg-amber-50 px-4 py-3 text-sm text-amber-950" role="status">
+            <p className="container-page">
+              Storefront setup is incomplete. Connect Supabase, add the project URL and keys, then apply the database setup SQL and migration to enable the catalogue and enquiries.
+            </p>
+          </div>
+        ) : null}
         <SiteHeader whatsappNumber={businessSettings.whatsapp_number} />
         <main>{children}</main>
         <SiteFooter settings={businessSettings} />

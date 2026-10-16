@@ -1,4 +1,4 @@
-import { getSupabasePublic } from "@/lib/supabase";
+import { getSupabasePublic, isSupabasePublicConfigured } from "@/lib/supabase";
 
 export type ProductVariant = {
   id: string;
@@ -160,6 +160,10 @@ const storeProductSelect = `
 `;
 
 export async function getStoreProducts(options: { limit?: number } = {}) {
+  if (!isSupabasePublicConfigured()) {
+    return [];
+  }
+
   const supabase = getSupabasePublic();
   let query = supabase
     .from("products")
@@ -172,27 +176,54 @@ export async function getStoreProducts(options: { limit?: number } = {}) {
     query = query.limit(options.limit);
   }
 
-  const { data, error } = await query;
-  if (error) {
-    throw new Error(`Unable to load published products: ${error.message}`);
+  let result;
+  try {
+    result = await query;
+  } catch (error) {
+    if (!(error instanceof TypeError)) {
+      throw error;
+    }
+
+    console.error("Unable to reach Supabase while loading published products.", error);
+    return [];
   }
 
-  return ((data || []) as ProductRow[]).map(mapProductRow);
+  if (result.error) {
+    console.error("Unable to load published products from Supabase.", result.error);
+    return [];
+  }
+
+  return ((result.data || []) as ProductRow[]).map(mapProductRow);
 }
 
 export async function getStoreProductBySlug(slug: string) {
-  const supabase = getSupabasePublic();
-  const { data, error } = await supabase
-    .from("products")
-    .select(storeProductSelect)
-    .eq("slug", slug)
-    .eq("status", "published")
-    .eq("active", true)
-    .maybeSingle();
-
-  if (error) {
-    throw new Error(`Unable to load product details: ${error.message}`);
+  if (!isSupabasePublicConfigured()) {
+    return null;
   }
 
-  return data ? mapProductRow(data as ProductRow) : null;
+  const supabase = getSupabasePublic();
+  let result;
+  try {
+    result = await supabase
+      .from("products")
+      .select(storeProductSelect)
+      .eq("slug", slug)
+      .eq("status", "published")
+      .eq("active", true)
+      .maybeSingle();
+  } catch (error) {
+    if (!(error instanceof TypeError)) {
+      throw error;
+    }
+
+    console.error("Unable to reach Supabase while loading product details.", error);
+    return null;
+  }
+
+  if (result.error) {
+    console.error("Unable to load product details from Supabase.", result.error);
+    return null;
+  }
+
+  return result.data ? mapProductRow(result.data as ProductRow) : null;
 }

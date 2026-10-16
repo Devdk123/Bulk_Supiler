@@ -40,10 +40,16 @@ Set `ADMIN_SESSION_SECRET` to a cryptographically random value of at least 32 ch
 
 ## Supabase Setup
 
-1. Create a Supabase project.
-2. Run the existing base setup in `supabase/run-this-in-sql-editor.sql` if the project does not already have the `products` and `orders` tables.
-3. Apply the versioned migration at `supabase/migrations/20261015154037_wholesale_platform.sql`. It preserves existing product/order rows, but sets pre-existing catalogue rows to draft by default; review and republish only verified entries in Admin.
-4. Add the project URL and keys to `.env`.
+For a new Supabase project:
+
+1. Create the project and wait until its database is ready.
+2. In Supabase Project Settings -> API Keys, copy the Project URL, publishable key, and secret key. Legacy `anon` and `service_role` keys are also supported.
+3. Set `NEXT_PUBLIC_SUPABASE_URL`, `NEXT_PUBLIC_SUPABASE_ANON_KEY` (publishable or legacy `anon` key), and `SUPABASE_SERVICE_ROLE_KEY` (secret or legacy `service_role` key) in local `.env` and in Vercel Project Settings -> Environment Variables. Keep `SUPABASE_SERVICE_ROLE_KEY` server-side only; never use a `NEXT_PUBLIC_` prefix for it.
+4. In the Supabase SQL Editor, run `supabase/run-this-in-sql-editor.sql`, then apply `supabase/migrations/20261015154037_wholesale_platform.sql`. The migration enables RLS and grants the roles required by this app's public and server-side access.
+5. Set a strong `ADMIN_PASSWORD` and a random `ADMIN_SESSION_SECRET` of at least 32 characters in both environments.
+6. Redeploy Vercel after setting its environment variables.
+
+The storefront remains available in setup mode before Supabase is configured, but product, enquiry, and admin data features require valid project keys and the SQL setup above. The local `.env` is not used by Vercel.
 
 The base schema creates:
 
