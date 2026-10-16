@@ -50,7 +50,7 @@ For a new Supabase project:
 6. Redeploy Vercel after setting its environment variables.
 
 The storefront remains available in setup mode before Supabase is configured, but product, enquiry, and admin data features require valid project keys and the SQL setup above. The local `.env` is not used by Vercel.
- 
+
 A newly created project starts with no previous products, enquiries, orders, or business settings. The SQL setup creates the schema only; restore data from a Supabase backup if one is available, otherwise re-enter it in Admin after setup.
 
 The base schema creates:
