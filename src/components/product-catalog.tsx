@@ -10,7 +10,14 @@ export function ProductCatalog({ products }: { products: Product[] }) {
   const [selectedCategory, setSelectedCategory] = useState("All products");
 
   const categories = useMemo(
-    () => ["All products", ...new Set(products.map((product) => product.quality).filter(Boolean))],
+    () => [
+      "All products",
+      ...new Set(
+        products
+          .map((product) => product.quality)
+          .filter((quality): quality is string => Boolean(quality))
+      )
+    ],
     [products]
   );
 
