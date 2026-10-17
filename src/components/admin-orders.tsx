@@ -91,7 +91,7 @@ type ImportPreview = {
   invalidRows: Array<{ row: number; errors: string[] }>;
   totalRows: number;
 };
-type Tab = "products" | "brands" | "enquiries" | "legacy-orders" | "import" | "settings";
+type Tab = "products" | "brands" | "enquiries" | "legacy-orders" | "import" | "settings" | "diagnostics";
 type LegacyOrder = {
   id: string;
   customer_name: string;
@@ -670,9 +670,10 @@ export function AdminOrders() {
             ["enquiries", "Enquiries"],
             ["legacy-orders", "Legacy orders"],
             ["import", "Import / export"],
-            ["settings", "Business settings"]
+            ["settings", "Business settings"],
+            ["diagnostics", "System Diagnostics"]
           ] as const).map(([tab, title]) => (
-            <Button key={tab} variant={activeTab === tab ? "gold" : "outline"} onClick={() => setActiveTab(tab)}>{title}</Button>
+            <Button key={tab} variant={activeTab === tab ? "gold" : "outline"} className="rounded-xl font-bold" onClick={() => setActiveTab(tab)}>{title}</Button>
           ))}
         </nav>
 
@@ -1017,6 +1018,93 @@ export function AdminOrders() {
                 ))}
                 <Button type="submit" variant="gold" className="w-fit"><Save className="h-4 w-4" /> Save public settings</Button>
               </form>
+            </CardContent>
+          </Card>
+        ) : null}
+        {activeTab === "diagnostics" ? (
+          <Card className="mt-6 rounded-3xl border border-border bg-card shadow-sm">
+            <CardContent className="p-6 md:p-8">
+              <h2 className="text-xl font-extrabold text-foreground">
+                Storefront Setup & Supabase Diagnostics
+              </h2>
+              <p className="mt-2 text-sm text-muted-foreground">
+                Check database connectivity, required environment variables, and migration status. This diagnostic interface is kept strictly internal to the administrator.
+              </p>
+
+              <div className="mt-6 grid gap-6 md:grid-cols-2">
+                <div className="rounded-2xl border border-border bg-background p-5">
+                  <h3 className="text-sm font-bold uppercase tracking-wider text-primary dark:text-accent">
+                    Required Environment Variables
+                  </h3>
+                  <p className="mt-1 text-xs text-muted-foreground">
+                    Ensure these are defined in your local <code className="rounded bg-secondary px-1.5 py-0.5 font-mono text-[11px]">.env</code> and in Vercel Project Settings:
+                  </p>
+                  <ul className="mt-4 space-y-2 text-xs font-mono">
+                    <li className="flex items-center justify-between rounded-lg border border-border bg-card p-2.5">
+                      <span>NEXT_PUBLIC_SUPABASE_URL</span>
+                      <span className="rounded bg-fresh/15 px-2 py-0.5 text-[10px] font-sans font-bold text-fresh">Required</span>
+                    </li>
+                    <li className="flex items-center justify-between rounded-lg border border-border bg-card p-2.5">
+                      <span>NEXT_PUBLIC_SUPABASE_ANON_KEY</span>
+                      <span className="rounded bg-fresh/15 px-2 py-0.5 text-[10px] font-sans font-bold text-fresh">Required</span>
+                    </li>
+                    <li className="flex items-center justify-between rounded-lg border border-border bg-card p-2.5">
+                      <span>SUPABASE_SERVICE_ROLE_KEY</span>
+                      <span className="rounded bg-fresh/15 px-2 py-0.5 text-[10px] font-sans font-bold text-fresh">Server-only</span>
+                    </li>
+                    <li className="flex items-center justify-between rounded-lg border border-border bg-card p-2.5">
+                      <span>ADMIN_PASSWORD</span>
+                      <span className="rounded bg-fresh/15 px-2 py-0.5 text-[10px] font-sans font-bold text-fresh">Configured</span>
+                    </li>
+                    <li className="flex items-center justify-between rounded-lg border border-border bg-card p-2.5">
+                      <span>ADMIN_SESSION_SECRET</span>
+                      <span className="rounded bg-fresh/15 px-2 py-0.5 text-[10px] font-sans font-bold text-fresh">Configured</span>
+                    </li>
+                    <li className="flex items-center justify-between rounded-lg border border-border bg-card p-2.5">
+                      <span>NEXT_PUBLIC_WHATSAPP_NUMBER</span>
+                      <span className="rounded bg-fresh/15 px-2 py-0.5 text-[10px] font-sans font-bold text-fresh">Configured</span>
+                    </li>
+                  </ul>
+                </div>
+
+                <div className="rounded-2xl border border-border bg-background p-5">
+                  <h3 className="text-sm font-bold uppercase tracking-wider text-primary dark:text-accent">
+                    Database Schema & Migrations
+                  </h3>
+                  <p className="mt-1 text-xs text-muted-foreground">
+                    To activate full wholesale features, execute these files in your Supabase SQL Editor:
+                  </p>
+
+                  <div className="mt-4 space-y-3 text-xs">
+                    <div className="rounded-xl border border-border bg-card p-3.5">
+                      <p className="font-bold text-foreground">1. Base Tables</p>
+                      <p className="mt-1 text-muted-foreground">
+                        File: <code className="rounded bg-secondary px-1.5 py-0.5 font-mono text-[11px]">supabase/run-this-in-sql-editor.sql</code>
+                      </p>
+                      <p className="mt-0.5 text-[11px] text-muted-foreground">
+                        Creates base <code className="font-mono">products</code> and legacy <code className="font-mono">orders</code> tables.
+                      </p>
+                    </div>
+
+                    <div className="rounded-xl border border-border bg-card p-3.5">
+                      <p className="font-bold text-foreground">2. Wholesale Platform Migration</p>
+                      <p className="mt-1 text-muted-foreground">
+                        File: <code className="rounded bg-secondary px-1.5 py-0.5 font-mono text-[11px]">supabase/migrations/20261015154037_wholesale_platform.sql</code>
+                      </p>
+                      <p className="mt-0.5 text-[11px] text-muted-foreground">
+                        Creates <code className="font-mono">brands</code>, <code className="font-mono">categories</code>, <code className="font-mono">enquiries</code>, <code className="font-mono">product_variants</code>, <code className="font-mono">product_price_tiers</code>, and <code className="font-mono">business_settings</code> with RLS policies and procedures.
+                      </p>
+                    </div>
+
+                    <div className="rounded-xl border border-fresh/30 bg-fresh/10 p-3.5 text-fresh">
+                      <p className="font-bold">Public Storefront Integrity</p>
+                      <p className="mt-0.5 text-[11px] text-foreground/80">
+                        Public visitors see a clean, professional FMCG storefront without internal database errors or setup banners.
+                      </p>
+                    </div>
+                  </div>
+                </div>
+              </div>
             </CardContent>
           </Card>
         ) : null}

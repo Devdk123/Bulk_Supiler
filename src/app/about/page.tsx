@@ -1,59 +1,109 @@
 import type { Metadata } from "next";
-import { BadgePercent, Boxes, Handshake, PackageCheck, ShieldCheck } from "lucide-react";
+import Link from "next/link";
+import {
+  BadgePercent,
+  Boxes,
+  PackageCheck,
+  ShieldCheck,
+  Store,
+  Truck
+} from "lucide-react";
 import { SectionHeading } from "@/components/section-heading";
+import { Button } from "@/components/ui/button";
 
 export const metadata: Metadata = {
-  title: "About",
-  description: "Learn about The Bulk Supplier, a direct godown wholesale supplier for bulk products."
+  title: "About Our Wholesale Operations",
+  description: "Learn about The Bulk Supplier, an Indian B2B FMCG distribution partner supplying spices, edible oils, matches and daily trade goods."
 };
 
-const sections = [
+const pillars = [
   {
-    title: "Who we are",
-    text: "We are a wholesale supplier providing spices, agarbatti, tea and daily goods in bulk. We supply directly from our godown at best rates.",
-    icon: Handshake
+    title: "Who We Are",
+    text: "We are an FMCG wholesale distributor dedicated to supplying independent grocers, retail store owners, and trade buyers across India with fast-moving daily consumption goods.",
+    icon: Store
   },
   {
-    title: "What we supply",
-    text: "Spices, agarbatti, dhoop, tea patti, machis and high movement daily goods for traders and shops.",
+    title: "Categories We Supply",
+    text: "Our core inventory spans whole and ground spices, edible cooking oils, safety matchsticks, agarbatti, dhoop, camphor, and everyday trade staples.",
     icon: PackageCheck
   },
   {
-    title: "Our promise",
-    text: "Clear bulk rates, practical packing options and dependable follow-up before dispatch.",
-    icon: ShieldCheck
-  },
-  {
-    title: "Direct godown supply",
-    text: "Orders are handled with a godown-first process for better wholesale consistency.",
+    title: "Godown-Direct Pricing",
+    text: "By coordinating dispatches directly from our warehouse and partner processing hubs, we offer transparent bulk margin structures tailored to retail shop economics.",
     icon: Boxes
   },
   {
-    title: "Bulk discount available",
-    text: "Repeat and larger quantity buyers can request sharper rates based on stock and transport.",
+    title: "Consolidated Multi-Category Dispatch",
+    text: "Instead of dealing with half a dozen different category vendors, store owners can consolidate spices, oils, and pooja supplies into a single transport booking.",
+    icon: Truck
+  },
+  {
+    title: "Straightforward Quotations",
+    text: "No hidden fees or rigid retail checkouts. Every enquiry receives an itemized quote reflecting live inventory and seasonal transport terms.",
+    icon: ShieldCheck
+  },
+  {
+    title: "High-Movement Volume Terms",
+    text: "Repeat retail buyers and regional stockists can negotiate tiered pricing for full-carton or recurring weekly requirements.",
     icon: BadgePercent
   }
 ];
 
 export default function AboutPage() {
   return (
-    <section className="py-14">
+    <div className="py-12 md:py-20">
       <div className="container-page">
-        <SectionHeading
-          eyebrow="About us"
-          title="A wholesale supply partner for everyday trade goods"
-          description="We focus on practical bulk supply for buyers who need reliable product availability, clear quantities and fast communication."
-        />
-        <div className="mt-10 grid gap-5 md:grid-cols-2">
-          {sections.map((section) => (
-            <div key={section.title} className="rounded-lg border bg-white p-6 transition-all hover:-translate-y-1 hover:shadow-lg">
-              <section.icon className="h-8 w-8 text-accent" />
-              <h2 className="mt-5 text-xl font-extrabold text-primary">{section.title}</h2>
-              <p className="mt-3 leading-7 text-muted-foreground">{section.text}</p>
+        {/* Intro Section */}
+        <div className="max-w-3xl">
+          <SectionHeading
+            eyebrow="Company Overview"
+            title="A Wholesale Supply Partner for Everyday Trade Goods"
+            description="We bridge the gap between regional processing facilities and local retail shelves, providing reliable availability, clear carton quantities, and responsive communication."
+          />
+        </div>
+
+        {/* Feature Grid */}
+        <div className="mt-14 grid gap-6 sm:grid-cols-2 lg:grid-cols-3">
+          {pillars.map((item) => (
+            <div
+              key={item.title}
+              className="group flex flex-col justify-between rounded-3xl border border-border bg-card p-7 shadow-xs transition-all duration-300 hover:-translate-y-1 hover:border-fresh/40 hover:shadow-md"
+            >
+              <div>
+                <span className="flex h-12 w-12 items-center justify-center rounded-2xl bg-fresh/10 text-fresh transition-colors group-hover:bg-fresh group-hover:text-white">
+                  <item.icon className="h-6 w-6" />
+                </span>
+                <h2 className="mt-5 text-lg font-bold text-foreground">
+                  {item.title}
+                </h2>
+                <p className="mt-2.5 text-xs sm:text-sm leading-relaxed text-muted-foreground">
+                  {item.text}
+                </p>
+              </div>
             </div>
           ))}
         </div>
+
+        {/* Bottom CTA Block */}
+        <div className="mt-16 rounded-3xl border border-border bg-secondary/40 p-8 sm:p-12 text-center md:text-left flex flex-col md:flex-row md:items-center md:justify-between gap-6">
+          <div>
+            <h3 className="text-xl sm:text-2xl font-extrabold text-foreground">
+              Interested in Stocking Our Product Lines?
+            </h3>
+            <p className="mt-2 text-sm text-muted-foreground max-w-xl">
+              Explore our current catalogue or submit your store details to discuss pricing and minimum order terms.
+            </p>
+          </div>
+          <div className="flex flex-wrap justify-center gap-3 shrink-0">
+            <Button asChild variant="gold" size="lg">
+              <Link href="/products">Explore Catalogue</Link>
+            </Button>
+            <Button asChild variant="outline" size="lg">
+              <Link href="/order">Request Wholesale Quote</Link>
+            </Button>
+          </div>
+        </div>
       </div>
-    </section>
+    </div>
   );
 }
