@@ -8,13 +8,13 @@ import { getPublicBusinessSettings } from "@/lib/business-settings";
 export const metadata: Metadata = {
   metadataBase: new URL(process.env.NEXT_PUBLIC_SITE_URL || "https://bulksupiler.in"),
   title: {
-    default: "The Bulk Supplier - Wholesale Products at Best Price",
+    default: "The Bulk Supplier | B2B Wholesale & FMCG Distribution",
     template: "%s | The Bulk Supplier"
   },
-  description: "Wholesale supplier for spices, agarbatti, tea patti, machis and daily goods in bulk across India.",
+  description: "Direct godown wholesale supplier for spices, edible oils, agarbatti, dhoop, matchsticks and FMCG daily goods across India.",
   openGraph: {
-    title: "The Bulk Supplier",
-    description: "Direct godown wholesale supply across India.",
+    title: "The Bulk Supplier - Premium Wholesale Supply",
+    description: "Everything your store needs. Direct godown wholesale supply across India.",
     type: "website"
   }
 };
@@ -32,16 +32,9 @@ export default async function RootLayout({ children }: Readonly<{ children: Reac
           }}
         />
       </head>
-      <body className="antialiased">
-        {!businessSettings.databaseAvailable ? (
-          <div className="border-b border-amber-300 bg-amber-50 px-4 py-3 text-sm text-amber-950" role="status">
-            <p className="container-page">
-              Storefront setup is incomplete. Connect Supabase, add the project URL and keys, then apply the database setup SQL and migration to enable the catalogue and enquiries.
-            </p>
-          </div>
-        ) : null}
+      <body className="min-h-screen bg-background text-foreground antialiased selection:bg-accent selection:text-primary">
         <SiteHeader whatsappNumber={businessSettings.whatsapp_number} />
-        <main>{children}</main>
+        <main className="flex-1">{children}</main>
         <SiteFooter settings={businessSettings} />
         <WhatsAppFloat whatsappNumber={businessSettings.whatsapp_number} />
       </body>

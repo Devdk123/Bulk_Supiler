@@ -1,16 +1,18 @@
 "use client";
 
 import Link from "next/link";
-import { usePathname } from "next/navigation";
-import { Menu, MessageCircle, Moon, Package2, Sun } from "lucide-react";
-import { useState, useSyncExternalStore } from "react";
+import { usePathname, useRouter } from "next/navigation";
+import { ArrowRight, Boxes, Menu, MessageCircle, Moon, PackageCheck, Search, Sun, X } from "lucide-react";
+import { useState, useSyncExternalStore, FormEvent } from "react";
 import { Button } from "@/components/ui/button";
 import { cn, buildWhatsAppLink } from "@/lib/utils";
 
 const links = [
   { href: "/", label: "Home" },
   { href: "/products", label: "Products" },
-  { href: "/order", label: "Order" },
+  { href: "/#categories", label: "Categories" },
+  { href: "/#brands", label: "Brands" },
+  { href: "/order", label: "Bulk Orders" },
   { href: "/about", label: "About" },
   { href: "/contact", label: "Contact" }
 ];
@@ -27,7 +29,9 @@ function getThemeSnapshot(): "light" | "dark" {
 
 export function SiteHeader({ whatsappNumber }: { whatsappNumber: string }) {
   const pathname = usePathname();
+  const router = useRouter();
   const [open, setOpen] = useState(false);
+  const [searchQuery, setSearchQuery] = useState("");
   const theme = useSyncExternalStore(subscribeToTheme, getThemeSnapshot, () => "light");
   const whatsappLink = buildWhatsAppLink("Hello The Bulk Supplier, I want to request a wholesale quote.", whatsappNumber);
 
@@ -37,83 +41,197 @@ export function SiteHeader({ whatsappNumber }: { whatsappNumber: string }) {
     localStorage.setItem("bulk-supplier-theme", nextTheme);
   }
 
+  function handleSearchSubmit(e: FormEvent) {
+    e.preventDefault();
+    if (searchQuery.trim()) {
+      router.push(`/products?search=${encodeURIComponent(searchQuery.trim())}`);
+      setOpen(false);
+    }
+  }
+
   return (
-    <header className="sticky top-0 z-40 border-b bg-white/92 backdrop-blur-md">
-      <div className="container-page flex h-16 items-center justify-between gap-4">
-        <Link href="/" className="flex items-center gap-3">
-          <span className="flex h-10 w-10 items-center justify-center rounded-md bg-primary text-accent">
-            <Package2 className="h-6 w-6" />
+    <header className="sticky top-0 z-40 border-b border-border bg-card/95 backdrop-blur-md transition-colors duration-200">
+      <div className="container-page flex h-20 items-center justify-between gap-4">
+        {/* Brand Mark and Title */}
+        <Link href="/" className="group flex items-center gap-3.5 focus-visible:outline-none">
+          <span className="flex h-11 w-11 shrink-0 items-center justify-center rounded-xl bg-primary text-accent shadow-xs transition-transform duration-300 group-hover:scale-105">
+            <Boxes className="h-6 w-6" />
           </span>
           <span className="leading-tight">
-            <span className="block text-lg font-extrabold text-primary">The Bulk Supplier</span>
-            <span className="hidden text-xs font-semibold uppercase tracking-[0.16em] text-muted-foreground sm:block">
-              Direct Godown Supply
+            <span className="block text-xl font-extrabold tracking-tight text-primary transition-colors">
+              The Bulk Supplier
+            </span>
+            <span className="block text-[11px] font-bold uppercase tracking-[0.16em] text-muted-foreground">
+              B2B Wholesale & Distribution
             </span>
           </span>
         </Link>
 
-        <nav className="hidden items-center gap-1 lg:flex">
-          {links.map((link) => (
-            <Link
-              key={link.href}
-              href={link.href}
-              className={cn(
-                "rounded-md px-3 py-2 text-sm font-semibold transition-colors hover:bg-secondary",
-                pathname === link.href ? "bg-secondary text-primary" : "text-muted-foreground"
-              )}
-            >
-              {link.label}
-            </Link>
-          ))}
+        {/* Desktop Navigation */}
+        <nav className="hidden items-center gap-1.5 xl:flex">
+          {links.map((link) => {
+            const isActive =
+              link.href === "/"
+                ? pathname === "/"
+                : link.href.startsWith("/#")
+                ? false
+                : pathname === link.href || pathname.startsWith(link.href + "/");
+
+            return (
+              <Link
+                key={link.href}
+                href={link.href}
+                className={cn(
+                  "rounded-lg px-3.5 py-2 text-sm font-semibold transition-all duration-150",
+                  isActive
+                    ? "bg-fresh/10 text-fresh font-bold"
+                    : "text-foreground/80 hover:bg-secondary hover:text-primary"
+                )}
+              >
+                {link.label}
+              </Link>
+            );
+          })}
         </nav>
 
-        <div className="hidden items-center gap-2 lg:flex">
-          <Button type="button" variant="outline" size="icon" aria-label={`Switch to ${theme === "dark" ? "light" : "dark"} mode`} onClick={toggleTheme}>
-            {theme === "dark" ? <Sun className="h-4 w-4" /> : <Moon className="h-4 w-4" />}
+        {/* Quick Search Entry */}
+        <div className="hidden items-center md:flex lg:w-56 xl:w-64">
+          <form onSubmit={handleSearchSubmit} className="relative w-full">
+            <Search className="pointer-events-none absolute left-3.5 top-1/2 h-4 w-4 -translate-y-1/2 text-muted-foreground" />
+            <input
+              type="text"
+              value={searchQuery}
+              onChange={(e) => setSearchQuery(e.target.value)}
+              placeholder="Search catalogue..."
+              className="h-10 w-full rounded-xl border border-border bg-background pl-9 pr-3 text-xs font-medium text-foreground placeholder:text-muted-foreground/70 transition-all focus:border-fresh focus:outline-none focus:ring-1 focus:ring-fresh"
+            />
+          </form>
+        </div>
+
+        {/* Actions & Buttons */}
+        <div className="hidden items-center gap-2.5 sm:flex">
+          {/* Theme Switcher */}
+          <button
+            type="button"
+            onClick={toggleTheme}
+            aria-label={`Switch to ${theme === "dark" ? "light" : "dark"} mode`}
+            className="flex h-10 w-10 items-center justify-center rounded-xl border border-border bg-background text-foreground transition-colors hover:bg-secondary hover:text-primary focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring"
+          >
+            {theme === "dark" ? (
+              <Sun className="h-4.5 w-4.5 text-accent" />
+            ) : (
+              <Moon className="h-4.5 w-4.5 text-muted-foreground" />
+            )}
+          </button>
+
+          {/* Primary CTA */}
+          <Button asChild variant="gold" size="default" className="shadow-xs">
+            <Link href="/order" className="gap-2">
+              <PackageCheck className="h-4 w-4" />
+              <span>Request Quote</span>
+            </Link>
           </Button>
+
           {whatsappLink ? (
-            <Button asChild variant="gold">
+            <Button asChild variant="outline" size="default" className="hidden lg:inline-flex border-fresh/30 text-fresh hover:bg-fresh/10">
               <a href={whatsappLink} target="_blank" rel="noreferrer">
-                <MessageCircle className="h-4 w-4" /> WhatsApp
+                <MessageCircle className="h-4 w-4 text-fresh" /> WhatsApp
               </a>
             </Button>
           ) : null}
         </div>
 
-        <div className="flex items-center gap-2 lg:hidden">
-          <Button type="button" variant="outline" size="icon" aria-label={`Switch to ${theme === "dark" ? "light" : "dark"} mode`} onClick={toggleTheme}>
-            {theme === "dark" ? <Sun className="h-4 w-4" /> : <Moon className="h-4 w-4" />}
-          </Button>
-          <Button aria-label={open ? "Close menu" : "Open menu"} aria-expanded={open} variant="outline" size="icon" onClick={() => setOpen(!open)}>
-            {open ? <span aria-hidden="true">×</span> : <Menu className="h-5 w-5" />}
+        {/* Mobile Controls */}
+        <div className="flex items-center gap-2 xl:hidden">
+          <button
+            type="button"
+            onClick={toggleTheme}
+            aria-label={`Switch to ${theme === "dark" ? "light" : "dark"} mode`}
+            className="flex h-10 w-10 items-center justify-center rounded-xl border border-border bg-background text-foreground sm:hidden"
+          >
+            {theme === "dark" ? (
+              <Sun className="h-4 w-4 text-accent" />
+            ) : (
+              <Moon className="h-4 w-4 text-muted-foreground" />
+            )}
+          </button>
+
+          <Button
+            type="button"
+            variant="outline"
+            size="icon"
+            aria-label={open ? "Close navigation menu" : "Open navigation menu"}
+            aria-expanded={open}
+            onClick={() => setOpen(!open)}
+            className="rounded-xl border-border bg-background"
+          >
+            {open ? <X className="h-5 w-5" /> : <Menu className="h-5 w-5" />}
           </Button>
         </div>
       </div>
 
+      {/* Responsive Mobile Drawer */}
       {open ? (
-        <div className="border-t bg-white lg:hidden">
-          <nav className="container-page grid gap-2 py-4">
-            {links.map((link) => (
-              <Link
-                key={link.href}
-                href={link.href}
-                onClick={() => setOpen(false)}
-                className={cn(
-                  "rounded-md px-3 py-3 text-sm font-semibold",
-                  pathname === link.href ? "bg-secondary text-primary" : "text-muted-foreground"
-                )}
-              >
-                {link.label}
-              </Link>
-            ))}
-            {whatsappLink ? (
-              <Button asChild variant="gold" className="mt-2">
-                <a href={whatsappLink} target="_blank" rel="noreferrer">
-                  <MessageCircle className="h-4 w-4" /> Order on WhatsApp
-                </a>
+        <div className="border-t border-border bg-card shadow-lg xl:hidden animate-in slide-in-from-top-2 duration-200">
+          <div className="container-page py-5">
+            {/* Mobile Search */}
+            <form onSubmit={handleSearchSubmit} className="relative mb-4">
+              <Search className="pointer-events-none absolute left-3.5 top-1/2 h-4 w-4 -translate-y-1/2 text-muted-foreground" />
+              <input
+                type="text"
+                value={searchQuery}
+                onChange={(e) => setSearchQuery(e.target.value)}
+                placeholder="Search products, brands, FMCG items..."
+                className="h-11 w-full rounded-xl border border-border bg-background pl-9 pr-4 text-sm font-medium text-foreground placeholder:text-muted-foreground focus:border-fresh focus:outline-none focus:ring-1 focus:ring-fresh"
+              />
+            </form>
+
+            {/* Mobile Links */}
+            <nav className="grid gap-1">
+              {links.map((link) => {
+                const isActive =
+                  link.href === "/"
+                    ? pathname === "/"
+                    : link.href.startsWith("/#")
+                    ? false
+                    : pathname === link.href || pathname.startsWith(link.href + "/");
+
+                return (
+                  <Link
+                    key={link.href}
+                    href={link.href}
+                    onClick={() => setOpen(false)}
+                    className={cn(
+                      "flex items-center justify-between rounded-xl px-4 py-3 text-sm font-semibold transition-colors",
+                      isActive
+                        ? "bg-fresh/10 text-fresh font-bold"
+                        : "text-foreground hover:bg-secondary"
+                    )}
+                  >
+                    <span>{link.label}</span>
+                    <ArrowRight className="h-4 w-4 opacity-40" />
+                  </Link>
+                );
+              })}
+            </nav>
+
+            {/* Mobile CTAs */}
+            <div className="mt-5 grid gap-2.5 border-t border-border pt-4">
+              <Button asChild variant="gold" size="lg" className="w-full justify-center">
+                <Link href="/order" onClick={() => setOpen(false)}>
+                  <PackageCheck className="h-5 w-5" /> Build Bulk Order
+                </Link>
               </Button>
-            ) : null}
-          </nav>
+
+              {whatsappLink ? (
+                <Button asChild variant="outline" size="lg" className="w-full justify-center border-fresh/30 text-fresh hover:bg-fresh/10">
+                  <a href={whatsappLink} target="_blank" rel="noreferrer">
+                    <MessageCircle className="h-5 w-5 text-fresh" /> Chat with Godown Team
+                  </a>
+                </Button>
+              ) : null}
+            </div>
+          </div>
         </div>
       ) : null}
     </header>
