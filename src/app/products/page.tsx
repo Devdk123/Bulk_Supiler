@@ -1,4 +1,5 @@
 import type { Metadata } from "next";
+import { Suspense } from "react";
 import { ProductCatalogue } from "@/components/product-catalogue";
 import { SectionHeading } from "@/components/section-heading";
 import { getStoreProducts } from "@/lib/products";
@@ -7,21 +8,23 @@ export const dynamic = "force-dynamic";
 
 export const metadata: Metadata = {
   title: "Wholesale Product Catalogue",
-  description: "Search published products and request wholesale quotations."
+  description: "Browse verified FMCG items, search by category or brand, and request wholesale bulk quotes."
 };
 
 export default async function ProductsPage() {
   const products = await getStoreProducts();
 
   return (
-    <section className="py-14">
+    <section className="py-12 md:py-16">
       <div className="container-page">
         <SectionHeading
-          eyebrow="Wholesale catalogue"
-          title="Products published for business buyers"
-          description="Search by product, brand, category or SKU. Request a quote for one or more products."
+          eyebrow="Direct Wholesale Catalogue"
+          title="Products Published for Business Buyers"
+          description="Browse by brand, category, or SKU. Select products and add them directly to your bulk quotation request."
         />
-        <ProductCatalogue products={products} />
+        <Suspense fallback={<div className="mt-8 rounded-2xl border border-border bg-card p-12 text-center text-sm text-muted-foreground">Loading wholesale catalogue...</div>}>
+          <ProductCatalogue products={products} />
+        </Suspense>
       </div>
     </section>
   );
