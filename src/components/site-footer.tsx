@@ -1,4 +1,5 @@
 import Link from "next/link";
+import Image from "next/image";
 import { Boxes, Mail, MapPin, MessageCircle, Phone, ShieldCheck, Timer, Truck } from "lucide-react";
 import type { BusinessSettings } from "@/lib/business-settings";
 import { buildWhatsAppLink } from "@/lib/utils";
@@ -79,9 +80,7 @@ export function SiteFooter({ settings }: { settings: BusinessSettings }) {
         {/* Brand Column */}
         <div className="space-y-4">
           <div className="flex items-center gap-3">
-            <span className="flex h-10 w-10 items-center justify-center rounded-xl bg-[#F4C542] text-[#174735]">
-              <Boxes className="h-5 w-5" />
-            </span>
+            <Image src="/images/bulk-supplier-logo.svg" alt="" width={40} height={40} className="h-10 w-10 rounded-xl" />
             <span className="text-xl font-extrabold tracking-tight text-white">
               The Bulk Supplier
             </span>

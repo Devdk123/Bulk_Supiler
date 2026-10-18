@@ -1,3 +1,4 @@
+import { cache } from "react";
 import { getSupabasePublic, isSupabasePublicConfigured } from "@/lib/supabase";
 
 export type BusinessSettings = {
@@ -19,7 +20,7 @@ const publicKeys = [
   "delivery_coverage"
 ] as const;
 
-export async function getPublicBusinessSettings(): Promise<BusinessSettings> {
+export const getPublicBusinessSettings = cache(async function getPublicBusinessSettings(): Promise<BusinessSettings> {
   const settings: BusinessSettings = {
     contact_phone: process.env.NEXT_PUBLIC_WHATSAPP_NUMBER || "",
     whatsapp_number: process.env.NEXT_PUBLIC_WHATSAPP_NUMBER || "",
@@ -64,4 +65,4 @@ export async function getPublicBusinessSettings(): Promise<BusinessSettings> {
     }
   }
   return settings;
-}
+});

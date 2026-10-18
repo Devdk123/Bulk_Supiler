@@ -160,8 +160,10 @@ const advantages = [
 ];
 
 export default async function HomePage() {
-  const products = await getStoreProducts({ limit: 6 });
-  const businessSettings = await getPublicBusinessSettings();
+  const [products, businessSettings] = await Promise.all([
+    getStoreProducts({ limit: 6 }),
+    getPublicBusinessSettings()
+  ]);
   const whatsappLink = buildWhatsAppLink(
     "Hello The Bulk Supplier, I would like to request wholesale rates for my store.",
     businessSettings.whatsapp_number
@@ -169,93 +171,66 @@ export default async function HomePage() {
 
   return (
     <div className="flex flex-col gap-0">
-      {/* 1. HERO SECTION (Split Layout: 55% Content / 45% Visual) */}
-      <section className="relative overflow-hidden border-b border-border hero-pattern py-12 md:py-20 lg:py-24">
-        <div className="container-page grid items-center gap-10 lg:grid-cols-[1.15fr_0.85fr] lg:gap-14">
-          {/* Left Side: Editorial & CTAs */}
-          <div className="flex flex-col items-start">
-            {/* Eyebrow Label */}
-            <div className="inline-flex items-center gap-2 rounded-full border border-fresh/30 bg-fresh/10 px-4 py-1.5 text-xs font-extrabold uppercase tracking-[0.16em] text-fresh dark:bg-fresh/20">
+      <section className="relative isolate flex min-h-[620px] items-center overflow-hidden border-b border-primary/20 bg-[#10271d] py-20 text-white sm:min-h-[680px] lg:min-h-[720px]">
+        <Image
+          src="/images/hero-wholesale-products.jpg"
+          alt="Indian wholesale assortment of spices, cooking oils, incense, matches and pooja essentials"
+          fill
+          priority
+          sizes="100vw"
+          className="absolute inset-0 -z-20 object-cover object-[66%_center] motion-safe:animate-[hero-drift_24s_ease-in-out_infinite_alternate]"
+        />
+        <div className="absolute inset-0 -z-10 bg-[linear-gradient(90deg,rgba(10,31,22,0.96)_0%,rgba(12,37,26,0.91)_38%,rgba(13,39,27,0.48)_70%,rgba(13,39,27,0.12)_100%)]" />
+        <div className="absolute inset-0 -z-10 bg-[linear-gradient(0deg,rgba(8,26,18,0.66)_0%,transparent_38%)]" />
+
+        <div className="container-page w-full">
+          <div className="max-w-3xl animate-in fade-in slide-in-from-bottom-4 duration-700">
+            <div className="inline-flex items-center gap-2 rounded-full border border-accent/35 bg-black/20 px-4 py-2 text-[11px] font-extrabold uppercase tracking-[0.17em] text-accent backdrop-blur-sm sm:text-xs">
               <ShieldCheck className="h-4 w-4" />
-              <span>YOUR TRUSTED WHOLESALE PARTNER</span>
+              Trusted wholesale partner across India
             </div>
 
-            {/* Headline */}
-            <h1 className="mt-5 text-3xl font-extrabold leading-[1.12] tracking-tight text-primary dark:text-foreground sm:text-4xl md:text-5xl lg:text-[3.25rem]">
-              Everything Your Store Needs. <br className="hidden sm:inline" />
-              <span className="text-fresh dark:text-accent">All in One Place.</span>
+            <h1 className="mt-6 max-w-3xl text-4xl font-black leading-[1.04] tracking-[-0.045em] text-white sm:text-5xl md:text-6xl lg:text-[4.5rem]">
+              Stock smarter.
+              <br />
+              <span className="text-accent">Grow your business.</span>
             </h1>
 
-            {/* Supporting Copy */}
-            <p className="mt-5 max-w-xl text-base leading-relaxed text-muted-foreground sm:text-lg">
-              Discover quality products across spices, edible oils, incense, dhoop, matchsticks and everyday essentials. Build your bulk order and request a wholesale quotation.
+            <p className="mt-6 max-w-2xl text-base leading-relaxed text-white/80 sm:text-lg md:text-xl">
+              Your trusted source for quality spices, oils, incense, pooja essentials and daily goods — all in one wholesale order.
             </p>
 
-            {/* Action Buttons */}
-            <div className="mt-8 flex w-full flex-col gap-3.5 sm:w-auto sm:flex-row">
-              <Button asChild variant="gold" size="lg" className="shadow-md">
+            <div className="mt-8 flex w-full flex-col gap-3 sm:w-auto sm:flex-row">
+              <Button asChild variant="gold" size="lg" className="h-12 rounded-xl px-6 font-bold shadow-lg shadow-black/20 transition-transform hover:-translate-y-0.5">
                 <Link href="/products" className="gap-2.5">
                   <PackageSearch className="h-5 w-5" />
                   <span>Explore Products</span>
+                  <ArrowRight className="h-4 w-4" />
                 </Link>
               </Button>
-              <Button asChild variant="outline" size="lg" className="border-border bg-card/80">
+              <Button asChild variant="outline" size="lg" className="h-12 rounded-xl border-white/30 bg-white/10 px-6 font-bold text-white backdrop-blur-sm hover:bg-white/20 hover:text-white">
                 <Link href="/order" className="gap-2.5">
-                  <Send className="h-5 w-5 text-fresh" />
+                  <Send className="h-4 w-4" />
                   <span>Build a Bulk Order</span>
                 </Link>
               </Button>
             </div>
 
-            {/* Trust Message */}
-            <div className="mt-8 flex flex-wrap items-center gap-x-3 gap-y-2 text-xs font-semibold text-muted-foreground sm:text-sm">
-              <span className="flex items-center gap-1.5 text-foreground">
-                <CheckCircle2 className="h-4 w-4 text-fresh" /> Wholesale enquiries
-              </span>
-              <span className="text-border">•</span>
-              <span className="flex items-center gap-1.5 text-foreground">
-                <CheckCircle2 className="h-4 w-4 text-fresh" /> Multiple product categories
-              </span>
-              <span className="text-border">•</span>
-              <span className="flex items-center gap-1.5 text-foreground">
-                <CheckCircle2 className="h-4 w-4 text-fresh" /> Direct business support
-              </span>
+            <div className="mt-10 flex flex-wrap gap-x-6 gap-y-3 text-sm font-semibold text-white/85">
+              <span className="flex items-center gap-2"><CheckCircle2 className="h-4 w-4 text-accent" /> Wholesale enquiries</span>
+              <span className="flex items-center gap-2"><CheckCircle2 className="h-4 w-4 text-accent" /> Multiple categories, one order</span>
+              <span className="flex items-center gap-2"><CheckCircle2 className="h-4 w-4 text-accent" /> Direct business support</span>
             </div>
           </div>
+        </div>
 
-          {/* Right Side: Showcase Product Visual */}
-          <div className="relative mx-auto w-full max-w-md lg:max-w-none">
-            {/* Visual Frame */}
-            <div className="relative aspect-[4/3] sm:aspect-[16/11] w-full overflow-hidden rounded-3xl border border-border bg-card shadow-2xl transition-transform duration-500 hover:scale-[1.01]">
-              <Image
-                src="/images/hero-wholesale-products.jpg"
-                alt="Wholesale FMCG product assortment: Spices, Edible Oils, Matches, Agarbatti and Pooja essentials"
-                fill
-                priority
-                sizes="(min-width: 1024px) 45vw, 100vw"
-                className="object-cover object-center"
-              />
-              <div className="absolute inset-0 bg-gradient-to-t from-black/40 via-transparent to-transparent pointer-events-none" />
-
-              {/* Floating Badge */}
-              <div className="absolute bottom-4 left-4 right-4 flex items-center justify-between rounded-2xl bg-card/90 p-3.5 shadow-lg backdrop-blur-md border border-border">
-                <div className="flex items-center gap-3">
-                  <span className="flex h-10 w-10 items-center justify-center rounded-xl bg-primary text-accent">
-                    <Boxes className="h-5 w-5" />
-                  </span>
-                  <div>
-                    <p className="text-xs font-bold text-foreground">Direct Godown Supply</p>
-                    <p className="text-[11px] text-muted-foreground">Spices • Oils • Incense • Matches</p>
-                  </div>
-                </div>
-                <Link
-                  href="/products"
-                  className="rounded-lg bg-fresh/15 px-3 py-1.5 text-xs font-bold text-fresh hover:bg-fresh hover:text-white transition-colors"
-                >
-                  View All
-                </Link>
-              </div>
-            </div>
+        <div className="container-page pointer-events-none absolute inset-x-0 bottom-5 hidden justify-end sm:flex">
+          <div className="pointer-events-auto flex items-center gap-3 rounded-2xl border border-white/15 bg-black/30 px-4 py-3 text-white shadow-xl backdrop-blur-md">
+            <span className="flex h-10 w-10 items-center justify-center rounded-xl bg-accent text-primary"><Boxes className="h-5 w-5" /></span>
+            <span>
+              <span className="block text-sm font-bold">One trusted source</span>
+              <span className="block text-xs text-white/70">Spices · Oils · Incense · Daily goods</span>
+            </span>
           </div>
         </div>
       </section>

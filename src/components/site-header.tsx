@@ -1,8 +1,9 @@
 "use client";
 
 import Link from "next/link";
+import Image from "next/image";
 import { usePathname, useRouter } from "next/navigation";
-import { ArrowRight, Boxes, Menu, MessageCircle, Moon, PackageCheck, Search, Sun, X } from "lucide-react";
+import { ArrowRight, Menu, MessageCircle, Moon, PackageCheck, Search, Sun, X } from "lucide-react";
 import { useState, useSyncExternalStore, FormEvent } from "react";
 import { Button } from "@/components/ui/button";
 import { cn, buildWhatsAppLink } from "@/lib/utils";
@@ -52,11 +53,15 @@ export function SiteHeader({ whatsappNumber }: { whatsappNumber: string }) {
   return (
     <header className="sticky top-0 z-40 border-b border-border bg-card/95 backdrop-blur-md transition-colors duration-200">
       <div className="container-page flex h-20 items-center justify-between gap-4">
-        {/* Brand Mark and Title */}
-        <Link href="/" className="group flex items-center gap-3.5 focus-visible:outline-none">
-          <span className="flex h-11 w-11 shrink-0 items-center justify-center rounded-xl bg-primary text-accent shadow-xs transition-transform duration-300 group-hover:scale-105">
-            <Boxes className="h-6 w-6" />
-          </span>
+        <Link href="/" className="group flex items-center gap-3 focus-visible:outline-none">
+          <Image
+            src="/images/bulk-supplier-logo.svg"
+            alt=""
+            width={48}
+            height={48}
+            priority
+            className="h-11 w-11 shrink-0 rounded-xl shadow-sm transition-transform duration-300 group-hover:scale-105"
+          />
           <span className="leading-tight">
             <span className="block text-xl font-extrabold tracking-tight text-primary transition-colors">
               The Bulk Supplier
