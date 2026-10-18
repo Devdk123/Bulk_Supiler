@@ -3,6 +3,7 @@ import "./globals.css";
 import { SiteFooter } from "@/components/site-footer";
 import { SiteHeader } from "@/components/site-header";
 import { WhatsAppFloat } from "@/components/whatsapp-float";
+import { AiAssistant } from "@/components/ai-assistant";
 import { getPublicBusinessSettings } from "@/lib/business-settings";
 
 export const metadata: Metadata = {
@@ -36,6 +37,7 @@ export default async function RootLayout({ children }: Readonly<{ children: Reac
         <SiteHeader whatsappNumber={businessSettings.whatsapp_number} />
         <main className="flex-1">{children}</main>
         <SiteFooter settings={businessSettings} />
+        <AiAssistant />
         <WhatsAppFloat whatsappNumber={businessSettings.whatsapp_number} />
       </body>
     </html>

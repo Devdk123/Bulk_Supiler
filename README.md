@@ -30,6 +30,8 @@ ADMIN_PASSWORD=
 ADMIN_SESSION_SECRET=
 NEXT_PUBLIC_SITE_URL=https://bulksupiler.in
 NEXT_PUBLIC_WHATSAPP_NUMBER=918849263377
+OPENAI_API_KEY=
+OPENAI_MODEL=gpt-4o-mini
 META_GRAPH_API_VERSION=v25.0
 WHATSAPP_PHONE_NUMBER_ID=
 WHATSAPP_ACCESS_TOKEN=
@@ -37,6 +39,8 @@ WHATSAPP_NOTIFY_TO=918849263377
 ```
 
 Set `ADMIN_SESSION_SECRET` to a cryptographically random value of at least 32 characters, and use a strong `ADMIN_PASSWORD`. Keep `SUPABASE_SERVICE_ROLE_KEY`, `ADMIN_PASSWORD`, `ADMIN_SESSION_SECRET`, and `WHATSAPP_ACCESS_TOKEN` private. They are used only by server-side routes.
+
+The multilingual wholesale assistant needs `OPENAI_API_KEY` set in the local environment and in Vercel. `OPENAI_MODEL` is optional and defaults to `gpt-4o-mini`. The assistant supports all 22 languages in India's Eighth Schedule; live product stock and prices are not sent to the AI.
 
 ## Supabase Setup
 
