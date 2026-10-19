@@ -15,6 +15,7 @@ import {
 } from "lucide-react";
 import { ProductCard } from "@/components/product-card";
 import { SectionHeading } from "@/components/section-heading";
+import { WholesaleCalculator } from "@/components/wholesale-calculator";
 import { Button } from "@/components/ui/button";
 import { getStoreProducts } from "@/lib/products";
 import { getPublicBusinessSettings } from "@/lib/business-settings";
@@ -419,6 +420,13 @@ export default async function HomePage() {
               </div>
             ))}
           </div>
+        </div>
+      </section>
+
+      {/* INTERACTIVE WHOLESALE SAVINGS CALCULATOR */}
+      <section className="border-b border-border bg-background py-16 md:py-24">
+        <div className="container-page">
+          <WholesaleCalculator />
         </div>
       </section>
 
