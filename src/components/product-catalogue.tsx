@@ -10,6 +10,7 @@ import {
   X
 } from "lucide-react";
 import { ProductCard } from "@/components/product-card";
+import { RateCardModal } from "@/components/rate-card-modal";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import type { Product } from "@/lib/products";
@@ -224,10 +225,17 @@ export function ProductCatalogue({ products }: { products: Product[] }) {
 
       {/* Results Header with Active Filters */}
       <div className="mt-6 flex flex-wrap items-center justify-between gap-3 text-sm">
-        <p className="font-semibold text-foreground">
-          Showing <span className="font-bold text-primary dark:text-accent">{filteredProducts.length}</span>{" "}
-          {filteredProducts.length === 1 ? "wholesale item" : "wholesale items"}
-        </p>
+        <div className="flex flex-wrap items-center gap-3">
+          <p className="font-semibold text-foreground">
+            Showing <span className="font-bold text-primary dark:text-accent">{filteredProducts.length}</span>{" "}
+            {filteredProducts.length === 1 ? "wholesale item" : "wholesale items"}
+          </p>
+          <RateCardModal
+            products={filteredProducts}
+            categoryFilter={effectiveCategory}
+            brandFilter={effectiveBrand}
+          />
+        </div>
 
         {hasActiveFilters ? (
           <div className="flex flex-wrap items-center gap-2">
