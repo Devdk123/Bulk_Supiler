@@ -2,15 +2,28 @@
 
 Premium full-stack wholesale supplier website for bulk products such as spices, agarbatti, dhoop, tea patti, machis and daily goods.
 
-## Tech Stack
+## Tech Stack & Architecture
 
-- Next.js 16 App Router
+- Next.js 16 App Router & Turbopack
 - TypeScript
-- Tailwind CSS 4
-- shadcn/ui-style local components
-- Supabase PostgreSQL
-- Next.js API routes
-- Responsive SEO-ready pages
+- Tailwind CSS 4 with OKLCH theme tokens
+- shadcn/ui design primitives
+- Supabase PostgreSQL with Row Level Security (RLS)
+- Next.js Server Actions & API Routes
+- Multilingual Wholesale AI Assistant
+- Progressive Web App (PWA) Manifest & Schema.org JSON-LD Structured Data
+
+## Visual Identity & Design System
+
+The platform uses an authentic Indian FMCG wholesale aesthetic:
+
+- **Warm Ivory (`#FFF9F0`):** Default page canvas offering an inviting, commercial look
+- **Deep Forest Green (`#174735`):** Primary brand headings, trust badges, and accents
+- **Fresh Green (`#2F7554`):** Secondary interactive accents, tags, and category highlights
+- **Rich Turmeric Yellow (`#F4C542`):** Primary quotation & bulk-order CTA actions
+- **Warm Vermilion (`#C94A3B`):** Selective highlights and alerts
+- **Surface Dark Mode:** Obsidian and deep charcoal surfaces with high-contrast cream typography
+
 
 ## Install
 

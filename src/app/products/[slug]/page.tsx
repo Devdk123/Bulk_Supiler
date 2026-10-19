@@ -23,11 +23,31 @@ export async function generateMetadata({
   const product = await getStoreProductBySlug(slug);
   if (!product) return { title: "Product not found | The Bulk Supplier" };
 
+  const title = `${product.name} Wholesale Rates | The Bulk Supplier`;
+  const description =
+    product.description ||
+    `Wholesale pricing, carton packaging and MOQ details for ${product.name}. Request a direct quote.`;
+  const image = product.imageUrl || productImageUrl();
+
   return {
-    title: `${product.name} Wholesale Rates | The Bulk Supplier`,
-    description:
-      product.description ||
-      `Wholesale pricing, carton packaging and MOQ details for ${product.name}. Request a direct quote.`
+    title,
+    description,
+    openGraph: {
+      title,
+      description,
+      images: [
+        {
+          url: image,
+          alt: product.name
+        }
+      ]
+    },
+    twitter: {
+      card: "summary_large_image",
+      title,
+      description,
+      images: [image]
+    }
   };
 }
 
