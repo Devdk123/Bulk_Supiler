@@ -50,7 +50,7 @@ export default async function RootLayout({ children }: Readonly<{ children: Reac
     description:
       "Direct godown wholesale supplier for spices, edible oils, agarbatti, dhoop, matchsticks and FMCG daily goods across India.",
     url: siteUrl,
-    telephone: businessSettings.phone_number || "+918849263377",
+    telephone: businessSettings.contact_phone || businessSettings.whatsapp_number || "+918849263377",
     address: {
       "@type": "PostalAddress",
       addressCountry: "IN"
