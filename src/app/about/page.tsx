@@ -9,6 +9,7 @@ import {
   Truck
 } from "lucide-react";
 import { SectionHeading } from "@/components/section-heading";
+import { WholesaleFAQ } from "@/components/wholesale-faq";
 import { Button } from "@/components/ui/button";
 
 export const metadata: Metadata = {
@@ -82,6 +83,11 @@ export default function AboutPage() {
               </div>
             </div>
           ))}
+        </div>
+
+        {/* Wholesale FAQ Section */}
+        <div className="mt-16">
+          <WholesaleFAQ />
         </div>
 
         {/* Bottom CTA Block */}
