@@ -21,12 +21,12 @@ export async function generateMetadata({
 }): Promise<Metadata> {
   const { slug } = await params;
   const product = await getStoreProductBySlug(slug);
-  if (!product) return { title: "Product not found | The Bulk Supplier" };
+  if (!product) return { title: "Product not found | Gayatri Store" };
 
-  const title = `${product.name} Wholesale Rates | The Bulk Supplier`;
+  const title = `${product.name} Wholesale Rates | Gayatri Store`;
   const description =
     product.description ||
-    `Wholesale pricing, carton packaging and MOQ details for ${product.name}. Request a direct quote.`;
+    `Wholesale pricing, carton packaging and MOQ details for ${product.name}. Request a direct quote from Gayatri Store.`;
   const image = product.imageUrl || productImageUrl();
 
   return {
@@ -77,7 +77,7 @@ export default async function ProductDetailsPage({
         ];
 
   const whatsappLink = buildWhatsAppLink(
-    `Hello The Bulk Supplier, please share wholesale quotation for *${product.name}* (SKU: ${product.sku || "N/A"}).`,
+    `Hello Gayatri Store, please share wholesale quotation for *${product.name}* (SKU: ${product.sku || "N/A"}).`,
     businessSettings.whatsapp_number
   );
 

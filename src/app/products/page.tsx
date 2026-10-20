@@ -7,8 +7,9 @@ import { getStoreProducts } from "@/lib/products";
 export const dynamic = "force-dynamic";
 
 export const metadata: Metadata = {
-  title: "Wholesale Product Catalogue",
-  description: "Browse verified FMCG items, search by category or brand, and request wholesale bulk quotes."
+  title: "Wholesale Product Catalogue | Gayatri Store",
+  description:
+    "Browse verified FMCG items from Gayatri Store, search by category or brand, and request wholesale bulk quotes for Maya Bazar and surrounding markets."
 };
 
 export default async function ProductsPage() {

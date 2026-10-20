@@ -13,14 +13,15 @@ import { WholesaleFAQ } from "@/components/wholesale-faq";
 import { Button } from "@/components/ui/button";
 
 export const metadata: Metadata = {
-  title: "About Our Wholesale Operations",
-  description: "Learn about The Bulk Supplier, an Indian B2B FMCG distribution partner supplying spices, edible oils, matches and daily trade goods."
+  title: "About Our Wholesale Operations | Gayatri Store",
+  description:
+    "Learn about Gayatri Store, a trusted B2B FMCG distribution partner supplying spices, edible oils, matches, and daily goods across Maya Bazar and nearby regional markets."
 };
 
 const pillars = [
   {
     title: "Who We Are",
-    text: "We are an FMCG wholesale distributor dedicated to supplying independent grocers, retail store owners, and trade buyers across India with fast-moving daily consumption goods.",
+    text: "Gayatri Store is an FMCG wholesale distributor dedicated to supplying independent grocers, retail store owners, and trade buyers across Maya Bazar and nearby markets with high-movement consumption goods.",
     icon: Store
   },
   {

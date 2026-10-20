@@ -70,7 +70,7 @@ export function AiAssistant() {
                 <Bot className="h-5 w-5" />
               </span>
               <div className="min-w-0">
-                <h2 className="truncate text-sm font-bold">Wholesale assistant</h2>
+                <h2 className="truncate text-sm font-bold">Gayatri Store Assistant</h2>
                 <p className="text-xs text-primary-foreground/75">Here to help with bulk orders</p>
               </div>
             </div>

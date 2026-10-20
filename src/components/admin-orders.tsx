@@ -624,8 +624,8 @@ export function AdminOrders() {
           <Card className="premium-shadow">
             <CardContent className="p-8">
               <div className="flex h-12 w-12 items-center justify-center rounded-md bg-primary text-accent"><Lock className="h-6 w-6" /></div>
-              <h1 className="mt-5 text-3xl font-extrabold text-primary">Admin Dashboard</h1>
-              <p className="mt-3 text-muted-foreground">Sign in to manage the catalogue and wholesale enquiries.</p>
+              <h1 className="mt-5 text-3xl font-extrabold text-primary">Gayatri Store Admin</h1>
+              <p className="mt-3 text-muted-foreground">Sign in to manage products, categories, and wholesale enquiries for Maya Bazar.</p>
               <form onSubmit={login} className="mt-6 grid gap-4">
                 {loginError ? <p role="alert" className="rounded-md bg-red-50 p-3 text-sm font-semibold text-red-700">{loginError}</p> : null}
                 <div className="grid gap-2">
@@ -653,7 +653,7 @@ export function AdminOrders() {
         <div className="flex flex-wrap items-end justify-between gap-5">
           <div>
             <p className="text-sm font-bold uppercase tracking-[0.18em] text-accent">Administration</p>
-            <h1 className="mt-2 text-3xl font-extrabold text-primary">Dashboard</h1>
+            <h1 className="mt-2 text-3xl font-extrabold text-primary">Gayatri Store Administration</h1>
           </div>
           <Button variant="outline" onClick={logout}><LogOut className="h-4 w-4" /> Sign out</Button>
         </div>

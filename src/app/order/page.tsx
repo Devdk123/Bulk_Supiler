@@ -12,8 +12,9 @@ import { getPublicBusinessSettings } from "@/lib/business-settings";
 import { buildWhatsAppLink } from "@/lib/utils";
 
 export const metadata: Metadata = {
-  title: "Build a Bulk Order & Request Quotation",
-  description: "Select multi-product wholesale items across spices, oils, matchsticks and pooja essentials and receive proforma rates."
+  title: "Build a Bulk Order & Request Quotation | Gayatri Store",
+  description:
+    "Select multi-product wholesale items across spices, oils, matchsticks and pooja essentials and receive proforma rates from Gayatri Store."
 };
 
 export const dynamic = "force-dynamic";
@@ -25,7 +26,7 @@ export default async function OrderPage() {
   ]);
 
   const whatsappLink = buildWhatsAppLink(
-    "Hello The Bulk Supplier, I want to discuss a bulk wholesale quotation for my business.",
+    "Hello Gayatri Store, I want to discuss a bulk wholesale quotation for my business.",
     businessSettings.whatsapp_number
   );
 

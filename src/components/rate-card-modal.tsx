@@ -76,10 +76,10 @@ export function RateCardModal({
                 <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-2">
                   <div>
                     <h1 className="text-xl font-black tracking-tight text-primary uppercase dark:text-accent">
-                      The Bulk Supplier
+                      Gayatri Store
                     </h1>
                     <p className="text-xs text-muted-foreground">
-                      B2B Direct Godown Wholesale & FMCG Distribution — India
+                      B2B Direct Godown Wholesale &amp; FMCG Distribution — Maya Bazar
                     </p>
                   </div>
                   <div className="text-left sm:text-right text-xs text-muted-foreground">
@@ -161,7 +161,7 @@ export function RateCardModal({
                 <ul className="mt-1.5 list-disc pl-4 space-y-1">
                   <li>Rates listed are godown wholesale prices subject to live batch availability and transit freight bilty.</li>
                   <li>Official order confirmation and GST invoicing provided upon quotation verification.</li>
-                  <li>WhatsApp Order Desk: +91 884 926 3377 • Website: bulksupiler.in</li>
+                  <li>WhatsApp Order Desk: +91 884 926 3377 • Gayatri Store (Maya Bazar)</li>
                 </ul>
               </div>
             </div>
@@ -171,3 +171,4 @@ export function RateCardModal({
     </>
   );
 }
+

@@ -2,7 +2,7 @@ import { MessageCircle } from "lucide-react";
 import { buildWhatsAppLink } from "@/lib/utils";
 
 export function WhatsAppFloat({ whatsappNumber }: { whatsappNumber: string }) {
-  const href = buildWhatsAppLink("Hello The Bulk Supplier, I want wholesale product rates.", whatsappNumber);
+  const href = buildWhatsAppLink("Hello Gayatri Store, I want wholesale product rates for my store.", whatsappNumber);
   if (!href) return null;
 
   return (

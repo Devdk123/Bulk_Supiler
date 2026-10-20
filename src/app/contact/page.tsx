@@ -7,14 +7,15 @@ import { buildWhatsAppLink } from "@/lib/utils";
 import { getPublicBusinessSettings } from "@/lib/business-settings";
 
 export const metadata: Metadata = {
-  title: "Contact Wholesale Sales Desk",
-  description: "Get in touch with The Bulk Supplier for wholesale prices, bulk order dispatches, and dealership queries."
+  title: "Contact Wholesale Sales Desk | Gayatri Store",
+  description:
+    "Get in touch with Gayatri Store for wholesale prices, bulk order dispatches, and retail supply in Maya Bazar and nearby markets."
 };
 
 export default async function ContactPage() {
   const settings = await getPublicBusinessSettings();
   const whatsappLink = buildWhatsAppLink(
-    "Hello The Bulk Supplier, I want to discuss wholesale rates for my store.",
+    "Hello Gayatri Store, I want to discuss wholesale rates for my store.",
     settings.whatsapp_number
   );
   const whatsappNumber = settings.contact_phone?.replace(/\D/g, "");

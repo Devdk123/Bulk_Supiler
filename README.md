@@ -1,28 +1,34 @@
-# The Bulk Supplier
+# Gayatri Store — B2B Wholesale & FMCG Distribution
 
-Premium full-stack wholesale supplier website for bulk products such as spices, agarbatti, dhoop, tea patti, machis and daily goods.
+Premium wholesale supplier and FMCG distribution website for bulk products such as spices, edible oils, agarbatti, dhoop, matchsticks, and daily goods serving Maya Bazar and surrounding regional markets (~50+ km).
+
+Tagline: *"Har Dukaan Tak, Bharosemand Supply."*
 
 ## Tech Stack & Architecture
 
 - Next.js 16 App Router & Turbopack
 - TypeScript
-- Tailwind CSS 4 with OKLCH theme tokens
+- Tailwind CSS 4 with inline theme tokens
 - shadcn/ui design primitives
 - Supabase PostgreSQL with Row Level Security (RLS)
 - Next.js Server Actions & API Routes
-- Multilingual Wholesale AI Assistant
+- Multilingual Wholesale AI Assistant (22 Indian languages)
 - Progressive Web App (PWA) Manifest & Schema.org JSON-LD Structured Data
 
 ## Visual Identity & Design System
 
-The platform uses an authentic Indian FMCG wholesale aesthetic:
+The platform uses an elevated Indian FMCG wholesale aesthetic:
 
-- **Warm Ivory (`#FFF9F0`):** Default page canvas offering an inviting, commercial look
+- **Warm Ivory (`#FFF9F0`):** Default page background canvas
+- **Pure White Cards (`#FFFFFF`):** High-contrast cards and modals
 - **Deep Forest Green (`#174735`):** Primary brand headings, trust badges, and accents
-- **Fresh Green (`#2F7554`):** Secondary interactive accents, tags, and category highlights
-- **Rich Turmeric Yellow (`#F4C542`):** Primary quotation & bulk-order CTA actions
-- **Warm Vermilion (`#C94A3B`):** Selective highlights and alerts
-- **Surface Dark Mode:** Obsidian and deep charcoal surfaces with high-contrast cream typography
+- **Fresh Green (`#347754`):** Secondary interactive accents, tags, and category highlights
+- **Turmeric Yellow (`#F4C542`):** Primary quotation & bulk-order CTA actions
+- **Vibrant Coral Accent (`#E66A50`):** Selective highlights and alerts
+- **Warm Charcoal (`#252A24`):** High-contrast primary reading text
+- **Secondary Text (`#666D64`):** Balanced supporting descriptions
+- **Light Border (`#EAE3D7`):** Refined surface borders
+- **Surface Dark Mode:** Obsidian and deep forest charcoal surfaces with high-contrast cream typography
 
 
 ## Install

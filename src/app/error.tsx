@@ -50,7 +50,7 @@ export default function ErrorBoundary({
         </div>
 
         <div className="mt-8 rounded-xl border border-border bg-card p-4 text-xs text-muted-foreground">
-          Need immediate assistance? Contact our wholesale support team on WhatsApp at{" "}
+          Need immediate assistance? Contact Gayatri Store wholesale support on WhatsApp at{" "}
           <a
             href="https://wa.me/918849263377"
             target="_blank"
@@ -64,3 +64,4 @@ export default function ErrorBoundary({
     </section>
   );
 }
+

@@ -181,7 +181,7 @@ export function OrderForm({
       setSavedEnquiry(saved);
       setWhatsappLink(
         buildWhatsAppLink(
-          `Wholesale Quote Enquiry\nReference: ${saved.reference}\n\n${whatsappMessage}`,
+          `Wholesale Quote Enquiry — Gayatri Store\nReference: ${saved.reference}\n\n${whatsappMessage}`,
           whatsappNumber
         )
       );
