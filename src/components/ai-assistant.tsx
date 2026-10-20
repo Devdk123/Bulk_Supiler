@@ -58,7 +58,7 @@ export function AiAssistant() {
   }
 
   return (
-    <div className="fixed bottom-[5.5rem] right-5 z-50 sm:bottom-6 sm:right-24">
+    <div className="fixed bottom-16 right-4 z-40 sm:bottom-6 sm:right-24 sm:z-50">
       {open ? (
         <section
           aria-label="Multilingual wholesale assistant"
