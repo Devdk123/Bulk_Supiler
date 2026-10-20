@@ -30,6 +30,15 @@ The platform uses an elevated Indian FMCG wholesale aesthetic:
 - **Light Border (`#EAE3D7`):** Refined surface borders
 - **Surface Dark Mode:** Obsidian and deep forest charcoal surfaces with high-contrast cream typography
 
+## Wholesale Features & Kirana Retail Experience
+
+- **Persistent Mobile Wholesale Dock:** Sticky bottom navigation on mobile devices with 1-tap WhatsApp consultation, instant catalogue search, and quick quotation launcher.
+- **MOQ Tier Filtering:** Instant toggle between small retail trial packs (≤ 20 pcs) and bulk commercial master cartons (20+ pcs / sacks).
+- **Stock Availability Filter:** Filter items by immediate godown availability with real-time in-stock badge indicators.
+- **Printable Rate Card Modal:** Instant printable / PDF-exportable *Bhav Suchi* rate card with print CSS optimization.
+- **Direct WhatsApp Quote Link:** Pre-populated WhatsApp inquiry generator encoding store requirements and selected SKUs.
+- **Maya Bazar Central Logistics:** Operating across Maya Bazar and adjacent market corridors within ~50+ km trade radius.
+
 
 ## Install
 

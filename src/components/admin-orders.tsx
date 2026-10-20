@@ -1098,6 +1098,20 @@ export function AdminOrders() {
 
                     <div className="rounded-xl border border-fresh/30 bg-fresh/10 p-3.5 text-fresh">
                       <p className="font-bold">Public Storefront Integrity</p>
+                    </div>
+
+                    <div className="rounded-xl border border-border bg-card p-3.5">
+                      <p className="font-bold text-foreground">3. Active Supabase Project Reference</p>
+                      <p className="mt-1 text-muted-foreground font-mono text-[11px]">
+                        Project ID: <span className="font-bold text-primary dark:text-accent">qclojxiuynbuwtaaiozm</span>
+                      </p>
+                      <p className="mt-0.5 text-[11px] text-muted-foreground">
+                        Auto-healed by client resolver if environment variable contains trailing quotes or whitespace.
+                      </p>
+                    </div>
+
+                    <div className="rounded-xl border border-fresh/30 bg-fresh/10 p-3.5 text-fresh">
+                      <p className="font-bold">Operational Readiness</p>
                       <p className="mt-0.5 text-[11px] text-foreground/80">
                         Public visitors see a clean, professional FMCG storefront without internal database errors or setup banners.
                       </p>
