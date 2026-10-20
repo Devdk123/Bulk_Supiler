@@ -4,9 +4,12 @@ import { useMemo, useState } from "react";
 import { useSearchParams, useRouter } from "next/navigation";
 import {
   Boxes,
+  CheckCircle2,
+  Filter,
   RotateCcw,
   Search,
   Send,
+  SlidersHorizontal,
   X
 } from "lucide-react";
 import { ProductCard } from "@/components/product-card";
@@ -47,6 +50,8 @@ export function ProductCatalogue({ products }: { products: Product[] }) {
   const [brand, setBrand] = useState(urlBrand);
   const [category, setCategory] = useState(urlCategory);
   const [sort, setSort] = useState("newest");
+  const [onlyInStock, setOnlyInStock] = useState(false);
+  const [moqTier, setMoqTier] = useState<"all" | "low" | "bulk">("all");
 
   // If user hasn't modified local state, fallback to URL params
   const effectiveCategory = category || urlCategory;
@@ -91,20 +96,47 @@ export function ProductCatalogue({ products }: { products: Product[] }) {
           !effectiveCategory ||
           (product.categoryName && product.categoryName.toLowerCase() === effectiveCategory.toLowerCase());
 
-        return matchesSearch && matchesBrand && matchesCategory;
+        const matchesStock = !onlyInStock || product.stockStatus === "in_stock";
+
+        let matchesMoq = true;
+        if (moqTier !== "all") {
+          const numMatch = product.moq?.match(/\d+/);
+          const parsed = numMatch ? parseInt(numMatch[0], 10) : null;
+          if (moqTier === "low") {
+            matchesMoq = parsed !== null ? parsed <= 20 : true;
+          } else if (moqTier === "bulk") {
+            matchesMoq = parsed !== null ? parsed > 20 : false;
+          }
+        }
+
+        return matchesSearch && matchesBrand && matchesCategory && matchesStock && matchesMoq;
       })
-      .sort((left, right) => (sort === "name" ? left.name.localeCompare(right.name) : 0));
-  }, [effectiveBrand, effectiveCategory, effectiveSearch, products, sort]);
+      .sort((left, right) => {
+        if (sort === "name") return left.name.localeCompare(right.name);
+        if (sort === "name_desc") return right.name.localeCompare(left.name);
+        if (sort === "category") return (left.categoryName || "").localeCompare(right.categoryName || "");
+        return 0;
+      });
+  }, [effectiveBrand, effectiveCategory, effectiveSearch, moqTier, onlyInStock, products, sort]);
 
   function resetFilters() {
     setSearch("");
     setBrand("");
     setCategory("");
     setSort("newest");
+    setOnlyInStock(false);
+    setMoqTier("all");
     router.push("/products");
   }
 
-  const hasActiveFilters = Boolean(effectiveSearch || effectiveBrand || effectiveCategory);
+  const activeFilterCount =
+    (effectiveSearch ? 1 : 0) +
+    (effectiveBrand ? 1 : 0) +
+    (effectiveCategory ? 1 : 0) +
+    (onlyInStock ? 1 : 0) +
+    (moqTier !== "all" ? 1 : 0);
+
+  const hasActiveFilters = activeFilterCount > 0;
 
   return (
     <div className="mt-8">
@@ -219,8 +251,70 @@ export function ProductCatalogue({ products }: { products: Product[] }) {
           >
             <option value="newest">Recently Added</option>
             <option value="name">Product Name (A-Z)</option>
+            <option value="name_desc">Product Name (Z-A)</option>
+            <option value="category">Category (A-Z)</option>
           </select>
         </label>
+      </div>
+
+      {/* Secondary Quick-Filter Toolbar */}
+      <div className="mt-3 flex flex-wrap items-center justify-between gap-3 rounded-xl border border-border/80 bg-secondary/40 px-4 py-2.5">
+        <div className="flex flex-wrap items-center gap-2">
+          <span className="text-xs font-bold text-muted-foreground flex items-center gap-1">
+            <SlidersHorizontal className="h-3.5 w-3.5 text-fresh" /> MOQ Tier:
+          </span>
+          <button
+            type="button"
+            onClick={() => setMoqTier("all")}
+            className={`rounded-lg px-2.5 py-1 text-xs font-semibold transition-all ${
+              moqTier === "all"
+                ? "bg-primary text-white shadow-xs"
+                : "bg-card text-foreground hover:bg-card/80 border border-border"
+            }`}
+          >
+            All MOQs
+          </button>
+          <button
+            type="button"
+            onClick={() => setMoqTier("low")}
+            className={`rounded-lg px-2.5 py-1 text-xs font-semibold transition-all ${
+              moqTier === "low"
+                ? "bg-fresh text-white shadow-xs"
+                : "bg-card text-foreground hover:bg-card/80 border border-border"
+            }`}
+          >
+            Kirana Trial (≤ 20 pcs)
+          </button>
+          <button
+            type="button"
+            onClick={() => setMoqTier("bulk")}
+            className={`rounded-lg px-2.5 py-1 text-xs font-semibold transition-all ${
+              moqTier === "bulk"
+                ? "bg-fresh text-white shadow-xs"
+                : "bg-card text-foreground hover:bg-card/80 border border-border"
+            }`}
+          >
+            Bulk Cases (20+ pcs)
+          </button>
+        </div>
+
+        <button
+          type="button"
+          onClick={() => setOnlyInStock(!onlyInStock)}
+          className={`inline-flex items-center gap-2 rounded-lg border px-3 py-1.5 text-xs font-bold transition-all ${
+            onlyInStock
+              ? "border-fresh bg-fresh/15 text-fresh"
+              : "border-border bg-card text-muted-foreground hover:text-foreground"
+          }`}
+        >
+          <span
+            className={`h-2 w-2 rounded-full ${
+              onlyInStock ? "bg-fresh animate-pulse" : "bg-muted-foreground/40"
+            }`}
+          />
+          In-Stock Only
+          {onlyInStock ? <CheckCircle2 className="h-3.5 w-3.5 text-fresh" /> : null}
+        </button>
       </div>
 
       {/* Results Header with Active Filters */}
@@ -287,12 +381,38 @@ export function ProductCatalogue({ products }: { products: Product[] }) {
               </span>
             ) : null}
 
+            {onlyInStock ? (
+              <span className="inline-flex items-center gap-1 rounded-lg bg-fresh/10 px-2.5 py-1 text-xs font-bold text-fresh">
+                In Stock Only
+                <button
+                  type="button"
+                  onClick={() => setOnlyInStock(false)}
+                  className="hover:opacity-75"
+                >
+                  <X className="h-3 w-3" />
+                </button>
+              </span>
+            ) : null}
+
+            {moqTier !== "all" ? (
+              <span className="inline-flex items-center gap-1 rounded-lg bg-fresh/10 px-2.5 py-1 text-xs font-bold text-fresh">
+                MOQ: {moqTier === "low" ? "≤ 20 pcs" : "Bulk (20+ pcs)"}
+                <button
+                  type="button"
+                  onClick={() => setMoqTier("all")}
+                  className="hover:opacity-75"
+                >
+                  <X className="h-3 w-3" />
+                </button>
+              </span>
+            ) : null}
+
             <button
               type="button"
               onClick={resetFilters}
               className="inline-flex items-center gap-1 text-xs font-semibold text-vermilion hover:underline"
             >
-              <RotateCcw className="h-3 w-3" /> Clear all
+              <RotateCcw className="h-3 w-3" /> Clear all ({activeFilterCount})
             </button>
           </div>
         ) : null}
