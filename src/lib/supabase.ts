@@ -17,16 +17,58 @@ export type Order = {
   created_at: string;
 };
 
-export function isSupabasePublicConfigured() {
-  return Boolean(
-    process.env.NEXT_PUBLIC_SUPABASE_URL?.trim() &&
-    process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY?.trim()
+function extractProjectRefFromJwt(token?: string): string | null {
+  if (!token) return null;
+  const parts = token.split(".");
+  if (parts.length < 2) return null;
+  try {
+    const base64 = parts[1].replace(/-/g, "+").replace(/_/g, "/");
+    const json = typeof atob === "function" 
+      ? atob(base64) 
+      : Buffer.from(base64, "base64").toString("utf-8");
+    const payload = JSON.parse(json);
+    return typeof payload.ref === "string" ? payload.ref : null;
+  } catch {
+    return null;
+  }
+}
+
+export function normalizeSupabaseUrl(rawUrl?: string, fallbackToken?: string): string | null {
+  const trimmed = rawUrl?.trim();
+  if (trimmed && /^https?:\/\//i.test(trimmed)) {
+    return trimmed.replace(/\/rest\/v1\/?$/, "").replace(/\/$/, "");
+  }
+
+  if (trimmed && /^[a-z0-9]{20}$/i.test(trimmed)) {
+    return `https://${trimmed}.supabase.co`;
+  }
+
+  const ref = extractProjectRefFromJwt(
+    fallbackToken ||
+      process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY ||
+      process.env.SUPABASE_SERVICE_ROLE_KEY
   );
+  if (ref) {
+    return `https://${ref}.supabase.co`;
+  }
+
+  return null;
+}
+
+export function isSupabasePublicConfigured() {
+  const url = normalizeSupabaseUrl(
+    process.env.NEXT_PUBLIC_SUPABASE_URL,
+    process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY
+  );
+  return Boolean(url && process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY?.trim());
 }
 
 export function getSupabasePublic() {
-  const url = process.env.NEXT_PUBLIC_SUPABASE_URL?.replace(/\/rest\/v1\/?$/, "").replace(/\/$/, "");
-  const key = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY;
+  const url = normalizeSupabaseUrl(
+    process.env.NEXT_PUBLIC_SUPABASE_URL,
+    process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY
+  );
+  const key = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY?.trim();
 
   if (!url || !key) {
     throw new Error("Missing NEXT_PUBLIC_SUPABASE_URL or NEXT_PUBLIC_SUPABASE_ANON_KEY. Add them to .env and restart Next.js.");
@@ -41,8 +83,11 @@ export function getSupabasePublic() {
 }
 
 export function getSupabaseAdmin() {
-  const url = process.env.NEXT_PUBLIC_SUPABASE_URL?.replace(/\/rest\/v1\/?$/, "").replace(/\/$/, "");
-  const serviceRoleKey = process.env.SUPABASE_SERVICE_ROLE_KEY;
+  const url = normalizeSupabaseUrl(
+    process.env.NEXT_PUBLIC_SUPABASE_URL,
+    process.env.SUPABASE_SERVICE_ROLE_KEY
+  );
+  const serviceRoleKey = process.env.SUPABASE_SERVICE_ROLE_KEY?.trim();
 
   if (!url || !serviceRoleKey) {
     const missing = [

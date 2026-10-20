@@ -2,10 +2,10 @@ import type { MetadataRoute } from "next";
 
 export default function manifest(): MetadataRoute.Manifest {
   return {
-    name: "The Bulk Supplier — B2B Wholesale & FMCG Distribution",
-    short_name: "Bulk Supplier",
+    name: "Gayatri Store — B2B Wholesale & FMCG Distribution",
+    short_name: "Gayatri Store",
     description:
-      "Direct godown wholesale supplier for spices, edible oils, agarbatti, dhoop, matchsticks, and FMCG essentials across India.",
+      "Direct godown wholesale supplier for spices, edible oils, agarbatti, dhoop, matchsticks, and FMCG essentials for Maya Bazar and surrounding regional markets.",
     start_url: "/",
     display: "standalone",
     orientation: "portrait",
@@ -25,3 +25,4 @@ export default function manifest(): MetadataRoute.Manifest {
     ]
   };
 }
+

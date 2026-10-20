@@ -9,31 +9,32 @@ import { getPublicBusinessSettings } from "@/lib/business-settings";
 export const metadata: Metadata = {
   metadataBase: new URL(process.env.NEXT_PUBLIC_SITE_URL || "https://bulksupiler.in"),
   title: {
-    default: "The Bulk Supplier | B2B Wholesale & FMCG Distribution",
-    template: "%s | The Bulk Supplier"
+    default: "Gayatri Store | B2B Wholesale & FMCG Distribution",
+    template: "%s | Gayatri Store"
   },
   description:
-    "Direct godown wholesale supplier for spices, edible oils, agarbatti, dhoop, matchsticks and FMCG daily goods across India.",
+    "Direct godown wholesale supplier for spices, edible oils, agarbatti, dhoop, matchsticks and daily goods for retail shops across Maya Bazar and nearby regional markets.",
   keywords: [
-    "wholesale supplier India",
+    "Gayatri Store",
+    "wholesale supplier Maya Bazar",
     "FMCG distributor",
     "bulk spices wholesale",
     "edible oil wholesale",
     "agarbatti bulk rate",
     "dhoop wholesale market",
-    "B2B grocery supply"
+    "kirana store B2B supply"
   ],
-  authors: [{ name: "The Bulk Supplier" }],
+  authors: [{ name: "Gayatri Store" }],
   openGraph: {
-    title: "The Bulk Supplier - Premium Wholesale Supply",
-    description: "Everything your store needs. Direct godown wholesale supply across India.",
+    title: "Gayatri Store — Your Local Wholesale Partner",
+    description: "Big variety. Better supply. Built for your business. Serving Maya Bazar and nearby markets.",
     type: "website",
     locale: "en_IN",
-    siteName: "The Bulk Supplier"
+    siteName: "Gayatri Store"
   },
   twitter: {
     card: "summary_large_image",
-    title: "The Bulk Supplier | B2B Wholesale & FMCG Distribution",
+    title: "Gayatri Store | B2B Wholesale & FMCG Distribution",
     description: "Direct godown wholesale supplier for spices, edible oils, and FMCG daily goods."
   }
 };
@@ -46,18 +47,19 @@ export default async function RootLayout({ children }: Readonly<{ children: Reac
   const jsonLd = {
     "@context": "https://schema.org",
     "@type": "WholesaleStore",
-    name: "The Bulk Supplier",
+    name: "Gayatri Store",
     description:
-      "Direct godown wholesale supplier for spices, edible oils, agarbatti, dhoop, matchsticks and FMCG daily goods across India.",
+      "Direct godown wholesale supplier for spices, edible oils, agarbatti, dhoop, matchsticks and FMCG daily goods across Maya Bazar and nearby markets.",
     url: siteUrl,
     telephone: businessSettings.contact_phone || businessSettings.whatsapp_number || "+918849263377",
     address: {
       "@type": "PostalAddress",
+      addressLocality: "Maya Bazar",
       addressCountry: "IN"
     },
     priceRange: "₹₹",
     currenciesAccepted: "INR",
-    areaServed: "IN"
+    areaServed: "Maya Bazar and surrounding 50+ km trade zone"
   };
 
   return (
@@ -69,7 +71,7 @@ export default async function RootLayout({ children }: Readonly<{ children: Reac
         />
         <script
           dangerouslySetInnerHTML={{
-            __html: `(()=>{try{const t=localStorage.getItem("bulk-supplier-theme");document.documentElement.dataset.theme=t==="light"||t==="dark"?t:(matchMedia("(prefers-color-scheme: dark)").matches?"dark":"light")}catch{document.documentElement.dataset.theme="light"}})();`
+            __html: `(()=>{try{const t=localStorage.getItem("gayatristore-theme")||localStorage.getItem("bulk-supplier-theme");document.documentElement.dataset.theme=t==="light"||t==="dark"?t:(matchMedia("(prefers-color-scheme: dark)").matches?"dark":"light")}catch{document.documentElement.dataset.theme="light"}})();`
           }}
         />
       </head>

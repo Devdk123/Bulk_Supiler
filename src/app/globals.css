@@ -17,6 +17,8 @@
   --color-accent-foreground: var(--accent-foreground);
   --color-fresh: var(--fresh);
   --color-fresh-foreground: var(--fresh-foreground);
+  --color-coral: var(--coral);
+  --color-coral-foreground: var(--coral-foreground);
   --color-vermilion: var(--vermilion);
   --color-vermilion-foreground: var(--vermilion-foreground);
   --color-destructive: var(--destructive);
@@ -30,55 +32,59 @@
 @layer base {
   :root {
     color-scheme: light;
-    /* Premium Indian FMCG Wholesale Palette */
-    --background: #FFF9F0;       /* Warm ivory canvas */
-    --foreground: #232820;       /* Primary text */
-    --card: #FFFFFF;             /* Pure white */
-    --card-foreground: #232820;
+    /* Gayatri Store — Premium Indian Wholesale Palette */
+    --background: #FFF9F0;       /* Warm ivory background */
+    --foreground: #252A24;       /* Warm charcoal text */
+    --card: #FFFFFF;             /* Pure white cards */
+    --card-foreground: #252A24;
     --popover: #FFFFFF;
-    --popover-foreground: #232820;
+    --popover-foreground: #252A24;
     --primary: #174735;          /* Deep forest green */
     --primary-foreground: #FFF9F0;
-    --secondary: #F3EBDD;        /* Refined soft warm surface */
+    --secondary: #F4EFE6;        /* Refined soft warm surface */
     --secondary-foreground: #174735;
-    --muted: #F1E9DB;
-    --muted-foreground: #62685F; /* Secondary text */
-    --accent: #F4C542;           /* Rich turmeric yellow */
+    --muted: #F3ECE1;
+    --muted-foreground: #666D64; /* Secondary text */
+    --accent: #F4C542;           /* Turmeric yellow */
     --accent-foreground: #174735;
-    --fresh: #2F7554;            /* Fresh green */
+    --fresh: #347754;            /* Fresh green */
     --fresh-foreground: #FFFFFF;
-    --vermilion: #C94A3B;        /* Warm vermilion */
+    --coral: #E66A50;            /* Vibrant coral accent */
+    --coral-foreground: #FFFFFF;
+    --vermilion: #E66A50;
     --vermilion-foreground: #FFFFFF;
-    --destructive: #C94A3B;
+    --destructive: #E66A50;
     --destructive-foreground: #FFFFFF;
-    --border: #E8E1D5;           /* Refined warm border */
-    --input: #E8E1D5;
-    --ring: #2F7554;
+    --border: #EAE3D7;           /* Light border */
+    --input: #EAE3D7;
+    --ring: #347754;
     --radius: 0.75rem;
   }
 
   :root[data-theme="dark"] {
     color-scheme: dark;
-    /* Refined Deep Forest & Charcoal Palette (Never pure black or muted maroon) */
+    /* Gayatri Store Dark Theme — Refined Deep Forest & Charcoal Surfaces */
     --background: #111815;       /* Deep forest obsidian */
-    --foreground: #F8F4EC;       /* Cream/ivory text */
+    --foreground: #F8F4EC;       /* High-contrast cream text */
     --card: #18231E;             /* Deep forest card */
     --card-foreground: #F8F4EC;
     --popover: #18231E;
     --popover-foreground: #F8F4EC;
-    --primary: #2F7554;          /* Fresh forest green for headlines & highlights */
+    --primary: #347754;          /* Fresh green */
     --primary-foreground: #FFFFFF;
-    --secondary: #22312A;        /* Deep green-grey surface */
+    --secondary: #22312A;
     --secondary-foreground: #F8F4EC;
     --muted: #22312A;
-    --muted-foreground: #A6AEA4; /* Legible muted text */
-    --accent: #F4C542;           /* Rich turmeric yellow */
+    --muted-foreground: #A6AEA4;
+    --accent: #F4C542;           /* Turmeric yellow */
     --accent-foreground: #111815;
-    --fresh: #3E9B71;
+    --fresh: #42956B;
     --fresh-foreground: #FFFFFF;
-    --vermilion: #DE5E4E;
+    --coral: #E66A50;
+    --coral-foreground: #FFFFFF;
+    --vermilion: #E66A50;
     --vermilion-foreground: #FFFFFF;
-    --destructive: #DE5E4E;
+    --destructive: #E66A50;
     --destructive-foreground: #FFFFFF;
     --border: #2B3D34;
     --input: #2B3D34;
@@ -128,6 +134,7 @@
   }
 
   [data-theme="dark"] .border-\[\#ded6c2\],
+  [data-theme="dark"] .border-\[\#EAE3D7\],
   [data-theme="dark"] .border-\[\#E8E1D5\] {
     border-color: var(--border);
   }
@@ -158,7 +165,7 @@
 
 @utility hero-pattern {
   background-color: #FFF9F0;
-  background-image: radial-gradient(#E8E1D5 0.8px, transparent 0.8px);
+  background-image: radial-gradient(#EAE3D7 0.8px, transparent 0.8px);
   background-size: 20px 20px;
 }
 

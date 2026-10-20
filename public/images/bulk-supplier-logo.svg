@@ -1,5 +1,17 @@
 <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 128 128" fill="none">
-  <rect width="128" height="128" rx="30" fill="#174735"/>
-  <path d="M33 29h41c18 0 29 10 29 25 0 10-5 17-14 21 12 3 19 11 19 23 0 17-13 27-33 27H33V29Zm22 18v21h17c7 0 11-4 11-11s-4-10-12-10H55Zm0 38v22h20c8 0 12-4 12-11 0-8-5-11-14-11H55Z" fill="#F4C542"/>
-  <path d="M20 20h16v13H20zM92 95h15v13H92z" fill="#FFF9F0"/>
+  <!-- Rounded Container -->
+  <rect width="128" height="128" rx="28" fill="#174735"/>
+  
+  <!-- Subtle geometric background grid line -->
+  <path d="M20 64h88M64 20v88" stroke="#347754" stroke-width="1.5" stroke-dasharray="3 3" opacity="0.4"/>
+  
+  <!-- Modern Geometric 'G' combined with wholesale supply crate / arrow -->
+  <path d="M84 40H52c-13.255 0-24 10.745-24 24s10.745 24 24 24h32c4.418 0 8-3.582 8-8V64H64v12h16v4H52c-6.627 0-12-5.373-12-12s5.373-12 12-12h32V40Z" fill="#F4C542"/>
+  
+  <!-- Golden grain / supply diamond accent -->
+  <polygon points="98,34 106,42 98,50 90,42" fill="#E66A50"/>
+  <circle cx="98" cy="42" r="2.5" fill="#FFF9F0"/>
+  
+  <!-- Subtle ivory accent notch -->
+  <rect x="36" y="80" width="8" height="8" rx="2" fill="#FFF9F0" opacity="0.9"/>
 </svg>

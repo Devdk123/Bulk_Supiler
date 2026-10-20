@@ -24,10 +24,10 @@ export const getPublicBusinessSettings = cache(async function getPublicBusinessS
   const settings: BusinessSettings = {
     contact_phone: process.env.NEXT_PUBLIC_WHATSAPP_NUMBER || "",
     whatsapp_number: process.env.NEXT_PUBLIC_WHATSAPP_NUMBER || "",
-    contact_email: "",
-    business_address: "",
-    business_hours: "",
-    delivery_coverage: "",
+    contact_email: "support@gayatristore.in",
+    business_address: "Maya Bazar, Main Wholesale Market",
+    business_hours: "Mon – Sat: 9:00 AM – 8:00 PM",
+    delivery_coverage: "Maya Bazar and surrounding 50+ km regional trade zone",
     databaseAvailable: false
   };
 
