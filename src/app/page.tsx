@@ -7,11 +7,16 @@ import {
   CheckCircle2,
   ChevronRight,
   ClipboardList,
+  MapPin,
   MessageCircle,
+  PackageCheck,
   PackageSearch,
   Percent,
   Send,
-  ShieldCheck
+  ShieldCheck,
+  Sparkles,
+  Store,
+  Truck
 } from "lucide-react";
 import { ProductCard } from "@/components/product-card";
 import { SectionHeading } from "@/components/section-heading";
@@ -24,139 +29,147 @@ import { buildWhatsAppLink } from "@/lib/utils";
 export const dynamic = "force-dynamic";
 
 export const metadata: Metadata = {
-  title: "The Bulk Supplier | B2B Wholesale FMCG & Daily Goods",
-  description: "Direct godown wholesale supply for spices, edible oils, matchsticks, agarbatti, dhoop and everyday essentials across India."
+  title: "Gayatri Store | B2B Wholesale FMCG & Daily Goods",
+  description:
+    "Direct godown wholesale supply for spices, edible oils, matchsticks, agarbatti, dhoop and everyday essentials for Maya Bazar and surrounding regional markets."
 };
 
 const categories = [
   {
     name: "Masala & Spices",
-    description: "Turmeric, red chilli, coriander, garam masala & whole spices",
+    description: "Pure turmeric, chilli, coriander, blended garam masala & whole spices",
     image: "/images/Chilli-powder.jpeg",
     slug: "Masala & Spices",
-    tag: "High Demand"
+    tag: "High Demand",
+    featured: true
   },
   {
     name: "Edible Oils",
-    description: "Pure mustard, refined, groundnut & bulk cooking oils",
+    description: "Pure mustard, refined, groundnut & bulk cooking oils in tins & jars",
     image: "/images/hero-wholesale-products.jpg",
     slug: "Edible Oils",
-    tag: "Bulk Tins & Bottles"
+    tag: "Bulk Tins & Jars",
+    featured: false
   },
   {
     name: "Matchsticks",
-    description: "Quality safety matches, moisture-resistant splints & bundles",
+    description: "Safety matchboxes, moisture-resistant splints & master bundle cartons",
     image: "/images/Match-Stick.png",
     slug: "Matchsticks",
-    tag: "Carton Packs"
+    tag: "Master Cartons",
+    featured: false
   },
   {
     name: "Agarbatti",
-    description: "Fragrant floral, chandan, mogra & premium daily incense",
+    description: "Floral, chandan, mogra, gulab & long-burning incense bamboo sticks",
     image: "/images/agarbatti.jpeg",
     slug: "Agarbatti",
-    tag: "Popular"
+    tag: "Fast Moving",
+    featured: true
   },
   {
     name: "Dhoop",
-    description: "Wet & dry dhoop sticks, cones, sambrani cups & pooja items",
+    description: "Wet & dry dhoop batti, cones, hawan cups & aromatic pooja samagri",
     image: "/images/hero-wholesale-products.jpg",
     slug: "Dhoop",
-    tag: "Pooja Essential"
+    tag: "Devotional",
+    featured: false
   },
   {
     name: "Kapoor & Pooja Products",
-    description: "Pure camphor tablets, pooja cotton wicks, hawan samagri",
+    description: "Pure camphor tablets, pooja cotton wicks, roli, chandan & hawan items",
     image: "/images/Pansari.jpg",
     slug: "Kapoor & Pooja Products",
-    tag: "Fast Moving"
+    tag: "Mandir & Home",
+    featured: false
   },
   {
     name: "Other FMCG Essentials",
-    description: "Tea patti, daily groceries, salt and staple trade provisions",
+    description: "Tea patti, salt, daily provisions & high-movement counter items",
     image: "/images/tea-patti.jpeg",
     slug: "Other FMCG Essentials",
-    tag: "Daily Goods"
+    tag: "Daily Goods",
+    featured: false
   }
 ];
 
 const featuredBrands = [
   {
     name: "Jhaveri's Mast!",
-    category: "Spices & Blended Masalas",
+    category: "Masalas & Ground Spices",
     highlight: "Authentic spice blends with verified aroma and batch consistency",
-    color: "from-amber-600/15 to-amber-700/5"
+    badge: "Spices"
   },
   {
     name: "Kisan",
-    category: "Pooja Goods & Camphor",
-    highlight: "Pure grade camphor, pooja essentials and household trade supplies",
-    color: "from-emerald-600/15 to-emerald-700/5"
+    category: "Matchsticks & Essentials",
+    highlight: "Long-standing safety matches with reliable friction striker heads",
+    badge: "Matchsticks"
   },
   {
     name: "Bharat Jyoti",
-    category: "Safety Matchsticks",
-    highlight: "Trusted long-burning matchboxes packed in sturdy master cartons",
-    color: "from-red-600/15 to-red-700/5"
+    category: "Edible Oils",
+    highlight: "Wholesale cooking oils packaged in durable tins and retail bottles",
+    badge: "Cooking Oils"
   },
   {
     name: "Bhola",
-    category: "FMCG & Trade Products",
+    category: "FMCG Trade Goods",
     highlight: "Consistent movement daily retail goods for grocery & general stores",
-    color: "from-yellow-600/15 to-yellow-700/5"
+    badge: "FMCG Staples"
   },
   {
     name: "GrahShanti",
-    category: "Agarbatti & Aromatic Dhoop",
+    category: "Aromatic Dhoop",
     highlight: "Long-lasting spiritual fragrances popular in regional retail counters",
-    color: "from-teal-600/15 to-teal-700/5"
+    badge: "Dhoop Batti"
   },
   {
     name: "Sukoon",
-    category: "Household & Devotional Essentials",
-    highlight: "Reliable quality consumer packs with dependable wholesale margins",
-    color: "from-indigo-600/15 to-indigo-700/5"
+    category: "Devotional Agarbatti",
+    highlight: "Reliable quality incense packs with dependable wholesale retailer margins",
+    badge: "Agarbatti"
   }
 ];
 
 const processSteps = [
   {
     number: "01",
-    title: "Browse & Build Your Order",
-    description: "Select items across spices, edible oils, matches and pooja essentials with required carton or packet quantities."
+    title: "Browse the Catalogue",
+    description: "Explore our verified inventory across spices, oils, matches, agarbatti, and daily goods with clear carton packaging."
   },
   {
     number: "02",
-    title: "Submit Business Enquiry",
-    description: "Share your shop or trading business details, destination city, and any specific packing or transport preferences."
+    title: "Select Products & Quantities",
+    description: "Add items to your bulk order with carton or unit counts tailored to your retail shop's weekly requirement."
   },
   {
     number: "03",
-    title: "Receive Quotation & Confirm",
-    description: "Our godown team verifies live stock, applies tier discounts, provides a complete rate sheet, and coordinates dispatch."
+    title: "Confirm Pricing & Fulfilment",
+    description: "Receive an itemized wholesale quotation from our godown team, verify live lot availability, and coordinate dispatch."
   }
 ];
 
 const advantages = [
   {
     icon: Boxes,
-    title: "Multiple Categories in One Order",
-    description: "Combine spices, cooking oils, matchboxes and agarbatti in a single transport booking to reduce freight costs."
+    title: "Multi-Category Sourcing",
+    description: "Consolidate spices, cooking oils, matchboxes, and pooja supplies into a single delivery, reducing multiple vendor hassles."
+  },
+  {
+    icon: MapPin,
+    title: "Maya Bazar & Local Reach",
+    description: "Dedicated to independent grocers and general store owners across Maya Bazar and nearby regional markets (~50+ km radius)."
   },
   {
     icon: Percent,
-    title: "Direct Godown Wholesale Pricing",
-    description: "Competitive margins designed for retailers and distributors, with transparent tier pricing on higher carton volumes."
-  },
-  {
-    icon: ClipboardList,
-    title: "Custom Quote-Based Ordering",
-    description: "No rigid checkouts. We customize rates to your specific delivery city, seasonal demand, and quantity requirements."
+    title: "Direct Godown Margins",
+    description: "Transparent B2B rates with healthy profit margins structured specifically for retail shop economics and wholesale traders."
   },
   {
     icon: MessageCircle,
-    title: "Direct Business Support",
-    description: "Dedicated WhatsApp and phone support with real humans to confirm stock, dispatch tracking, and invoice details."
+    title: "Direct WhatsApp & Phone Support",
+    description: "Prompt, human-first business communication to verify stock availability, dispatch timelines, and GST tax invoice queries."
   }
 ];
 
@@ -165,144 +178,181 @@ export default async function HomePage() {
     getStoreProducts({ limit: 6 }),
     getPublicBusinessSettings()
   ]);
+
   const whatsappLink = buildWhatsAppLink(
-    "Hello The Bulk Supplier, I would like to request wholesale rates for my store.",
+    "Hello Gayatri Store, I want to discuss wholesale rates for my store.",
     businessSettings.whatsapp_number
   );
 
   return (
     <div className="flex flex-col gap-0">
-      <section className="relative isolate flex min-h-[620px] items-center overflow-hidden border-b border-primary/20 bg-[#10271d] py-20 text-white sm:min-h-[680px] lg:min-h-[720px]">
-        <Image
-          src="/images/hero-wholesale-products.jpg"
-          alt="Indian wholesale assortment of spices, cooking oils, incense, matches and pooja essentials"
-          fill
-          priority
-          sizes="100vw"
-          className="absolute inset-0 -z-20 object-cover object-[66%_center] motion-safe:animate-[hero-drift_24s_ease-in-out_infinite_alternate]"
-        />
-        <div className="absolute inset-0 -z-10 bg-[linear-gradient(90deg,rgba(10,31,22,0.96)_0%,rgba(12,37,26,0.91)_38%,rgba(13,39,27,0.48)_70%,rgba(13,39,27,0.12)_100%)]" />
-        <div className="absolute inset-0 -z-10 bg-[linear-gradient(0deg,rgba(8,26,18,0.66)_0%,transparent_38%)]" />
+      {/* 1. SIGNATURE SPLIT-LAYOUT HERO (LIGHT-FIRST EDITORIAL) */}
+      <section className="relative overflow-hidden border-b border-border bg-gradient-to-b from-[#FFF9F0] to-[#F8F1E3] py-12 md:py-20 lg:py-24 transition-colors">
+        <div className="container-page">
+          <div className="grid items-center gap-10 lg:grid-cols-[1.15fr_0.95fr] lg:gap-14">
+            {/* Left side (approx 55% space) */}
+            <div className="flex flex-col items-start text-left">
+              <div className="inline-flex items-center gap-2 rounded-full border border-primary/20 bg-primary/5 px-4 py-1.5 text-xs font-bold uppercase tracking-widest text-primary dark:border-accent/40 dark:bg-accent/10 dark:text-accent">
+                <Store className="h-3.5 w-3.5" />
+                <span>YOUR LOCAL WHOLESALE PARTNER</span>
+              </div>
 
-        <div className="container-page w-full">
-          <div className="max-w-3xl animate-in fade-in slide-in-from-bottom-4 duration-700">
-            <div className="inline-flex items-center gap-2 rounded-full border border-accent/35 bg-black/20 px-4 py-2 text-[11px] font-extrabold uppercase tracking-[0.17em] text-accent backdrop-blur-sm sm:text-xs">
-              <ShieldCheck className="h-4 w-4" />
-              Trusted wholesale partner across India
+              <h1 className="mt-5 text-3xl font-black tracking-tight text-primary sm:text-4xl md:text-5xl lg:text-[3.25rem] lg:leading-[1.12] dark:text-[#F4C542]">
+                Big Variety. Better Supply.
+                <br />
+                <span className="text-[#347754] dark:text-[#52B47F]">Built for Your Business.</span>
+              </h1>
+
+              <p className="mt-5 text-base leading-relaxed text-[#252A24]/85 sm:text-lg dark:text-[#F8F4EC]/85 max-w-xl">
+                Discover wholesale products across spices, edible oils, matchsticks, agarbatti, dhoop and everyday essentials. Build your product list and request a quote from Gayatri Store.
+              </p>
+
+              {/* CTAs */}
+              <div className="mt-8 flex w-full flex-col gap-3 sm:w-auto sm:flex-row">
+                <Button asChild variant="gold" size="lg" className="h-12 rounded-xl px-7 text-sm font-extrabold shadow-md hover:shadow-lg transition-all">
+                  <Link href="/products" className="gap-2">
+                    <PackageSearch className="h-4.5 w-4.5" />
+                    <span>Explore Products</span>
+                    <ArrowRight className="h-4 w-4" />
+                  </Link>
+                </Button>
+
+                <Button asChild variant="outline" size="lg" className="h-12 rounded-xl border-primary/25 bg-card px-6 text-sm font-bold text-primary hover:bg-secondary dark:border-border dark:text-foreground">
+                  <Link href="/order" className="gap-2">
+                    <PackageCheck className="h-4.5 w-4.5 text-[#347754]" />
+                    <span>Build Bulk Order</span>
+                  </Link>
+                </Button>
+              </div>
+
+              {/* Supporting Trust Note */}
+              <div className="mt-8 flex flex-wrap items-center gap-y-2 gap-x-4 text-xs font-semibold text-[#666D64] dark:text-[#A6AEA4]">
+                <span className="flex items-center gap-1.5">
+                  <CheckCircle2 className="h-4 w-4 text-[#347754]" /> Wholesale enquiries
+                </span>
+                <span>•</span>
+                <span className="flex items-center gap-1.5">
+                  <CheckCircle2 className="h-4 w-4 text-[#347754]" /> Multiple product categories
+                </span>
+                <span>•</span>
+                <span className="flex items-center gap-1.5">
+                  <CheckCircle2 className="h-4 w-4 text-[#347754]" /> Direct business support
+                </span>
+              </div>
+
+              {/* Local Area Verification Tag */}
+              <div className="mt-6 inline-flex items-center gap-2 rounded-xl border border-border/80 bg-card/80 px-3.5 py-2 text-xs font-medium text-foreground shadow-xs">
+                <MapPin className="h-3.5 w-3.5 text-[#E66A50] shrink-0" />
+                <span>
+                  Supplying kirana shops &amp; retail stores across <strong>Maya Bazar</strong> and nearby regional markets (~50+ km).
+                </span>
+              </div>
             </div>
 
-            <h1 className="mt-6 max-w-3xl text-4xl font-black leading-[1.04] tracking-[-0.045em] text-white sm:text-5xl md:text-6xl lg:text-[4.5rem]">
-              Stock smarter.
-              <br />
-              <span className="text-accent">Grow your business.</span>
-            </h1>
+            {/* Right side (approx 45% space) */}
+            <div className="relative">
+              {/* Decorative warm aura */}
+              <div className="absolute -inset-2 rounded-[2.5rem] bg-gradient-to-tr from-[#F4C542]/20 via-[#347754]/15 to-transparent blur-xl" />
 
-            <p className="mt-6 max-w-2xl text-base leading-relaxed text-white/80 sm:text-lg md:text-xl">
-              Your trusted source for quality spices, oils, incense, pooja essentials and daily goods — all in one wholesale order.
-            </p>
+              <div className="relative overflow-hidden rounded-[2rem] border border-[#EAE3D7] bg-card p-3 shadow-xl dark:border-[#2B3D34]">
+                <div className="relative aspect-[4/3] w-full overflow-hidden rounded-2xl bg-secondary/50">
+                  <Image
+                    src="/images/hero-wholesale-products.jpg"
+                    alt="Gayatri Store wholesale merchandise featuring spices, edible oils, matchsticks, and incense"
+                    fill
+                    priority
+                    sizes="(min-width: 1024px) 45vw, 100vw"
+                    className="object-cover object-center transition-transform duration-700 hover:scale-105"
+                  />
+                </div>
 
-            <div className="mt-8 flex w-full flex-col gap-3 sm:w-auto sm:flex-row">
-              <Button asChild variant="gold" size="lg" className="h-12 rounded-xl px-6 font-bold shadow-lg shadow-black/20 transition-transform hover:-translate-y-0.5">
-                <Link href="/products" className="gap-2.5">
-                  <PackageSearch className="h-5 w-5" />
-                  <span>Explore Products</span>
-                  <ArrowRight className="h-4 w-4" />
-                </Link>
-              </Button>
-              <Button asChild variant="outline" size="lg" className="h-12 rounded-xl border-white/30 bg-white/10 px-6 font-bold text-white backdrop-blur-sm hover:bg-white/20 hover:text-white">
-                <Link href="/order" className="gap-2.5">
-                  <Send className="h-4 w-4" />
-                  <span>Build a Bulk Order</span>
-                </Link>
-              </Button>
+                {/* Floating badge */}
+                <div className="mt-3 flex items-center justify-between px-2 py-1">
+                  <div className="flex items-center gap-2 text-xs font-bold text-primary dark:text-accent">
+                    <Sparkles className="h-4 w-4 text-[#F4C542]" />
+                    <span>Fresh Godown Lots • Direct Wholesale Supply</span>
+                  </div>
+                  <span className="rounded-md bg-fresh/10 px-2 py-0.5 text-[11px] font-bold text-fresh">
+                    B2B Trade
+                  </span>
+                </div>
+              </div>
             </div>
-
-            <div className="mt-10 flex flex-wrap gap-x-6 gap-y-3 text-sm font-semibold text-white/85">
-              <span className="flex items-center gap-2"><CheckCircle2 className="h-4 w-4 text-accent" /> Wholesale enquiries</span>
-              <span className="flex items-center gap-2"><CheckCircle2 className="h-4 w-4 text-accent" /> Multiple categories, one order</span>
-              <span className="flex items-center gap-2"><CheckCircle2 className="h-4 w-4 text-accent" /> Direct business support</span>
-            </div>
-          </div>
-        </div>
-
-        <div className="container-page pointer-events-none absolute inset-x-0 bottom-5 hidden justify-end sm:flex">
-          <div className="pointer-events-auto flex items-center gap-3 rounded-2xl border border-white/15 bg-black/30 px-4 py-3 text-white shadow-xl backdrop-blur-md">
-            <span className="flex h-10 w-10 items-center justify-center rounded-xl bg-accent text-primary"><Boxes className="h-5 w-5" /></span>
-            <span>
-              <span className="block text-sm font-bold">One trusted source</span>
-              <span className="block text-xs text-white/70">Spices · Oils · Incense · Daily goods</span>
-            </span>
           </div>
         </div>
       </section>
 
-      {/* 2. SECTION A: EXPLORE CATEGORIES */}
-      <section id="categories" className="border-b border-border bg-card py-16 md:py-24">
+      {/* 2. SECTION A: EXPLORE CATEGORIES (EDITORIAL ASYMMETRICAL GRID) */}
+      <section id="categories" className="border-b border-border bg-card py-16 md:py-24 transition-colors">
         <div className="container-page">
           <div className="flex flex-col md:flex-row md:items-end md:justify-between gap-4">
             <SectionHeading
               eyebrow="Category Directory"
               title="Explore Wholesale Product Categories"
-              description="Sourced directly from verified processors and master packaging facilities. Choose a category to browse inventory and request quotes."
+              description="Sourced from verified processing hubs and master packaging godowns. Pick a category to browse inventory and request instant quotations."
             />
             <Button asChild variant="outline" className="w-fit">
               <Link href="/products" className="gap-2">
-                <span>All Categories</span>
+                <span>View All Products</span>
                 <ArrowRight className="h-4 w-4" />
               </Link>
             </Button>
           </div>
 
-          {/* Category Tiles Grid */}
+          {/* Asymmetrical / Editorial Category Grid */}
           <div className="mt-12 grid gap-5 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
-            {categories.map((cat, index) => (
-              <Link
-                key={cat.name}
-                href={`/products?category=${encodeURIComponent(cat.slug)}`}
-                className={`group relative flex flex-col justify-between overflow-hidden rounded-2xl border border-border bg-background p-5 transition-all duration-300 hover:-translate-y-1 hover:border-fresh/50 hover:shadow-lg ${
-                  index === 0 ? "sm:col-span-2 lg:col-span-2" : ""
-                }`}
-              >
-                <div className="relative z-10">
-                  <div className="flex items-center justify-between">
-                    <span className="rounded-md bg-fresh/10 px-2.5 py-1 text-[11px] font-bold text-fresh">
+            {categories.map((cat, index) => {
+              const isLarge = index === 0 || index === 3;
+              return (
+                <Link
+                  key={cat.name}
+                  href={`/products?category=${encodeURIComponent(cat.slug)}`}
+                  className={`group relative flex flex-col justify-between overflow-hidden rounded-3xl border border-border bg-background p-5 transition-all duration-300 hover:-translate-y-1 hover:border-[#347754]/50 hover:shadow-lg ${
+                    isLarge ? "sm:col-span-2 lg:col-span-1 xl:col-span-1" : ""
+                  }`}
+                >
+                  <div className="relative aspect-[16/10] w-full overflow-hidden rounded-2xl bg-secondary/40">
+                    <Image
+                      src={cat.image}
+                      alt={cat.name}
+                      fill
+                      sizes="(min-width: 1280px) 25vw, (min-width: 768px) 50vw, 100vw"
+                      className="object-cover transition-transform duration-500 group-hover:scale-108"
+                    />
+                    <div className="absolute top-3 left-3 rounded-full bg-card/90 px-2.5 py-1 text-[11px] font-bold text-primary shadow-xs backdrop-blur-xs">
                       {cat.tag}
-                    </span>
-                    <span className="flex h-8 w-8 items-center justify-center rounded-full bg-card text-muted-foreground transition-transform duration-300 group-hover:translate-x-1 group-hover:text-primary">
-                      <ChevronRight className="h-4 w-4" />
-                    </span>
+                    </div>
                   </div>
-                  <h3 className="mt-4 text-lg font-bold text-foreground group-hover:text-primary">
-                    {cat.name}
-                  </h3>
-                  <p className="mt-1.5 max-w-xs text-xs leading-relaxed text-muted-foreground">
-                    {cat.description}
-                  </p>
-                </div>
 
-                {/* Visual Thumbnail */}
-                <div className="relative mt-6 aspect-[16/9] w-full overflow-hidden rounded-xl border border-border/60 bg-secondary/30">
-                  <Image
-                    src={cat.image}
-                    alt={cat.name}
-                    fill
-                    sizes="(min-width: 1024px) 33vw, 100vw"
-                    className="object-cover transition-transform duration-500 ease-out group-hover:scale-105"
-                  />
-                </div>
-              </Link>
-            ))}
+                  <div className="mt-4 flex flex-col justify-between flex-1">
+                    <div>
+                      <h3 className="text-base font-extrabold tracking-tight text-foreground transition-colors group-hover:text-primary dark:group-hover:text-accent">
+                        {cat.name}
+                      </h3>
+                      <p className="mt-1.5 text-xs leading-relaxed text-muted-foreground line-clamp-2">
+                        {cat.description}
+                      </p>
+                    </div>
+
+                    <div className="mt-4 flex items-center gap-1.5 text-xs font-bold text-fresh group-hover:underline">
+                      <span>Browse Wholesale Lots</span>
+                      <ChevronRight className="h-3.5 w-3.5 transition-transform group-hover:translate-x-1" />
+                    </div>
+                  </div>
+                </Link>
+              );
+            })}
           </div>
         </div>
       </section>
 
       {/* 3. SECTION B: FEATURED BRANDS */}
-      <section id="brands" className="border-b border-border bg-secondary/40 py-16 md:py-20">
+      <section id="brands" className="border-b border-border bg-secondary/30 py-16 md:py-24 transition-colors">
         <div className="container-page">
           <SectionHeading
-            eyebrow="Commercial Brand Partners"
-            title="Supplied FMCG Brands"
-            description="We stock and distribute genuine brand packaging across retail essentials. Click on any brand to inspect its products."
+            eyebrow="Verified Suppliers"
+            title="Featured Wholesale Brands"
+            description="We stock established regional and national FMCG brand lines with reliable batch quality and retail counter demand."
             align="center"
           />
 
@@ -311,27 +361,32 @@ export default async function HomePage() {
               <Link
                 key={brand.name}
                 href={`/products?brand=${encodeURIComponent(brand.name)}`}
-                className="group relative flex flex-col justify-between rounded-2xl border border-border bg-card p-6 shadow-xs transition-all duration-300 hover:-translate-y-1 hover:border-fresh/40 hover:shadow-md"
+                className="group flex flex-col justify-between rounded-3xl border border-border bg-card p-6 shadow-xs transition-all duration-300 hover:-translate-y-1 hover:border-primary/30 hover:shadow-md"
               >
                 <div>
                   <div className="flex items-center justify-between">
-                    <span className="text-xs font-bold uppercase tracking-wider text-fresh">
-                      {brand.category}
+                    <span className="rounded-full bg-fresh/10 px-3 py-1 text-xs font-bold text-fresh">
+                      {brand.badge}
                     </span>
-                    <span className="rounded-full bg-secondary p-1 text-muted-foreground transition-colors group-hover:bg-primary group-hover:text-white">
-                      <ArrowRight className="h-3.5 w-3.5" />
+                    <span className="text-[11px] font-semibold text-muted-foreground">
+                      B2B Supply
                     </span>
                   </div>
-                  <h3 className="mt-3 text-xl font-extrabold text-foreground group-hover:text-primary">
+
+                  <h3 className="mt-4 text-xl font-black tracking-tight text-foreground group-hover:text-primary dark:group-hover:text-accent transition-colors">
                     {brand.name}
                   </h3>
-                  <p className="mt-2 text-xs leading-relaxed text-muted-foreground">
+                  <p className="mt-1 text-xs font-bold text-fresh">
+                    {brand.category}
+                  </p>
+                  <p className="mt-2.5 text-xs leading-relaxed text-muted-foreground">
                     {brand.highlight}
                   </p>
                 </div>
-                <div className="mt-5 flex items-center gap-1.5 text-xs font-semibold text-primary dark:text-accent">
-                  <span>Browse {brand.name} items</span>
-                  <ChevronRight className="h-3.5 w-3.5" />
+
+                <div className="mt-5 flex items-center gap-1.5 text-xs font-bold text-primary dark:text-accent">
+                  <span>Browse {brand.name} products</span>
+                  <ChevronRight className="h-3.5 w-3.5 transition-transform group-hover:translate-x-1" />
                 </div>
               </Link>
             ))}
@@ -340,13 +395,13 @@ export default async function HomePage() {
       </section>
 
       {/* 4. SECTION C: FEATURED WHOLESALE PRODUCTS */}
-      <section className="border-b border-border bg-card py-16 md:py-24">
+      <section className="border-b border-border bg-card py-16 md:py-24 transition-colors">
         <div className="container-page">
           <div className="flex flex-col md:flex-row md:items-end md:justify-between gap-4">
             <SectionHeading
-              eyebrow="Published Inventory"
-              title="Products Available for Bulk Quotation"
-              description="Each product card features active packaging details, MOQ specifications, and instant bulk enquiry capability."
+              eyebrow="Available Inventory"
+              title="Products Ready for Bulk Quotation"
+              description="Live packaging specifications, master carton details, and direct enquiry actions for store owners."
             />
             <Button asChild variant="gold">
               <Link href="/products" className="gap-2">
@@ -363,15 +418,15 @@ export default async function HomePage() {
               ))}
             </div>
           ) : (
-            <div className="mt-10 rounded-2xl border border-dashed border-border bg-background p-8 text-center sm:p-12">
+            <div className="mt-10 rounded-3xl border border-dashed border-border bg-background p-8 text-center sm:p-12">
               <div className="mx-auto flex h-14 w-14 items-center justify-center rounded-2xl bg-fresh/10 text-fresh">
                 <Boxes className="h-7 w-7" />
               </div>
-              <h3 className="mt-4 text-lg font-bold text-foreground">
-                Digital Catalogue Updating
+              <h3 className="mt-4 text-lg font-extrabold text-foreground">
+                Digital Inventory Syncing
               </h3>
               <p className="mx-auto mt-2 max-w-md text-sm text-muted-foreground">
-                Our fresh godown lots across Spices, Edible Oils, Incense, and Matches are currently being catalogued. You can build a custom quotation or contact our team directly for current stock.
+                Our active godown lots across Spices, Edible Oils, Incense, and Matches are being catalogued. You can build a custom quotation or contact the Gayatri Store team directly for live lot rates.
               </p>
               <div className="mt-6 flex flex-wrap justify-center gap-3">
                 <Button asChild variant="gold">
@@ -390,13 +445,20 @@ export default async function HomePage() {
         </div>
       </section>
 
-      {/* 5. SECTION D: WHY BUY FROM US? */}
-      <section className="border-b border-border bg-secondary/30 py-16 md:py-24">
+      {/* 5. INTERACTIVE WHOLESALE SAVINGS CALCULATOR */}
+      <section className="border-b border-border bg-background py-16 md:py-24 transition-colors">
+        <div className="container-page">
+          <WholesaleCalculator />
+        </div>
+      </section>
+
+      {/* 6. SECTION D: WHY CHOOSE GAYATRI STORE? (EDITORIAL LAYOUT) */}
+      <section className="border-b border-border bg-secondary/30 py-16 md:py-24 transition-colors">
         <div className="container-page">
           <SectionHeading
-            eyebrow="Wholesale Value"
-            title="Why Store Owners Partner With Us"
-            description="Designed specifically to support retail grocers, general store owners, and regional distributors with dependable wholesale trade supply."
+            eyebrow="Commercial Value"
+            title="Why Store Owners Choose Gayatri Store"
+            description="Designed specifically to support independent retail grocers and trade buyers across Maya Bazar with dependable wholesale supply."
             align="center"
           />
 
@@ -404,13 +466,13 @@ export default async function HomePage() {
             {advantages.map((item) => (
               <div
                 key={item.title}
-                className="flex flex-col justify-between rounded-2xl border border-border bg-card p-6 shadow-xs transition-all duration-300 hover:-translate-y-1 hover:shadow-md"
+                className="flex flex-col justify-between rounded-3xl border border-border bg-card p-6 shadow-xs transition-all duration-300 hover:-translate-y-1 hover:border-fresh/40 hover:shadow-md"
               >
                 <div>
-                  <div className="flex h-12 w-12 items-center justify-center rounded-xl bg-fresh/10 text-fresh">
+                  <div className="flex h-12 w-12 items-center justify-center rounded-2xl bg-fresh/10 text-fresh">
                     <item.icon className="h-6 w-6" />
                   </div>
-                  <h3 className="mt-5 text-base font-bold text-foreground">
+                  <h3 className="mt-5 text-base font-extrabold text-foreground">
                     {item.title}
                   </h3>
                   <p className="mt-2.5 text-xs leading-relaxed text-muted-foreground">
@@ -423,20 +485,13 @@ export default async function HomePage() {
         </div>
       </section>
 
-      {/* INTERACTIVE WHOLESALE SAVINGS CALCULATOR */}
-      <section className="border-b border-border bg-background py-16 md:py-24">
-        <div className="container-page">
-          <WholesaleCalculator />
-        </div>
-      </section>
-
-      {/* 6. SECTION E: HOW BULK ORDERING WORKS */}
-      <section className="border-b border-border bg-card py-16 md:py-24">
+      {/* 7. SECTION E: SIMPLE 3-STEP ORDERING EXPERIENCE */}
+      <section className="border-b border-border bg-card py-16 md:py-24 transition-colors">
         <div className="container-page">
           <SectionHeading
             eyebrow="Simple 3-Step Process"
             title="How Bulk Ordering Works"
-            description="A clear, transparent enquiry and fulfilment journey built for business buyers."
+            description="A clear, transparent enquiry and fulfilment journey built for local shopkeepers and commercial traders."
             align="center"
           />
 
@@ -444,10 +499,10 @@ export default async function HomePage() {
             {processSteps.map((step) => (
               <div
                 key={step.number}
-                className="relative flex flex-col justify-between rounded-2xl border border-border bg-background p-7 transition-all duration-300 hover:border-fresh/40"
+                className="relative flex flex-col justify-between rounded-3xl border border-border bg-background p-8 transition-all duration-300 hover:border-fresh/40"
               >
                 <div>
-                  <span className="font-mono text-3xl font-extrabold text-accent">
+                  <span className="font-mono text-3xl font-black text-accent">
                     {step.number}
                   </span>
                   <h3 className="mt-4 text-lg font-bold text-foreground">
@@ -463,38 +518,38 @@ export default async function HomePage() {
         </div>
       </section>
 
-      {/* 7. SECTION F: WHOLESALE ENQUIRY BANNER */}
+      {/* 8. SECTION F: BOLD CALL-TO-ACTION (FOREST GREEN + WARM IVORY + TURMERIC) */}
       <section className="py-16 md:py-20">
         <div className="container-page">
-          <div className="relative overflow-hidden rounded-3xl bg-[#174735] px-6 py-12 text-[#FFF9F0] shadow-2xl sm:px-12 md:py-16">
-            {/* Subtle decorative background glow */}
-            <div className="absolute -right-20 -top-20 h-64 w-64 rounded-full bg-[#F4C542]/10 blur-3xl" />
-            <div className="absolute -bottom-20 -left-20 h-64 w-64 rounded-full bg-[#2F7554]/20 blur-3xl" />
+          <div className="relative overflow-hidden rounded-[2.5rem] bg-[#174735] px-6 py-12 text-[#FFF9F0] shadow-2xl sm:px-12 md:py-16">
+            {/* Subtle decorative background aura */}
+            <div className="absolute -right-20 -top-20 h-64 w-64 rounded-full bg-[#F4C542]/10 blur-3xl pointer-events-none" />
+            <div className="absolute -bottom-20 -left-20 h-64 w-64 rounded-full bg-[#347754]/25 blur-3xl pointer-events-none" />
 
             <div className="relative z-10 flex flex-col items-start justify-between gap-8 lg:flex-row lg:items-center">
               <div className="max-w-2xl">
                 <span className="inline-block rounded-full bg-white/10 px-4 py-1.5 text-xs font-bold uppercase tracking-wider text-[#F4C542]">
-                  Direct Godown Supply
+                  Direct Godown Supply • Maya Bazar
                 </span>
-                <h2 className="mt-4 text-3xl font-extrabold leading-tight tracking-tight sm:text-4xl md:text-5xl">
-                  Ready to Stock Your Store?
+                <h2 className="mt-4 text-3xl font-black leading-tight tracking-tight sm:text-4xl md:text-5xl">
+                  Let&apos;s Stock Your Next Big Sale.
                 </h2>
-                <p className="mt-4 text-base leading-relaxed text-[#FFF9F0]/80 sm:text-lg">
-                  Create a multi-product enquiry and discuss wholesale pricing with our team.
+                <p className="mt-4 text-base leading-relaxed text-[#FFF9F0]/85 sm:text-lg">
+                  Create a bulk enquiry for your store and discuss your requirements with Gayatri Store.
                 </p>
               </div>
 
               <div className="flex flex-col gap-3 sm:flex-row lg:shrink-0">
-                <Button asChild variant="gold" size="lg" className="shadow-lg">
+                <Button asChild variant="gold" size="lg" className="h-12 rounded-xl px-7 font-extrabold shadow-lg">
                   <Link href="/order" className="gap-2">
-                    <Send className="h-5 w-5" />
-                    <span>Build Your Bulk Order</span>
+                    <Send className="h-4.5 w-4.5" />
+                    <span>Start a Bulk Enquiry</span>
                   </Link>
                 </Button>
                 {whatsappLink ? (
-                  <Button asChild variant="outline" size="lg" className="border-white/20 bg-white/10 text-white hover:bg-white/20">
+                  <Button asChild variant="outline" size="lg" className="h-12 rounded-xl border-white/25 bg-white/10 text-white hover:bg-white/20">
                     <a href={whatsappLink} target="_blank" rel="noreferrer" className="gap-2">
-                      <MessageCircle className="h-5 w-5 text-[#F4C542]" />
+                      <MessageCircle className="h-4.5 w-4.5 text-[#F4C542]" />
                       <span>WhatsApp Rates</span>
                     </a>
                   </Button>

@@ -23,7 +23,7 @@ const quickLinks = [
 
 export function SiteFooter({ settings }: { settings: BusinessSettings }) {
   const whatsappLink = buildWhatsAppLink(
-    "Hello The Bulk Supplier, I would like to request wholesale rates for my store.",
+    "Hello Gayatri Store, I would like to request wholesale rates for my store.",
     settings.whatsapp_number
   );
   const whatsappNumber = settings.contact_phone?.replace(/\D/g, "");
@@ -49,7 +49,7 @@ export function SiteFooter({ settings }: { settings: BusinessSettings }) {
             </span>
             <div>
               <p className="text-sm font-bold text-white">Multi-Category Sourcing</p>
-              <p className="text-xs text-[#FFF9F0]/70">Combine spices, oils & pooja in one dispatch</p>
+              <p className="text-xs text-[#FFF9F0]/70">Combine spices, oils &amp; pooja in one dispatch</p>
             </div>
           </div>
 
@@ -68,8 +68,8 @@ export function SiteFooter({ settings }: { settings: BusinessSettings }) {
               <ShieldCheck className="h-5 w-5" />
             </span>
             <div>
-              <p className="text-sm font-bold text-white">Verified FMCG Brands</p>
-              <p className="text-xs text-[#FFF9F0]/70">Genuine packaging and batch quality</p>
+              <p className="text-sm font-bold text-white">Local Market Focus</p>
+              <p className="text-xs text-[#FFF9F0]/70">Serving Maya Bazar &amp; surrounding 50+ km</p>
             </div>
           </div>
         </div>
@@ -80,20 +80,20 @@ export function SiteFooter({ settings }: { settings: BusinessSettings }) {
         {/* Brand Column */}
         <div className="space-y-4">
           <div className="flex items-center gap-3">
-            <Image src="/images/bulk-supplier-logo.svg" alt="" width={40} height={40} className="h-10 w-10 rounded-xl" />
-            <span className="text-xl font-extrabold tracking-tight text-white">
-              The Bulk Supplier
+            <Image src="/images/gayatri-store-logo.svg" alt="Gayatri Store" width={40} height={40} className="h-10 w-10 rounded-xl" />
+            <span className="text-xl font-black tracking-tight text-white">
+              Gayatri Store
             </span>
           </div>
           <p className="max-w-sm text-sm leading-relaxed text-[#FFF9F0]/80">
-            A trusted Indian wholesale and distribution partner supplying spices, edible oils, matchsticks, agarbatti, dhoop and everyday FMCG essentials to shopkeepers and traders.
+            Your local wholesale partner supplying quality spices, edible oils, matchsticks, agarbatti, dhoop and everyday FMCG essentials to shopkeepers across Maya Bazar and nearby markets.
           </p>
           <div className="pt-2">
             <p className="text-xs font-semibold uppercase tracking-wider text-[#F4C542]">
-              Trade Inquiries
+              Har Dukaan Tak, Bharosemand Supply.
             </p>
-            <p className="mt-1 text-sm text-[#FFF9F0]/80">
-              Retail orders not accepted. Dedicated exclusively to wholesale supply.
+            <p className="mt-1 text-xs text-[#FFF9F0]/75">
+              Dedicated B2B wholesale trade supply. Serving verified retail partners.
             </p>
           </div>
         </div>
@@ -193,11 +193,11 @@ export function SiteFooter({ settings }: { settings: BusinessSettings }) {
       {/* Bottom Legal / Policy Bar */}
       <div className="border-t border-white/10 bg-[#0d2a1f] py-6">
         <div className="container-page flex flex-col gap-3 text-xs text-[#FFF9F0]/70 sm:flex-row sm:items-center sm:justify-between">
-          <p>© {new Date().getFullYear()} The Bulk Supplier. All commercial rights reserved.</p>
+          <p>© {new Date().getFullYear()} Gayatri Store. All commercial rights reserved.</p>
           <div className="flex flex-wrap gap-4">
-            <span>B2B Quotation Terms</span>
+            <span>Maya Bazar &amp; Nearby Markets</span>
             <span>•</span>
-            <span>Fulfilment & Dispatch Policy</span>
+            <span>B2B Quotation Terms</span>
             <span>•</span>
             <span>Wholesale MOQ Applicable</span>
           </div>

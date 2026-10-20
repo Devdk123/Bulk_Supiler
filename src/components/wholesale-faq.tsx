@@ -22,16 +22,16 @@ const FAQS: FAQItem[] = [
   },
   {
     id: "faq-2",
-    question: "How does freight and transport delivery (Bilty) work across India?",
+    question: "How does delivery work in Maya Bazar and surrounding markets?",
     answer:
-      "We partner with major regional and pan-India transport services (V-Trans, TCI, Safechem, local bilty transporters). Orders are dispatched from our central godown to your nearest transporter hub. Freight charges are shared or subsidized based on order volume.",
+      "We coordinate dispatches directly from our central godown to your shop or through dependable regional transporters across Maya Bazar and our 50+ km trade zone. Freight charges and dispatch schedules are confirmed transparently in your quotation.",
     category: "Logistics"
   },
   {
     id: "faq-3",
     question: "Can I combine multiple brands and categories in one quotation?",
     answer:
-      "Yes! Our multi-item wholesale builder allows you to select Jhaveri's Mast! spices, Kisan oils, Bharat Jyoti matchsticks, and GrahShanti incense together in a single order, saving you freight overheads.",
+      "Yes! Gayatri Store lets you combine Jhaveri's Mast! spices, Kisan matches, Bharat Jyoti oils, and GrahShanti incense in a single quotation, saving you multi-vendor coordination hassles.",
     category: "Products"
   },
   {
@@ -161,3 +161,4 @@ export function WholesaleFAQ() {
     </div>
   );
 }
+

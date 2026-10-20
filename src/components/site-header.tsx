@@ -13,7 +13,7 @@ const links = [
   { href: "/products", label: "Products" },
   { href: "/#categories", label: "Categories" },
   { href: "/#brands", label: "Brands" },
-  { href: "/order", label: "Bulk Orders" },
+  { href: "/order", label: "Bulk Order" },
   { href: "/about", label: "About" },
   { href: "/contact", label: "Contact" }
 ];
@@ -34,11 +34,12 @@ export function SiteHeader({ whatsappNumber }: { whatsappNumber: string }) {
   const [open, setOpen] = useState(false);
   const [searchQuery, setSearchQuery] = useState("");
   const theme = useSyncExternalStore(subscribeToTheme, getThemeSnapshot, () => "light");
-  const whatsappLink = buildWhatsAppLink("Hello The Bulk Supplier, I want to request a wholesale quote.", whatsappNumber);
+  const whatsappLink = buildWhatsAppLink("Hello Gayatri Store, I want to request a wholesale quote for my store.", whatsappNumber);
 
   function toggleTheme() {
     const nextTheme = theme === "dark" ? "light" : "dark";
     document.documentElement.dataset.theme = nextTheme;
+    localStorage.setItem("gayatristore-theme", nextTheme);
     localStorage.setItem("bulk-supplier-theme", nextTheme);
   }
 
@@ -51,100 +52,124 @@ export function SiteHeader({ whatsappNumber }: { whatsappNumber: string }) {
   }
 
   return (
-    <header className="sticky top-0 z-40 border-b border-border bg-card/95 backdrop-blur-md transition-colors duration-200">
-      <div className="container-page flex h-20 items-center justify-between gap-4">
-        <Link href="/" className="group flex items-center gap-3 focus-visible:outline-none">
-          <Image
-            src="/images/bulk-supplier-logo.svg"
-            alt=""
-            width={48}
-            height={48}
-            priority
-            className="h-11 w-11 shrink-0 rounded-xl shadow-sm transition-transform duration-300 group-hover:scale-105"
-          />
-          <span className="leading-tight">
-            <span className="block text-xl font-extrabold tracking-tight text-primary transition-colors">
-              The Bulk Supplier
-            </span>
-            <span className="block text-[11px] font-bold uppercase tracking-[0.16em] text-muted-foreground">
-              B2B Wholesale & Distribution
-            </span>
-          </span>
-        </Link>
-
-        {/* Desktop Navigation */}
-        <nav className="hidden items-center gap-1.5 xl:flex">
-          {links.map((link) => {
-            const isActive =
-              link.href === "/"
-                ? pathname === "/"
-                : link.href.startsWith("/#")
-                ? false
-                : pathname === link.href || pathname.startsWith(link.href + "/");
-
-            return (
-              <Link
-                key={link.href}
-                href={link.href}
-                className={cn(
-                  "rounded-lg px-3.5 py-2 text-sm font-semibold transition-all duration-150",
-                  isActive
-                    ? "bg-fresh/10 text-fresh font-bold"
-                    : "text-foreground/80 hover:bg-secondary hover:text-primary"
-                )}
+    <>
+      {/* 3A. Modern Announcement Strip */}
+      <div className="border-b border-[#1b4b38] bg-[#143d2e] px-4 py-2 text-xs font-semibold text-[#FFF9F0] transition-colors">
+        <div className="container-page flex flex-wrap items-center justify-between gap-2">
+          <div className="flex items-center gap-2">
+            <span className="inline-block h-2 w-2 rounded-full bg-accent animate-pulse" />
+            <span>Serving Maya Bazar &amp; Nearby Markets • Wholesale Inquiries &amp; Godown Supply</span>
+          </div>
+          <div className="hidden items-center gap-4 text-[11px] sm:flex">
+            <span className="text-[#FFF9F0]/80">Har Dukaan Tak, Bharosemand Supply.</span>
+            {whatsappLink ? (
+              <a
+                href={whatsappLink}
+                target="_blank"
+                rel="noreferrer"
+                className="inline-flex items-center gap-1 font-bold text-accent hover:underline"
               >
-                {link.label}
-              </Link>
-            );
-          })}
-        </nav>
-
-        {/* Quick Search Entry */}
-        <div className="hidden items-center md:flex lg:w-56 xl:w-64">
-          <form onSubmit={handleSearchSubmit} className="relative w-full">
-            <Search className="pointer-events-none absolute left-3.5 top-1/2 h-4 w-4 -translate-y-1/2 text-muted-foreground" />
-            <input
-              type="text"
-              value={searchQuery}
-              onChange={(e) => setSearchQuery(e.target.value)}
-              placeholder="Search catalogue..."
-              className="h-10 w-full rounded-xl border border-border bg-background pl-9 pr-3 text-xs font-medium text-foreground placeholder:text-muted-foreground/70 transition-all focus:border-fresh focus:outline-none focus:ring-1 focus:ring-fresh"
-            />
-          </form>
-        </div>
-
-        {/* Actions & Buttons */}
-        <div className="hidden items-center gap-2.5 sm:flex">
-          {/* Theme Switcher */}
-          <button
-            type="button"
-            onClick={toggleTheme}
-            aria-label={`Switch to ${theme === "dark" ? "light" : "dark"} mode`}
-            className="flex h-10 w-10 items-center justify-center rounded-xl border border-border bg-background text-foreground transition-colors hover:bg-secondary hover:text-primary focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring"
-          >
-            {theme === "dark" ? (
-              <Sun className="h-4.5 w-4.5 text-accent" />
-            ) : (
-              <Moon className="h-4.5 w-4.5 text-muted-foreground" />
-            )}
-          </button>
-
-          {/* Primary CTA */}
-          <Button asChild variant="gold" size="default" className="shadow-xs">
-            <Link href="/order" className="gap-2">
-              <PackageCheck className="h-4 w-4" />
-              <span>Request Quote</span>
-            </Link>
-          </Button>
-
-          {whatsappLink ? (
-            <Button asChild variant="outline" size="default" className="hidden lg:inline-flex border-fresh/30 text-fresh hover:bg-fresh/10">
-              <a href={whatsappLink} target="_blank" rel="noreferrer">
-                <MessageCircle className="h-4 w-4 text-fresh" /> WhatsApp
+                <MessageCircle className="h-3 w-3" /> WhatsApp Desk
               </a>
-            </Button>
-          ) : null}
+            ) : null}
+          </div>
         </div>
+      </div>
+
+      <header className="sticky top-0 z-40 border-b border-border bg-card/95 backdrop-blur-md transition-colors duration-200">
+        <div className="container-page flex h-20 items-center justify-between gap-4">
+          <Link href="/" className="group flex items-center gap-3 focus-visible:outline-none">
+            <Image
+              src="/images/gayatri-store-logo.svg"
+              alt="Gayatri Store Logo"
+              width={48}
+              height={48}
+              priority
+              className="h-11 w-11 shrink-0 rounded-xl shadow-sm transition-transform duration-300 group-hover:scale-105"
+            />
+            <span className="leading-tight">
+              <span className="block text-xl font-black tracking-tight text-primary transition-colors">
+                Gayatri Store
+              </span>
+              <span className="block text-[10.5px] font-bold uppercase tracking-[0.14em] text-muted-foreground">
+                Wholesale &amp; Distribution
+              </span>
+            </span>
+          </Link>
+
+          {/* Desktop Navigation */}
+          <nav className="hidden items-center gap-1.5 xl:flex">
+            {links.map((link) => {
+              const isActive =
+                link.href === "/"
+                  ? pathname === "/"
+                  : link.href.startsWith("/#")
+                  ? false
+                  : pathname === link.href || pathname.startsWith(link.href + "/");
+
+              return (
+                <Link
+                  key={link.href}
+                  href={link.href}
+                  className={cn(
+                    "rounded-lg px-3.5 py-2 text-sm font-semibold transition-all duration-150",
+                    isActive
+                      ? "bg-fresh/10 text-fresh font-bold"
+                      : "text-foreground/80 hover:bg-secondary hover:text-primary"
+                  )}
+                >
+                  {link.label}
+                </Link>
+              );
+            })}
+          </nav>
+
+          {/* Quick Search Entry */}
+          <div className="hidden items-center md:flex lg:w-56 xl:w-60">
+            <form onSubmit={handleSearchSubmit} className="relative w-full">
+              <Search className="pointer-events-none absolute left-3.5 top-1/2 h-4 w-4 -translate-y-1/2 text-muted-foreground" />
+              <input
+                type="text"
+                value={searchQuery}
+                onChange={(e) => setSearchQuery(e.target.value)}
+                placeholder="Search products, brands..."
+                className="h-10 w-full rounded-xl border border-border bg-background pl-9 pr-3 text-xs font-medium text-foreground placeholder:text-muted-foreground/70 transition-all focus:border-fresh focus:outline-none focus:ring-1 focus:ring-fresh"
+              />
+            </form>
+          </div>
+
+          {/* Actions & Buttons */}
+          <div className="hidden items-center gap-2.5 sm:flex">
+            {/* Theme Switcher */}
+            <button
+              type="button"
+              onClick={toggleTheme}
+              aria-label={`Switch to ${theme === "dark" ? "light" : "dark"} mode`}
+              className="flex h-10 w-10 items-center justify-center rounded-xl border border-border bg-background text-foreground transition-colors hover:bg-secondary hover:text-primary focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring"
+            >
+              {theme === "dark" ? (
+                <Sun className="h-4.5 w-4.5 text-accent" />
+              ) : (
+                <Moon className="h-4.5 w-4.5 text-muted-foreground" />
+              )}
+            </button>
+
+            {/* High-visibility Request a Quote action */}
+            <Button asChild variant="gold" size="sm" className="h-10 rounded-xl px-4 font-bold shadow-xs">
+              <Link href="/order" className="gap-2">
+                <PackageCheck className="h-4 w-4" />
+                <span>Request a Quote</span>
+              </Link>
+            </Button>
+            {whatsappLink ? (
+              <Button asChild variant="outline" size="sm" className="hidden lg:inline-flex border-fresh/30 text-fresh hover:bg-fresh/10">
+                <a href={whatsappLink} target="_blank" rel="noreferrer" className="gap-1.5">
+                  <MessageCircle className="h-4 w-4 text-fresh" />
+                  <span>WhatsApp</span>
+                </a>
+              </Button>
+            ) : null}
+          </div>
 
         {/* Mobile Controls */}
         <div className="flex items-center gap-2 xl:hidden">
@@ -239,6 +264,7 @@ export function SiteHeader({ whatsappNumber }: { whatsappNumber: string }) {
           </div>
         </div>
       ) : null}
-    </header>
+      </header>
+    </>
   );
 }
