@@ -4,7 +4,7 @@ import Link from "next/link";
 import Image from "next/image";
 import { usePathname, useRouter } from "next/navigation";
 import { ArrowRight, Menu, MessageCircle, Moon, PackageCheck, Search, Sun, X } from "lucide-react";
-import { useState, useSyncExternalStore, FormEvent } from "react";
+import { useState, useSyncExternalStore, FormEvent, useEffect, useRef } from "react";
 import { Button } from "@/components/ui/button";
 import { cn, buildWhatsAppLink } from "@/lib/utils";
 
@@ -33,8 +33,24 @@ export function SiteHeader({ whatsappNumber }: { whatsappNumber: string }) {
   const router = useRouter();
   const [open, setOpen] = useState(false);
   const [searchQuery, setSearchQuery] = useState("");
+  const searchInputRef = useRef<HTMLInputElement>(null);
   const theme = useSyncExternalStore(subscribeToTheme, getThemeSnapshot, () => "light");
   const whatsappLink = buildWhatsAppLink("Hello Gayatri Store, I want to request a wholesale quote for my store.", whatsappNumber);
+
+  useEffect(() => {
+    function handleKeyDown(e: KeyboardEvent) {
+      if (
+        (e.key === "/" || ((e.metaKey || e.ctrlKey) && e.key.toLowerCase() === "k")) &&
+        document.activeElement?.tagName !== "INPUT" &&
+        document.activeElement?.tagName !== "TEXTAREA"
+      ) {
+        e.preventDefault();
+        searchInputRef.current?.focus();
+      }
+    }
+    window.addEventListener("keydown", handleKeyDown);
+    return () => window.removeEventListener("keydown", handleKeyDown);
+  }, []);
 
   function toggleTheme() {
     const nextTheme = theme === "dark" ? "light" : "dark";
@@ -129,12 +145,16 @@ export function SiteHeader({ whatsappNumber }: { whatsappNumber: string }) {
             <form onSubmit={handleSearchSubmit} className="relative w-full">
               <Search className="pointer-events-none absolute left-3.5 top-1/2 h-4 w-4 -translate-y-1/2 text-muted-foreground" />
               <input
+                ref={searchInputRef}
                 type="text"
                 value={searchQuery}
                 onChange={(e) => setSearchQuery(e.target.value)}
                 placeholder="Search products, brands..."
-                className="h-10 w-full rounded-xl border border-border bg-background pl-9 pr-3 text-xs font-medium text-foreground placeholder:text-muted-foreground/70 transition-all focus:border-fresh focus:outline-none focus:ring-1 focus:ring-fresh"
+                className="h-10 w-full rounded-xl border border-border bg-background pl-9 pr-8 text-xs font-medium text-foreground placeholder:text-muted-foreground/70 transition-all focus:border-fresh focus:outline-none focus:ring-1 focus:ring-fresh"
               />
+              <kbd className="pointer-events-none absolute right-2.5 top-1/2 -translate-y-1/2 hidden rounded border border-border bg-secondary/80 px-1.5 py-0.5 text-[10px] font-mono font-medium text-muted-foreground lg:inline-block">
+                /
+              </kbd>
             </form>
           </div>
 
@@ -205,7 +225,7 @@ export function SiteHeader({ whatsappNumber }: { whatsappNumber: string }) {
         <div className="border-t border-border bg-card shadow-lg xl:hidden animate-in slide-in-from-top-2 duration-200">
           <div className="container-page py-5">
             {/* Mobile Search */}
-            <form onSubmit={handleSearchSubmit} className="relative mb-4">
+            <form onSubmit={handleSearchSubmit} className="relative mb-3">
               <Search className="pointer-events-none absolute left-3.5 top-1/2 h-4 w-4 -translate-y-1/2 text-muted-foreground" />
               <input
                 type="text"
@@ -215,6 +235,24 @@ export function SiteHeader({ whatsappNumber }: { whatsappNumber: string }) {
                 className="h-11 w-full rounded-xl border border-border bg-background pl-9 pr-4 text-sm font-medium text-foreground placeholder:text-muted-foreground focus:border-fresh focus:outline-none focus:ring-1 focus:ring-fresh"
               />
             </form>
+
+            {/* Quick Search Chips */}
+            <div className="mb-4 flex flex-wrap items-center gap-1.5">
+              <span className="text-[11px] font-bold text-muted-foreground">Quick:</span>
+              {["Masala", "Edible Oils", "Agarbatti", "Matchsticks", "Dhoop"].map((cat) => (
+                <button
+                  key={cat}
+                  type="button"
+                  onClick={() => {
+                    router.push(`/products?category=${encodeURIComponent(cat)}`);
+                    setOpen(false);
+                  }}
+                  className="rounded-lg border border-border bg-background px-2.5 py-1 text-xs font-semibold text-foreground hover:border-fresh hover:text-fresh"
+                >
+                  {cat}
+                </button>
+              ))}
+            </div>
 
             {/* Mobile Links */}
             <nav className="grid gap-1">
