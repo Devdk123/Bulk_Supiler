@@ -1,7 +1,7 @@
 "use client";
 
 import { useState } from "react";
-import { Printer, FileText, X, CheckCircle2, Download } from "lucide-react";
+import { Printer, FileText, X, CheckCircle2, Share2, Copy, Check } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import type { Product } from "@/lib/products";
 
@@ -15,9 +15,24 @@ export function RateCardModal({
   brandFilter?: string;
 }) {
   const [isOpen, setIsOpen] = useState(false);
+  const [copied, setCopied] = useState(false);
 
   function handlePrint() {
     window.print();
+  }
+
+  function handleShareWhatsApp() {
+    const filterInfo = [categoryFilter, brandFilter].filter(Boolean).join(" • ");
+    const summary = `*Gayatri Store — Wholesale Rate Sheet*\nDate: ${currentDate}\n${filterInfo ? `Category / Brand: ${filterInfo}\n` : ""}Products: ${products.length} wholesale items\nGodown: Maya Bazar\nCatalogue link: ${typeof window !== "undefined" ? window.location.href : "https://bulksupiler.in/products"}\nDirect WhatsApp: +91 884 926 3377`;
+    window.open(`https://api.whatsapp.com/send?text=${encodeURIComponent(summary)}`, "_blank");
+  }
+
+  function handleCopyLink() {
+    if (typeof navigator !== "undefined" && navigator.clipboard) {
+      navigator.clipboard.writeText(window.location.href);
+      setCopied(true);
+      setTimeout(() => setCopied(false), 2000);
+    }
   }
 
   const currentDate = new Date().toLocaleDateString("en-IN", {
@@ -49,7 +64,25 @@ export function RateCardModal({
                   Wholesale Godown Rate Sheet
                 </h3>
               </div>
-              <div className="flex items-center gap-2">
+              <div className="flex flex-wrap items-center gap-2">
+                <Button
+                  onClick={handleShareWhatsApp}
+                  variant="outline"
+                  size="sm"
+                  className="gap-1.5 border-[#25D366]/40 text-[#25D366] hover:bg-[#25D366]/10 text-xs font-bold"
+                >
+                  <Share2 className="h-3.5 w-3.5" />
+                  <span className="hidden sm:inline">WhatsApp Share</span>
+                </Button>
+                <Button
+                  onClick={handleCopyLink}
+                  variant="outline"
+                  size="sm"
+                  className="gap-1.5 text-xs font-bold"
+                >
+                  {copied ? <Check className="h-3.5 w-3.5 text-fresh" /> : <Copy className="h-3.5 w-3.5" />}
+                  <span className="hidden sm:inline">{copied ? "Copied!" : "Copy Link"}</span>
+                </Button>
                 <Button
                   onClick={handlePrint}
                   variant="gold"
