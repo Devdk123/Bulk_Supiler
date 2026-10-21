@@ -105,13 +105,8 @@ export function SiteHeader({ whatsappNumber }: { whatsappNumber: string }) {
               priority
               className="h-11 w-11 shrink-0 rounded-xl shadow-sm transition-transform duration-300 group-hover:scale-105"
             />
-            <span className="leading-tight">
-              <span className="block text-xl font-black tracking-tight text-primary transition-colors">
-                Gayatri Store
-              </span>
-              <span className="block text-[10.5px] font-bold uppercase tracking-[0.14em] text-muted-foreground">
-                Wholesale &amp; Distribution
-              </span>
+            <span className="text-xl sm:text-2xl font-black tracking-tight text-primary transition-colors">
+              Gayatri Store
             </span>
           </Link>
 
