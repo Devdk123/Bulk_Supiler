@@ -1,0 +1,44 @@
+import { createClient, SupabaseClient } from "@supabase/supabase-js";
+import { normalizeSupabaseUrl } from "@/lib/supabase";
+
+let browserClient: SupabaseClient | null = null;
+
+export function getSupabaseBrowser(): SupabaseClient {
+  if (typeof window === "undefined") {
+    // Return dummy/fallback client if evaluated during SSR
+    const url = normalizeSupabaseUrl(
+      process.env.NEXT_PUBLIC_SUPABASE_URL,
+      process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY
+    ) || "https://placeholder.supabase.co";
+    const key = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY || "placeholder-key";
+    return createClient(url, key, {
+      auth: { persistSession: false, autoRefreshToken: false }
+    });
+  }
+
+  if (!browserClient) {
+    const url = normalizeSupabaseUrl(
+      process.env.NEXT_PUBLIC_SUPABASE_URL,
+      process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY
+    );
+    const key = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY?.trim();
+
+    if (!url || !key) {
+      console.warn("Supabase browser credentials are missing. Running in offline/preview mode.");
+      return createClient("https://placeholder.supabase.co", "placeholder-key", {
+        auth: { persistSession: false }
+      });
+    }
+
+    browserClient = createClient(url, key, {
+      auth: {
+        persistSession: true,
+        autoRefreshToken: true,
+        detectSessionInUrl: true,
+        storageKey: "gayatristore-auth-token"
+      }
+    });
+  }
+
+  return browserClient;
+}

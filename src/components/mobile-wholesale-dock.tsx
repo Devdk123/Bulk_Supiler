@@ -2,23 +2,25 @@
 
 import Link from "next/link";
 import { usePathname } from "next/navigation";
-import { MessageCircle, PackageCheck, Search, Tag } from "lucide-react";
+import { MessageCircle, PackageCheck, Search, User } from "lucide-react";
 import { buildWhatsAppLink } from "@/lib/utils";
+import { useAuth } from "@/context/auth-context";
 
 export function MobileWholesaleDock({ whatsappNumber }: { whatsappNumber: string }) {
   const pathname = usePathname();
+  const { user } = useAuth();
   const whatsappHref = buildWhatsAppLink(
     "Hello Gayatri Store, I am inquiring about wholesale product pricing and minimum order quantities.",
     whatsappNumber
   );
 
   // Do not render dock on administrative routes
-  if (pathname.startsWith("/admin")) {
+  if (pathname.startsWith("/admin") || pathname.startsWith("/about/admin")) {
     return null;
   }
 
   const isProducts = pathname.startsWith("/products");
-  const isBrands = pathname.startsWith("/brands");
+  const isAccount = pathname.startsWith("/account") || pathname.startsWith("/login") || pathname.startsWith("/register");
   const isOrder = pathname.startsWith("/order");
 
   return (
@@ -37,15 +39,15 @@ export function MobileWholesaleDock({ whatsappNumber }: { whatsappNumber: string
         </Link>
 
         <Link
-          href="/brands"
+          href={user ? "/account" : "/login"}
           className={`flex flex-1 flex-col items-center justify-center rounded-xl py-1 text-[11px] font-bold transition-colors ${
-            isBrands
+            isAccount
               ? "bg-fresh/15 text-fresh"
               : "text-muted-foreground hover:text-foreground"
           }`}
         >
-          <Tag className="mb-0.5 h-4 w-4" />
-          <span>Brands</span>
+          <User className="mb-0.5 h-4 w-4" />
+          <span>{user ? "Account" : "Sign In"}</span>
         </Link>
 
         {whatsappHref ? (
@@ -75,3 +77,4 @@ export function MobileWholesaleDock({ whatsappNumber }: { whatsappNumber: string
     </div>
   );
 }
+

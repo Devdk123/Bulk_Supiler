@@ -8,6 +8,8 @@ import { Card, CardContent } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
+import { AdminAuditTab } from "@/components/admin-audit-tab";
+import { getSupabaseBrowser } from "@/lib/supabase-browser";
 import { enquiryStatuses } from "@/lib/validation";
 
 type Status = "draft" | "published" | "archived";
@@ -91,7 +93,7 @@ type ImportPreview = {
   invalidRows: Array<{ row: number; errors: string[] }>;
   totalRows: number;
 };
-type Tab = "products" | "brands" | "enquiries" | "legacy-orders" | "import" | "settings" | "diagnostics";
+type Tab = "products" | "brands" | "enquiries" | "legacy-orders" | "import" | "settings" | "diagnostics" | "audit";
 type LegacyOrder = {
   id: string;
   customer_name: string;
@@ -302,6 +304,31 @@ export function AdminOrders() {
       setLegacyOrdersLoading(false);
     }
   }
+
+  useEffect(() => {
+    if (!authenticated) return;
+    const supabase = getSupabaseBrowser();
+    const channel = supabase
+      .channel("admin-enquiries-realtime")
+      .on(
+        "postgres_changes",
+        { event: "*", schema: "public", table: "enquiries" },
+        async () => {
+          try {
+            const res = await fetch("/api/admin/enquiries", { cache: "no-store" });
+            const data = await readResponse<{ enquiries: AdminEnquiry[] }>(res);
+            setEnquiries(data.enquiries);
+          } catch {
+            // silent
+          }
+        }
+      )
+      .subscribe();
+
+    return () => {
+      supabase.removeChannel(channel);
+    };
+  }, [authenticated]);
 
   useEffect(() => {
     let mounted = true;
@@ -671,7 +698,8 @@ export function AdminOrders() {
             ["legacy-orders", "Legacy orders"],
             ["import", "Import / export"],
             ["settings", "Business settings"],
-            ["diagnostics", "System Diagnostics"]
+            ["diagnostics", "System Diagnostics"],
+            ["audit", "Audit Logs"]
           ] as const).map(([tab, title]) => (
             <Button key={tab} variant={activeTab === tab ? "gold" : "outline"} className="rounded-xl font-bold" onClick={() => setActiveTab(tab)}>{title}</Button>
           ))}
@@ -1122,6 +1150,7 @@ export function AdminOrders() {
             </CardContent>
           </Card>
         ) : null}
+        {activeTab === "audit" ? <AdminAuditTab /> : null}
       </div>
     </section>
   );

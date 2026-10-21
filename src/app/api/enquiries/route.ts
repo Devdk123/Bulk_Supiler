@@ -176,6 +176,7 @@ export async function POST(request: Request) {
     const { data, error } = await supabase.rpc("create_enquiry_with_items", {
       p_enquiry: {
         client_request_id: enquiry.client_request_id,
+        customer_id: enquiry.customer_id || "",
         business_name: enquiry.business_name,
         contact_person: enquiry.contact_person,
         phone: enquiry.phone,
@@ -185,7 +186,8 @@ export async function POST(request: Request) {
         pin_code: enquiry.pin_code,
         gstin: enquiry.gstin || "",
         delivery_requirements: enquiry.delivery_requirements || "",
-        message: enquiry.message || ""
+        message: enquiry.message || "",
+        customer_notes: enquiry.customer_notes || ""
       },
       p_items: snapshots
     });

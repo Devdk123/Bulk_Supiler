@@ -3,10 +3,11 @@
 import Link from "next/link";
 import Image from "next/image";
 import { usePathname, useRouter } from "next/navigation";
-import { ArrowRight, Menu, MessageCircle, Moon, PackageCheck, Search, Sun, X } from "lucide-react";
+import { ArrowRight, Menu, MessageCircle, Moon, PackageCheck, Search, Sun, User, X } from "lucide-react";
 import { useState, useSyncExternalStore, FormEvent, useEffect, useRef } from "react";
 import { Button } from "@/components/ui/button";
 import { cn, buildWhatsAppLink } from "@/lib/utils";
+import { useAuth } from "@/context/auth-context";
 
 const links = [
   { href: "/", label: "Home" },
@@ -33,6 +34,7 @@ export function SiteHeader({ whatsappNumber }: { whatsappNumber: string }) {
   const router = useRouter();
   const [open, setOpen] = useState(false);
   const [searchQuery, setSearchQuery] = useState("");
+  const { user, profile } = useAuth();
   const searchInputRef = useRef<HTMLInputElement>(null);
   const theme = useSyncExternalStore(subscribeToTheme, getThemeSnapshot, () => "light");
   const whatsappLink = buildWhatsAppLink("Hello Gayatri Store, I want to request a wholesale quote for my store.", whatsappNumber);
@@ -174,6 +176,14 @@ export function SiteHeader({ whatsappNumber }: { whatsappNumber: string }) {
               )}
             </button>
 
+            {/* Account / Sign In Button */}
+            <Button asChild variant="outline" size="sm" className="h-10 rounded-xl px-3.5 text-xs font-bold gap-1.5 border-border">
+              <Link href={user ? "/account" : "/login"}>
+                <User className={`h-4 w-4 ${user ? "text-fresh" : "text-muted-foreground"}`} />
+                <span>{user ? (profile?.business_name || profile?.full_name?.split(" ")[0] || "Account") : "Sign In"}</span>
+              </Link>
+            </Button>
+
             {/* High-visibility Request a Quote action */}
             <Button asChild variant="gold" size="sm" className="h-10 rounded-xl px-4 font-bold shadow-xs">
               <Link href="/order" className="gap-2">
@@ -285,6 +295,13 @@ export function SiteHeader({ whatsappNumber }: { whatsappNumber: string }) {
 
             {/* Mobile CTAs */}
             <div className="mt-5 grid gap-2.5 border-t border-border pt-4">
+              <Button asChild variant="outline" size="lg" className="w-full justify-center">
+                <Link href={user ? "/account" : "/login"} onClick={() => setOpen(false)}>
+                  <User className={`h-5 w-5 mr-1.5 ${user ? "text-fresh" : ""}`} />
+                  <span>{user ? "My Store Account & Enquiries" : "Sign In to Account"}</span>
+                </Link>
+              </Button>
+
               <Button asChild variant="gold" size="lg" className="w-full justify-center">
                 <Link href="/order" onClick={() => setOpen(false)}>
                   <PackageCheck className="h-5 w-5" /> Build Bulk Order

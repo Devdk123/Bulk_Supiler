@@ -1,12 +1,15 @@
 "use client";
 
-import { useMemo, useState } from "react";
+import { useMemo, useState, useEffect } from "react";
+import Link from "next/link";
 import { useSearchParams } from "next/navigation";
+import { useAuth } from "@/context/auth-context";
 import {
   Boxes,
   CheckCircle2,
   Loader2,
   MessageCircle,
+  PackageCheck,
   Plus,
   Send,
   Trash2,
@@ -79,12 +82,28 @@ export function OrderForm({
       : []
   );
 
+  const { user, profile } = useAuth();
   const [errors, setErrors] = useState<Record<string, string>>({});
   const [loading, setLoading] = useState(false);
   const [formError, setFormError] = useState("");
   const [savedEnquiry, setSavedEnquiry] = useState<SavedEnquiry | null>(null);
   const [whatsappLink, setWhatsappLink] = useState<string | null>(null);
   const [requestId, setRequestId] = useState("");
+
+  useEffect(() => {
+    if (profile) {
+      setForm((prev) => ({
+        ...prev,
+        contact_person: prev.contact_person || profile.full_name || "",
+        phone: prev.phone || profile.phone || "",
+        email: prev.email || user?.email || "",
+        business_name: prev.business_name || profile.business_name || "",
+        city: prev.city || profile.city || "Maya Bazar",
+        state: prev.state || profile.state || "Uttar Pradesh",
+        pin_code: prev.pin_code || profile.pincode || ""
+      }));
+    }
+  }, [profile, user]);
 
   const whatsappMessage = useMemo(() => {
     const lines = items.map((item) => {
@@ -157,6 +176,7 @@ export function OrderForm({
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
           ...form,
+          customer_id: user?.id || null,
           client_request_id: id,
           items: items.map((item) => ({
             product_id: item.product_id,
@@ -239,6 +259,14 @@ export function OrderForm({
                   <MessageCircle className="h-5 w-5" />
                   <span>Send Reference to WhatsApp</span>
                 </a>
+              </Button>
+            ) : null}
+            {user ? (
+              <Button asChild variant="outline" size="lg">
+                <Link href="/account" className="gap-2">
+                  <PackageCheck className="h-5 w-5 text-fresh" />
+                  <span>Track in My Account</span>
+                </Link>
               </Button>
             ) : null}
             <Button

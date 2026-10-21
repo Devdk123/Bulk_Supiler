@@ -66,6 +66,7 @@ export const productSchema = z.object({
 
 export const enquirySchema = z.object({
   client_request_id: z.string().uuid(),
+  customer_id: z.string().uuid().nullable().optional(),
   business_name: z.string().trim().min(2).max(160),
   contact_person: z.string().trim().min(2).max(120),
   phone: z.string().trim().regex(/^[6-9]\d{9}$/, "Enter a valid 10 digit mobile number"),
@@ -76,6 +77,7 @@ export const enquirySchema = z.object({
   gstin: z.string().trim().max(15).optional().or(z.literal("")),
   delivery_requirements: z.string().trim().max(1000).optional().or(z.literal("")),
   message: z.string().trim().max(2000).optional().or(z.literal("")),
+  customer_notes: optionalText(2000),
   items: z.array(z.object({
     product_id: z.string().uuid(),
     variant_id: z.string().uuid().nullable().optional(),

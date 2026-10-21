@@ -5,6 +5,7 @@ import { SiteHeader } from "@/components/site-header";
 import { WhatsAppFloat } from "@/components/whatsapp-float";
 import { MobileWholesaleDock } from "@/components/mobile-wholesale-dock";
 import { AiAssistant } from "@/components/ai-assistant";
+import { AuthProvider } from "@/context/auth-context";
 import { getPublicBusinessSettings } from "@/lib/business-settings";
 
 export const metadata: Metadata = {
@@ -77,12 +78,14 @@ export default async function RootLayout({ children }: Readonly<{ children: Reac
         />
       </head>
       <body className="min-h-screen bg-background text-foreground antialiased selection:bg-accent selection:text-primary">
-        <SiteHeader whatsappNumber={businessSettings.whatsapp_number} />
-        <main className="flex-1 pb-16 md:pb-0">{children}</main>
-        <SiteFooter settings={businessSettings} />
-        <AiAssistant />
-        <WhatsAppFloat whatsappNumber={businessSettings.whatsapp_number} />
-        <MobileWholesaleDock whatsappNumber={businessSettings.whatsapp_number} />
+        <AuthProvider>
+          <SiteHeader whatsappNumber={businessSettings.whatsapp_number} />
+          <main className="flex-1 pb-16 md:pb-0">{children}</main>
+          <SiteFooter settings={businessSettings} />
+          <AiAssistant />
+          <WhatsAppFloat whatsappNumber={businessSettings.whatsapp_number} />
+          <MobileWholesaleDock whatsappNumber={businessSettings.whatsapp_number} />
+        </AuthProvider>
       </body>
     </html>
   );
