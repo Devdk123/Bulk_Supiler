@@ -1,4 +1,4 @@
-import type { Metadata } from "next";
+import type { Metadata, Viewport } from "next";
 import { SpeedInsights } from "@vercel/speed-insights/next";
 import "./globals.css";
 import { SiteFooter } from "@/components/site-footer";
@@ -51,6 +51,13 @@ export const metadata: Metadata = {
     title: "Gayatri Store | B2B Wholesale & FMCG Distribution",
     description: "Direct godown wholesale supplier for spices, edible oils, and FMCG daily goods."
   }
+};
+
+export const viewport: Viewport = {
+  width: "device-width",
+  initialScale: 1,
+  viewportFit: "cover",
+  themeColor: "#174735"
 };
 
 export const revalidate = 300;
