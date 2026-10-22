@@ -7,22 +7,20 @@ import {
   Boxes,
   CheckCircle2,
   ChevronRight,
-  ClipboardList,
   MapPin,
   MessageCircle,
   PackageCheck,
   PackageSearch,
   Percent,
   Send,
-  ShieldCheck,
   Sparkles,
-  Store,
-  Truck
+  Store
 } from "lucide-react";
 import { ProductCard } from "@/components/product-card";
 import { SectionHeading } from "@/components/section-heading";
 import { WholesaleCalculator } from "@/components/wholesale-calculator";
 import { Button } from "@/components/ui/button";
+import { TranslatedText } from "@/components/translated-text";
 import { getStoreProducts } from "@/lib/products";
 import { getDefaultBusinessSettings } from "@/lib/business-settings";
 import { buildWhatsAppLink } from "@/lib/utils";
@@ -192,17 +190,17 @@ export default function HomePage() {
             <div className="flex flex-col items-start text-left">
               <div className="inline-flex items-center gap-2 rounded-full border border-primary/20 bg-primary/5 px-4 py-1.5 text-xs font-bold uppercase tracking-widest text-primary dark:border-accent/40 dark:bg-accent/10 dark:text-accent">
                 <Store className="h-3.5 w-3.5" />
-                <span>YOUR LOCAL WHOLESALE PARTNER</span>
+                <TranslatedText id="home.heroEyebrow" />
               </div>
 
               <h1 className="mt-5 text-3xl font-black tracking-tight text-primary sm:text-4xl md:text-5xl lg:text-[3.25rem] lg:leading-[1.12] dark:text-[#F4C542]">
-                Big Variety. Better Supply.
+                <TranslatedText id="home.heroTitle" />
                 <br />
-                <span className="text-[#347754] dark:text-[#52B47F]">Built for Your Business.</span>
+                <span className="text-[#347754] dark:text-[#52B47F]"><TranslatedText id="home.heroTitleSecond" /></span>
               </h1>
 
               <p className="mt-5 text-base leading-relaxed text-[#252A24]/85 sm:text-lg dark:text-[#F8F4EC]/85 max-w-xl">
-                Discover wholesale products across spices, edible oils, matchsticks, agarbatti, dhoop and everyday essentials. Build your product list and request a quote from Gayatri Store.
+                <TranslatedText id="home.heroDescription" />
               </p>
 
               {/* CTAs */}
@@ -210,7 +208,7 @@ export default function HomePage() {
                 <Button asChild variant="gold" size="lg" className="h-12 rounded-xl px-7 text-sm font-extrabold shadow-md hover:shadow-lg transition-all">
                   <Link href="/products" className="gap-2">
                     <PackageSearch className="h-4.5 w-4.5" />
-                    <span>Explore Products</span>
+                    <TranslatedText id="home.explore" />
                     <ArrowRight className="h-4 w-4" />
                   </Link>
                 </Button>
@@ -218,7 +216,7 @@ export default function HomePage() {
                 <Button asChild variant="outline" size="lg" className="h-12 rounded-xl border-primary/25 bg-card px-6 text-sm font-bold text-primary hover:bg-secondary dark:border-border dark:text-foreground">
                   <Link href="/order" className="gap-2">
                     <PackageCheck className="h-4.5 w-4.5 text-[#347754]" />
-                    <span>Build Bulk Order</span>
+                    <TranslatedText id="home.buildOrder" />
                   </Link>
                 </Button>
               </div>
@@ -226,15 +224,15 @@ export default function HomePage() {
               {/* Supporting Trust Note */}
               <div className="mt-8 flex flex-wrap items-center gap-y-2 gap-x-4 text-xs font-semibold text-[#666D64] dark:text-[#A6AEA4]">
                 <span className="flex items-center gap-1.5">
-                  <CheckCircle2 className="h-4 w-4 text-[#347754]" /> Wholesale enquiries
+                  <CheckCircle2 className="h-4 w-4 text-[#347754]" /> <TranslatedText id="home.trust1" />
                 </span>
                 <span>•</span>
                 <span className="flex items-center gap-1.5">
-                  <CheckCircle2 className="h-4 w-4 text-[#347754]" /> Multiple product categories
+                  <CheckCircle2 className="h-4 w-4 text-[#347754]" /> <TranslatedText id="home.trust2" />
                 </span>
                 <span>•</span>
                 <span className="flex items-center gap-1.5">
-                  <CheckCircle2 className="h-4 w-4 text-[#347754]" /> Direct business support
+                  <CheckCircle2 className="h-4 w-4 text-[#347754]" /> <TranslatedText id="home.trust3" />
                 </span>
               </div>
 
@@ -242,7 +240,7 @@ export default function HomePage() {
               <div className="mt-6 inline-flex items-center gap-2 rounded-xl border border-border/80 bg-card/80 px-3.5 py-2 text-xs font-medium text-foreground shadow-xs">
                 <MapPin className="h-3.5 w-3.5 text-[#E66A50] shrink-0" />
                 <span>
-                  Supplying kirana shops &amp; retail stores across <strong>Maya Bazar</strong> and nearby regional markets (~50+ km).
+                  <TranslatedText id="home.serviceArea" />
                 </span>
               </div>
             </div>
@@ -268,10 +266,10 @@ export default function HomePage() {
                 <div className="mt-3 flex items-center justify-between px-2 py-1">
                   <div className="flex items-center gap-2 text-xs font-bold text-primary dark:text-accent">
                     <Sparkles className="h-4 w-4 text-[#F4C542]" />
-                    <span>Fresh Godown Lots • Direct Wholesale Supply</span>
+                    <TranslatedText id="home.heroBadge" />
                   </div>
                   <span className="rounded-md bg-fresh/10 px-2 py-0.5 text-[11px] font-bold text-fresh">
-                    B2B Trade
+                    <TranslatedText id="home.b2b" />
                   </span>
                 </div>
               </div>
@@ -285,13 +283,13 @@ export default function HomePage() {
         <div className="container-page">
           <div className="flex flex-col md:flex-row md:items-end md:justify-between gap-4">
             <SectionHeading
-              eyebrow="Category Directory"
-              title="Explore Wholesale Product Categories"
-              description="Sourced from verified processing hubs and master packaging godowns. Pick a category to browse inventory and request instant quotations."
+              eyebrow={<TranslatedText id="home.categoryEyebrow" />}
+              title={<TranslatedText id="home.categoryHeading" />}
+              description={<TranslatedText id="home.categoryDescription" />}
             />
             <Button asChild variant="outline" className="w-fit">
               <Link href="/products" className="gap-2">
-                <span>View All Products</span>
+                <TranslatedText id="home.allProducts" />
                 <ArrowRight className="h-4 w-4" />
               </Link>
             </Button>
@@ -319,22 +317,22 @@ export default function HomePage() {
                       className="object-cover transition-transform duration-500 group-hover:scale-108"
                     />
                     <div className="absolute top-3 left-3 rounded-full bg-card/90 px-2.5 py-1 text-[11px] font-bold text-primary shadow-xs backdrop-blur-xs">
-                      {cat.tag}
+                      <TranslatedText id={`home.categories.${index}.2`} />
                     </div>
                   </div>
 
                   <div className="mt-4 flex flex-col justify-between flex-1">
                     <div>
                       <h3 className="text-base font-extrabold tracking-tight text-foreground transition-colors group-hover:text-primary dark:group-hover:text-accent">
-                        {cat.name}
+                        <TranslatedText id={`home.categories.${index}.0`} />
                       </h3>
                       <p className="mt-1.5 text-xs leading-relaxed text-muted-foreground line-clamp-2">
-                        {cat.description}
+                        <TranslatedText id={`home.categories.${index}.1`} />
                       </p>
                     </div>
 
                     <div className="mt-4 flex items-center gap-1.5 text-xs font-bold text-fresh group-hover:underline">
-                      <span>Browse Wholesale Lots</span>
+                      <TranslatedText id="home.browseLots" />
                       <ChevronRight className="h-3.5 w-3.5 transition-transform group-hover:translate-x-1" />
                     </div>
                   </div>
@@ -349,14 +347,14 @@ export default function HomePage() {
       <section id="brands" className="border-b border-border bg-secondary/30 py-16 md:py-24 transition-colors">
         <div className="container-page">
           <SectionHeading
-            eyebrow="Verified Suppliers"
-            title="Featured Wholesale Brands"
-            description="We stock established regional and national FMCG brand lines with reliable batch quality and retail counter demand."
+            eyebrow={<TranslatedText id="home.brandEyebrow" />}
+            title={<TranslatedText id="home.brandHeading" />}
+            description={<TranslatedText id="home.brandDescription" />}
             align="center"
           />
 
           <div className="mt-12 grid gap-5 sm:grid-cols-2 lg:grid-cols-3">
-            {featuredBrands.map((brand) => (
+            {featuredBrands.map((brand, index) => (
               <Link
                 key={brand.name}
                 href={`/products?brand=${encodeURIComponent(brand.name)}`}
@@ -366,10 +364,10 @@ export default function HomePage() {
                 <div>
                   <div className="flex items-center justify-between">
                     <span className="rounded-full bg-fresh/10 px-3 py-1 text-xs font-bold text-fresh">
-                      {brand.badge}
+                      <TranslatedText id={`home.brands.${index}.2`} />
                     </span>
                     <span className="text-[11px] font-semibold text-muted-foreground">
-                      B2B Supply
+                      <TranslatedText id="home.brandSupply" />
                     </span>
                   </div>
 
@@ -377,15 +375,15 @@ export default function HomePage() {
                     {brand.name}
                   </h3>
                   <p className="mt-1 text-xs font-bold text-fresh">
-                    {brand.category}
+                    <TranslatedText id={`home.brands.${index}.0`} />
                   </p>
                   <p className="mt-2.5 text-xs leading-relaxed text-muted-foreground">
-                    {brand.highlight}
+                    <TranslatedText id={`home.brands.${index}.1`} />
                   </p>
                 </div>
 
                 <div className="mt-5 flex items-center gap-1.5 text-xs font-bold text-primary dark:text-accent">
-                  <span>Browse {brand.name} products</span>
+                  <span><TranslatedText id="home.browseBrand" /> {brand.name}</span>
                   <ChevronRight className="h-3.5 w-3.5 transition-transform group-hover:translate-x-1" />
                 </div>
               </Link>
@@ -409,14 +407,14 @@ export default function HomePage() {
       <section className="border-b border-border bg-secondary/30 py-16 md:py-24 transition-colors">
         <div className="container-page">
           <SectionHeading
-            eyebrow="Commercial Value"
-            title="Why Store Owners Choose Gayatri Store"
-            description="Designed specifically to support independent retail grocers and trade buyers across Maya Bazar with dependable wholesale supply."
+            eyebrow={<TranslatedText id="home.advantageEyebrow" />}
+            title={<TranslatedText id="home.advantageTitle" />}
+            description={<TranslatedText id="home.advantageDescription" />}
             align="center"
           />
 
           <div className="mt-14 grid gap-6 sm:grid-cols-2 lg:grid-cols-4">
-            {advantages.map((item) => (
+            {advantages.map((item, index) => (
               <div
                 key={item.title}
                 className="flex flex-col justify-between rounded-3xl border border-border bg-card p-6 shadow-xs transition-all duration-300 hover:-translate-y-1 hover:border-fresh/40 hover:shadow-md"
@@ -426,10 +424,10 @@ export default function HomePage() {
                     <item.icon className="h-6 w-6" />
                   </div>
                   <h3 className="mt-5 text-base font-extrabold text-foreground">
-                    {item.title}
+                    <TranslatedText id={`home.advantages.${index}.0`} />
                   </h3>
                   <p className="mt-2.5 text-xs leading-relaxed text-muted-foreground">
-                    {item.description}
+                    <TranslatedText id={`home.advantages.${index}.1`} />
                   </p>
                 </div>
               </div>
@@ -442,14 +440,14 @@ export default function HomePage() {
       <section className="border-b border-border bg-card py-16 md:py-24 transition-colors">
         <div className="container-page">
           <SectionHeading
-            eyebrow="Simple 3-Step Process"
-            title="How Bulk Ordering Works"
-            description="A clear, transparent enquiry and fulfilment journey built for local shopkeepers and commercial traders."
+            eyebrow={<TranslatedText id="home.processEyebrow" />}
+            title={<TranslatedText id="home.processTitle" />}
+            description={<TranslatedText id="home.processDescription" />}
             align="center"
           />
 
           <div className="mt-14 grid gap-6 md:grid-cols-3">
-            {processSteps.map((step) => (
+            {processSteps.map((step, index) => (
               <div
                 key={step.number}
                 className="relative flex flex-col justify-between rounded-3xl border border-border bg-background p-8 transition-all duration-300 hover:border-fresh/40"
@@ -459,10 +457,10 @@ export default function HomePage() {
                     {step.number}
                   </span>
                   <h3 className="mt-4 text-lg font-bold text-foreground">
-                    {step.title}
+                    <TranslatedText id={`home.steps.${index}.0`} />
                   </h3>
                   <p className="mt-2.5 text-xs leading-relaxed text-muted-foreground">
-                    {step.description}
+                    <TranslatedText id={`home.steps.${index}.1`} />
                   </p>
                 </div>
               </div>
@@ -482,13 +480,13 @@ export default function HomePage() {
             <div className="relative z-10 flex flex-col items-start justify-between gap-8 lg:flex-row lg:items-center">
               <div className="max-w-2xl">
                 <span className="inline-block rounded-full bg-white/10 px-4 py-1.5 text-xs font-bold uppercase tracking-wider text-[#F4C542]">
-                  Direct Godown Supply • Maya Bazar
+                  <TranslatedText id="home.ctaBadge" />
                 </span>
                 <h2 className="mt-4 text-3xl font-black leading-tight tracking-tight sm:text-4xl md:text-5xl">
-                  Let&apos;s Stock Your Next Big Sale.
+                  <TranslatedText id="home.ctaTitle" />
                 </h2>
                 <p className="mt-4 text-base leading-relaxed text-[#FFF9F0]/85 sm:text-lg">
-                  Create a bulk enquiry for your store and discuss your requirements with Gayatri Store.
+                  <TranslatedText id="home.ctaDescription" />
                 </p>
               </div>
 
@@ -496,14 +494,14 @@ export default function HomePage() {
                 <Button asChild variant="gold" size="lg" className="h-12 rounded-xl px-7 font-extrabold shadow-lg">
                   <Link href="/order" className="gap-2">
                     <Send className="h-4.5 w-4.5" />
-                    <span>Start a Bulk Enquiry</span>
+                    <TranslatedText id="home.ctaStart" />
                   </Link>
                 </Button>
                 {whatsappLink ? (
                   <Button asChild variant="outline" size="lg" className="h-12 rounded-xl border-white/25 bg-white/10 text-white hover:bg-white/20">
                     <a href={whatsappLink} target="_blank" rel="noreferrer" className="gap-2">
                       <MessageCircle className="h-4.5 w-4.5 text-[#F4C542]" />
-                      <span>WhatsApp Rates</span>
+                      <TranslatedText id="home.whatsappRates" />
                     </a>
                   </Button>
                 ) : null}
@@ -538,12 +536,12 @@ async function FeaturedProductsSection({ whatsappLink }: { whatsappLink: string 
       <div className="container-page">
         <div className="flex flex-col gap-4 md:flex-row md:items-end md:justify-between">
           <SectionHeading
-            eyebrow="Available Inventory"
-            title="Products Ready for Bulk Quotation"
-            description="Browse public product listings and request current wholesale pricing from the Gayatri Store team."
+            eyebrow={<TranslatedText id="home.inventoryEyebrow" />}
+            title={<TranslatedText id="home.inventoryTitle" />}
+            description={<TranslatedText id="home.inventoryDescription" />}
           />
           <Button asChild variant="gold">
-            <Link href="/products" className="gap-2"><span>View Full Catalogue</span><ArrowRight className="h-4 w-4" /></Link>
+            <Link href="/products" className="gap-2"><TranslatedText id="home.fullCatalogue" /><ArrowRight className="h-4 w-4" /></Link>
           </Button>
         </div>
 
@@ -554,10 +552,10 @@ async function FeaturedProductsSection({ whatsappLink }: { whatsappLink: string 
         ) : (
           <div className="mt-10 rounded-3xl border border-dashed border-border bg-background p-8 text-center sm:p-12">
             <div className="mx-auto flex h-14 w-14 items-center justify-center rounded-2xl bg-fresh/10 text-fresh"><Boxes className="h-7 w-7" /></div>
-            <h3 className="mt-4 text-lg font-extrabold text-foreground">No published products yet</h3>
-            <p className="mx-auto mt-2 max-w-md text-sm text-muted-foreground">You can still contact the Gayatri Store team to ask about current wholesale availability.</p>
+            <h3 className="mt-4 text-lg font-extrabold text-foreground"><TranslatedText id="home.noProducts" /></h3>
+            <p className="mx-auto mt-2 max-w-md text-sm text-muted-foreground"><TranslatedText id="home.noProductsDescription" /></p>
             <div className="mt-6 flex flex-wrap justify-center gap-3">
-              <Button asChild variant="gold"><Link href="/order">Request a Wholesale Quote</Link></Button>
+              <Button asChild variant="gold"><Link href="/order"><TranslatedText id="home.requestQuote" /></Link></Button>
               {whatsappLink ? <Button asChild variant="outline"><a href={whatsappLink} target="_blank" rel="noreferrer"><MessageCircle className="h-4 w-4 text-fresh" /> WhatsApp</a></Button> : null}
             </div>
           </div>

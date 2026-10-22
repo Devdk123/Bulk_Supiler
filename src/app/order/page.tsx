@@ -10,6 +10,7 @@ import { Button } from "@/components/ui/button";
 import { getStoreProducts } from "@/lib/products";
 import { getDefaultBusinessSettings } from "@/lib/business-settings";
 import { buildWhatsAppLink } from "@/lib/utils";
+import { TranslatedText } from "@/components/translated-text";
 
 export const metadata: Metadata = {
   title: "Build a Bulk Order & Request Quotation | Gayatri Store",
@@ -32,35 +33,35 @@ export default function OrderPage() {
         {/* Left Side: Wholesale Guidelines & Business Context */}
         <div className="space-y-6">
           <SectionHeading
-            eyebrow="Commercial Order Desk"
-            title="Build a Multi-Product Wholesale Order"
-            description="Add multiple products and pack options into a single enquiry. Our godown team consolidates your dispatch to save shipping freight."
+            eyebrow={<TranslatedText id="orderPage.eyebrow" />}
+            title={<TranslatedText id="orderPage.title" />}
+            description={<TranslatedText id="orderPage.description" />}
           />
 
           {/* Wholesale Policy Notice Card */}
           <div className="rounded-3xl border border-fresh/30 bg-[#174735] p-6 md:p-8 text-[#FFF9F0] shadow-md">
             <span className="inline-block rounded-full bg-white/10 px-3.5 py-1 text-xs font-bold uppercase tracking-wider text-[#F4C542]">
-              Strictly Wholesale & B2B
+              <TranslatedText id="orderPage.wholesaleOnly" />
             </span>
             <h3 className="mt-4 text-xl font-extrabold text-white">
-              How Your Quote is Handled
+              <TranslatedText id="orderPage.howHandled" />
             </h3>
             <p className="mt-3 text-sm leading-relaxed text-[#FFF9F0]/80">
-              Submitting a quotation request does not require any online credit card or payment. We verify active godown stock, confirm transport options, apply volume discounts, and provide your formal invoice.
+              <TranslatedText id="orderPage.policy" />
             </p>
 
             <ul className="mt-5 space-y-3 text-xs text-[#FFF9F0]/90">
               <li className="flex items-center gap-2.5">
                 <CheckCircle2 className="h-4 w-4 text-[#F4C542] shrink-0" />
-                <span>Multi-category consolidated freight bookings</span>
+                <span><TranslatedText id="orderPage.benefit1" /></span>
               </li>
               <li className="flex items-center gap-2.5">
                 <CheckCircle2 className="h-4 w-4 text-[#F4C542] shrink-0" />
-                <span>Transparent tiered wholesale carton pricing</span>
+                <span><TranslatedText id="orderPage.benefit2" /></span>
               </li>
               <li className="flex items-center gap-2.5">
                 <CheckCircle2 className="h-4 w-4 text-[#F4C542] shrink-0" />
-                <span>Direct coordination with transport godowns</span>
+                <span><TranslatedText id="orderPage.benefit3" /></span>
               </li>
             </ul>
           </div>
@@ -69,15 +70,15 @@ export default function OrderPage() {
           {whatsappLink ? (
             <div className="rounded-3xl border border-border bg-card p-6 shadow-xs">
               <h4 className="text-sm font-bold text-foreground">
-                Need Immediate Stock Confirmation?
+                <TranslatedText id="orderPage.immediateTitle" />
               </h4>
               <p className="mt-1 text-xs text-muted-foreground">
-                Send your list of items directly to our wholesale sales desk on WhatsApp.
+                <TranslatedText id="orderPage.immediateDescription" />
               </p>
               <Button asChild variant="outline" className="mt-4 w-full justify-center border-fresh/30 text-fresh hover:bg-fresh/10">
                 <a href={whatsappLink} target="_blank" rel="noreferrer" className="gap-2">
                   <MessageCircle className="h-4 w-4 text-fresh" />
-                  <span>Chat with Dispatch Team</span>
+                  <span><TranslatedText id="orderPage.whatsapp" /></span>
                 </a>
               </Button>
             </div>
@@ -86,7 +87,7 @@ export default function OrderPage() {
 
         {/* Right Side: Interactive Order Form */}
         <div>
-          <Suspense fallback={<div className="rounded-3xl border border-border bg-card p-12 text-center text-sm text-muted-foreground">Loading quotation system...</div>}>
+          <Suspense fallback={<div className="rounded-3xl border border-border bg-card p-12 text-center text-sm text-muted-foreground"><TranslatedText id="orderPage.loading" /></div>}>
             <OrderFormContent whatsappNumber={businessSettings.whatsapp_number} />
           </Suspense>
         </div>

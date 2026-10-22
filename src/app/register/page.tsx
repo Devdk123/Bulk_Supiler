@@ -4,14 +4,11 @@ import { useState, FormEvent, useEffect } from "react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import {
-  ArrowRight,
-  Building2,
   CheckCircle2,
   Eye,
   EyeOff,
   Lock,
   Mail,
-  MapPin,
   Phone,
   ShieldAlert,
   Store,
