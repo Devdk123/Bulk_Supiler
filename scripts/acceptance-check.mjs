@@ -253,3 +253,12 @@ test("account enquiry history has a bounded wait and localized retry states", as
   assert.ok(getPath(en, "accountUI.loadError"));
   assert.ok(getPath(hi, "accountUI.loadError"));
 });
+
+test("assistant offers only localized interface languages and retains Hindi for Hinglish conversations", async () => {
+  const { assistantLanguages } = await importTypeScript("src/lib/assistant-languages.ts");
+  assert.deepEqual(assistantLanguages.map(({ code }) => code), ["en", "hi"]);
+  assert.equal(assistantLanguages[1].nativeName, "हिन्दी");
+  const endpoint = await readFile("src/app/api/assistant/route.ts", "utf8");
+  assert.match(endpoint, /Understand English, conversational Hindi in Devanagari, and Hinglish\/Roman Hindi/);
+  assert.match(endpoint, /answer Devanagari Hindi in Hindi and Roman Hindi\/Hinglish naturally/);
+});
