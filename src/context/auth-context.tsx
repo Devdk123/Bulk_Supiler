@@ -30,6 +30,16 @@ export type SignUpData = {
   pincode?: string;
 };
 
+function withTimeout<T>(promise: PromiseLike<T>, timeoutMs: number, message: string): Promise<T> {
+  let timeout: ReturnType<typeof setTimeout>;
+  return Promise.race([
+    Promise.resolve(promise),
+    new Promise<never>((_, reject) => {
+      timeout = setTimeout(() => reject(new Error(message)), timeoutMs);
+    })
+  ]).finally(() => clearTimeout(timeout));
+}
+
 type AuthContextType = {
   user: User | null;
   session: Session | null;
@@ -62,11 +72,15 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
   const fetchProfile = useCallback(async (userId: string): Promise<UserProfile | null> => {
     try {
       const supabase = getSupabaseBrowser();
-      const { data, error } = await supabase
-        .from("profiles")
-        .select("id, role, full_name, phone, business_name, city, state, pincode")
-        .eq("id", userId)
-        .maybeSingle();
+      const { data, error } = await withTimeout(
+        supabase
+          .from("profiles")
+          .select("id, role, full_name, phone, business_name, city, state, pincode")
+          .eq("id", userId)
+          .maybeSingle(),
+        4000,
+        "Profile request timed out. You can still use your account; profile details can be retried."
+      );
 
       if (error) {
         console.warn("Unable to fetch user profile:", error.message);
@@ -101,37 +115,49 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
 
   useEffect(() => {
     const supabase = getSupabaseBrowser();
+    let active = true;
+    let authStateHandled = false;
 
-    // 1. Initial session load
-    supabase.auth.getSession().then(async ({ data: { session } }) => {
-      setSession(session);
-      setUser(session?.user ?? null);
-      if (session?.user) {
-        await fetchProfile(session.user.id);
-      }
+    // Keep the auth callback synchronous. Awaiting a profile request here can
+    // hold Supabase's auth lock and leave getSession() pending indefinitely.
+    const { data: { subscription } } = supabase.auth.onAuthStateChange((_event, currentSession) => {
+      if (!active) return;
+      authStateHandled = true;
+      setSession(currentSession);
+      setUser(currentSession?.user ?? null);
       setLoading(false);
+
+      if (!currentSession?.user) {
+        setProfile(null);
+      } else {
+        const userId = currentSession.user.id;
+        queueMicrotask(() => {
+          if (active) void fetchProfile(userId);
+        });
+      }
     });
 
-    // 2. Auth state subscription
-    const { data: { subscription } } = supabase.auth.onAuthStateChange(
-      async (event, currentSession) => {
-        setSession(currentSession);
-        setUser(currentSession?.user ?? null);
-
-        if (event === "SIGNED_OUT" || !currentSession?.user) {
-          setProfile(null);
-          setLoading(false);
-          return;
-        }
-
-        if (event === "SIGNED_IN" || event === "USER_UPDATED" || event === "TOKEN_REFRESHED") {
-          await fetchProfile(currentSession.user.id);
-        }
+    // Resolve the account shell promptly, even if auth storage or a profile
+    // request is slow. Profile data is loaded separately and is not a gate.
+    void withTimeout(supabase.auth.getSession(), 5000, "Session request timed out.")
+      .then(({ data: { session } }) => {
+        if (!active || authStateHandled) return;
+        setSession(session);
+        setUser(session?.user ?? null);
         setLoading(false);
-      }
-    );
+        if (session?.user) void fetchProfile(session.user.id);
+      })
+      .catch((error) => {
+        console.warn("Unable to restore auth session:", error);
+        if (!active || authStateHandled) return;
+        setSession(null);
+        setUser(null);
+        setProfile(null);
+        setLoading(false);
+      });
 
     return () => {
+      active = false;
       subscription.unsubscribe();
     };
   }, [fetchProfile]);
@@ -149,7 +175,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
       }
 
       if (data.user) {
-        await fetchProfile(data.user.id);
+        void fetchProfile(data.user.id);
       }
       return { error: null };
     } catch (err) {
