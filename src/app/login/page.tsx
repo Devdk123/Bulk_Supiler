@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, FormEvent, useEffect } from "react";
+import { useState, FormEvent, useEffect, Suspense } from "react";
 import Link from "next/link";
 import { useRouter, useSearchParams } from "next/navigation";
 import { Eye, EyeOff, Lock, Mail, ArrowRight, LoaderCircle, ShieldAlert } from "lucide-react";
@@ -9,6 +9,14 @@ import { Input } from "@/components/ui/input";
 import { useAuth } from "@/context/auth-context";
 
 export default function LoginPage() {
+  return (
+    <Suspense fallback={<div className="flex min-h-[calc(100vh-16rem)] items-center justify-center px-4 py-12 text-sm text-muted-foreground">Loading sign in…</div>}>
+      <LoginForm />
+    </Suspense>
+  );
+}
+
+function LoginForm() {
   const router = useRouter();
   const searchParams = useSearchParams();
   const redirectTo = searchParams.get("redirect") || "/account";
