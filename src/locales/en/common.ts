@@ -62,6 +62,8 @@ const en = {
     enquiriesDescription: "Track quotation responses and dispatch updates for your store.",
     refresh: "Refresh",
     loadingEnquiries: "Loading your enquiry history...",
+    timeout: "Your enquiry history is taking too long to load. Please try again.",
+    loadError: "Unable to load your enquiry history. Please try again.",
     emptyTitle: "No enquiries yet",
     emptyDescription: "Browse the Gayatri Store catalogue and request your first wholesale quote.",
     exploreCatalogue: "Explore catalogue",

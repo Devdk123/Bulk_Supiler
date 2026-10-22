@@ -105,7 +105,8 @@ export default function AccountPage() {
       const response = await fetch("/api/customer/enquiries", {
         headers: {
           Authorization: `Bearer ${session.access_token}`
-        }
+        },
+        signal: AbortSignal.timeout(10000)
       });
       const data = await response.json();
       if (!response.ok) {
@@ -113,11 +114,13 @@ export default function AccountPage() {
       }
       setEnquiries(data.enquiries || []);
     } catch (err) {
-      setEnquiriesError(err instanceof Error ? err.message : "Unable to load enquiries.");
+      setEnquiriesError(err instanceof DOMException && err.name === "TimeoutError"
+        ? t("accountUI.timeout")
+        : err instanceof Error ? err.message : t("accountUI.loadError"));
     } finally {
       setLoadingEnquiries(false);
     }
-  }, [session]);
+  }, [session, t]);
 
   useEffect(() => {
     if (!user || !session) return;

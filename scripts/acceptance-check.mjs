@@ -242,3 +242,14 @@ test("narrow header keeps only language and menu controls in its top row", async
   assert.match(header, /<InstallPrompt showLabel \/>/);
   assert.match(header, /theme\.switchToLight/);
 });
+
+test("account enquiry history has a bounded wait and localized retry states", async () => {
+  const account = await readFile("src/app/account/page.tsx", "utf8");
+  assert.match(account, /signal: AbortSignal\.timeout\(10000\)/);
+  assert.match(account, /t\("accountUI\.timeout"\)/);
+  assert.match(account, /t\("accountUI\.loadError"\)/);
+  assert.ok(getPath(en, "accountUI.timeout"));
+  assert.ok(getPath(hi, "accountUI.timeout"));
+  assert.ok(getPath(en, "accountUI.loadError"));
+  assert.ok(getPath(hi, "accountUI.loadError"));
+});
