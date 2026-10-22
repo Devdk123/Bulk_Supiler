@@ -89,9 +89,11 @@ type AdminEnquiry = {
   items: EnquiryItem[];
 };
 type ImportPreview = {
-  validRows: Array<{ row: number; product: Record<string, unknown>; variants: unknown[]; images: unknown[]; price_tiers: unknown[] }>;
+  validRows: Array<{ row: number; product: Record<string, unknown>; variants: unknown[]; images: unknown[]; price_tiers: unknown[]; brand_name?: string | null; category_name?: string | null; already_exists?: boolean }>;
   invalidRows: Array<{ row: number; errors: string[] }>;
   totalRows: number;
+  existingRows: number;
+  newRows: number;
 };
 type Tab = "products" | "brands" | "enquiries" | "legacy-orders" | "import" | "settings" | "diagnostics" | "audit";
 type LegacyOrder = {
@@ -567,13 +569,13 @@ export function AdminOrders() {
     setImportLoading(true);
     setImportError("");
     try {
-      const result = await readResponse<{ imported: number }>(await fetch("/api/admin/products/import", {
+      const result = await readResponse<{ imported: number; skippedExisting: number }>(await fetch("/api/admin/products/import", {
         method: "PUT",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ rows: importPreview.validRows })
       }));
       setImportPreview(null);
-      setImportError(`Imported ${result.imported} products as configured.`);
+      setImportError(`Added ${result.imported} products. Skipped ${result.skippedExisting} products with existing SKUs.`);
       await loadDashboard();
     } catch (commitError) {
       setImportError(commitError instanceof Error ? commitError.message : "Unable to import products.");
@@ -989,7 +991,7 @@ export function AdminOrders() {
             <CardContent className="p-5">
               <h2 className="text-xl font-extrabold text-primary">Import and export catalogue</h2>
               <p className="mt-2 max-w-3xl text-sm leading-6 text-muted-foreground">
-                Download the CSV/XLSX template, create any brands/categories first, then preview the import. Duplicate SKUs, unknown brands/categories and invalid rows are reported without writing them. Import does not overwrite existing products.
+                Upload the starter workbook or a catalogue template. Starter workbook brands and categories are created or reused at commit. Suggested SKUs are stable: existing SKUs are skipped on reimport, and existing product records are never overwritten.
               </p>
               <div className="mt-5 flex flex-wrap gap-3">
                 <DownloadLink href="/api/admin/products/template?format=csv" label="CSV template" />
@@ -1005,7 +1007,7 @@ export function AdminOrders() {
               {importError ? <p role="status" className="mt-4 rounded-md bg-secondary p-3 text-sm">{importError}</p> : null}
               {importPreview ? (
                 <div className="mt-6">
-                  <p className="font-semibold">Preview: {importPreview.totalRows} rows · {importPreview.validRows.length} valid · {importPreview.invalidRows.length} with errors</p>
+                  <p className="font-semibold">Preview: {importPreview.totalRows} rows · {importPreview.newRows} new · {importPreview.existingRows} already imported · {importPreview.invalidRows.length} with errors</p>
                   {importPreview.invalidRows.length ? (
                     <ul className="mt-3 grid gap-2 text-sm text-red-800">
                       {importPreview.invalidRows.map((row) => <li key={row.row} className="rounded-md bg-red-50 p-3">Row {row.row}: {row.errors.join(" ")}</li>)}
