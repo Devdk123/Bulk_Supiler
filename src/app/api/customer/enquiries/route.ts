@@ -33,11 +33,16 @@ export async function GET(request: Request) {
         )
       `)
       .or(`customer_id.eq.${user.id},email.eq.${user.email}`)
-      .order("created_at", { ascending: false });
+      .order("created_at", { ascending: false })
+      .abortSignal(AbortSignal.timeout(7000));
 
     if (enquiriesError) {
       console.error("Error loading customer enquiries:", enquiriesError.message);
-      return NextResponse.json({ error: "Unable to load enquiries." }, { status: 500 });
+      const timedOut = /abort|timeout/i.test(enquiriesError.message);
+      return NextResponse.json(
+        { error: timedOut ? "Enquiry history request timed out." : "Unable to load enquiries." },
+        { status: timedOut ? 504 : 500 }
+      );
     }
 
     return NextResponse.json({ enquiries: enquiries || [] });

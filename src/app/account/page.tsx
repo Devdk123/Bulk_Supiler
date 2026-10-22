@@ -110,13 +110,13 @@ export default function AccountPage() {
       });
       const data = await response.json();
       if (!response.ok) {
-        throw new Error(data.error || "Failed to load enquiries.");
+        throw new Error(data.error || "Unable to load enquiries.");
       }
       setEnquiries(data.enquiries || []);
     } catch (err) {
-      setEnquiriesError(err instanceof DOMException && err.name === "TimeoutError"
-        ? t("accountUI.timeout")
-        : err instanceof Error ? err.message : t("accountUI.loadError"));
+      const timedOut = err instanceof DOMException && ["TimeoutError", "AbortError"].includes(err.name);
+      console.warn("Unable to load account enquiry history:", err);
+      setEnquiriesError(timedOut ? t("accountUI.timeout") : t("accountUI.loadError"));
     } finally {
       setLoadingEnquiries(false);
     }

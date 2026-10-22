@@ -245,9 +245,12 @@ test("narrow header keeps only language and menu controls in its top row", async
 
 test("account enquiry history has a bounded wait and localized retry states", async () => {
   const account = await readFile("src/app/account/page.tsx", "utf8");
+  const endpoint = await readFile("src/app/api/customer/enquiries/route.ts", "utf8");
   assert.match(account, /signal: AbortSignal\.timeout\(10000\)/);
   assert.match(account, /t\("accountUI\.timeout"\)/);
   assert.match(account, /t\("accountUI\.loadError"\)/);
+  assert.match(endpoint, /\.abortSignal\(AbortSignal\.timeout\(7000\)\)/);
+  assert.match(endpoint, /status: timedOut \? 504 : 500/);
   assert.ok(getPath(en, "accountUI.timeout"));
   assert.ok(getPath(hi, "accountUI.timeout"));
   assert.ok(getPath(en, "accountUI.loadError"));
