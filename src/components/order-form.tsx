@@ -22,6 +22,7 @@ import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
 import type { Product } from "@/lib/products";
 import { buildWhatsAppLink } from "@/lib/utils";
+import { useLanguage } from "@/context/language-context";
 
 type QuoteForm = {
   business_name: string;
@@ -83,6 +84,7 @@ export function OrderForm({
   );
 
   const { user, profile } = useAuth();
+  const { t } = useLanguage();
   const [errors, setErrors] = useState<Record<string, string>>({});
   const [loading, setLoading] = useState(false);
   const [formError, setFormError] = useState("");
@@ -165,6 +167,10 @@ export function OrderForm({
 
   async function onSubmit(event: React.FormEvent<HTMLFormElement>) {
     event.preventDefault();
+    if (!navigator.onLine) {
+      setFormError(t("orderForm.networkError"));
+      return;
+    }
     setLoading(true);
     setErrors({});
     setFormError("");
@@ -191,7 +197,7 @@ export function OrderForm({
       const data = await response.json();
       if (!response.ok) {
         setErrors(data.fieldErrors || {});
-        setFormError(data.error || "Unable to save enquiry. Please check the fields.");
+        setFormError(data.error || t("orderForm.checkFields"));
         return;
       }
 
@@ -208,7 +214,7 @@ export function OrderForm({
         )
       );
     } catch {
-      setFormError("Network error. Your enquiry was not confirmed. Please retry.");
+      setFormError(t("orderForm.networkError"));
     } finally {
       setLoading(false);
     }
@@ -226,17 +232,17 @@ export function OrderForm({
               </span>
               <div>
                 <h3 className="text-xl font-extrabold text-foreground">
-                  {savedEnquiry.created ? "Enquiry Successfully Submitted!" : "Enquiry Already Received"}
+                  {savedEnquiry.created ? t("orderForm.saved") : t("orderForm.duplicate")}
                 </h3>
                 <p className="text-xs text-muted-foreground">
-                  Your wholesale quotation request has been recorded in our dispatch system.
+                  {t("orderForm.savedDescription")}
                 </p>
               </div>
             </div>
 
             <div className="mt-6 rounded-xl border border-border bg-card p-4">
               <span className="text-xs font-semibold uppercase tracking-wider text-muted-foreground">
-                Official Quote Reference
+                {t("orderForm.reference")}
               </span>
               <p className="mt-1 font-mono text-2xl font-black text-primary dark:text-accent">
                 {savedEnquiry.reference}
@@ -244,7 +250,7 @@ export function OrderForm({
             </div>
 
             <p className="mt-4 text-xs leading-relaxed text-muted-foreground">
-              Our sales coordinator will inspect real-time godown availability, apply tier quantity discounts, and contact you via phone or WhatsApp with your itemized proforma invoice.
+              {t("orderForm.followup")}
             </p>
 
             {savedEnquiry.notificationWarning ? (
@@ -259,7 +265,7 @@ export function OrderForm({
               <Button asChild variant="gold" size="lg" className="shadow-md">
                 <a href={whatsappLink} target="_blank" rel="noreferrer" className="gap-2">
                   <MessageCircle className="h-5 w-5" />
-                  <span>Send Reference to WhatsApp</span>
+                  <span>{t("orderForm.sendReference")}</span>
                 </a>
               </Button>
             ) : null}
@@ -267,7 +273,7 @@ export function OrderForm({
               <Button asChild variant="outline" size="lg">
                 <Link href="/account" className="gap-2">
                   <PackageCheck className="h-5 w-5 text-fresh" />
-                  <span>Track in My Account</span>
+                  <span>{t("orderForm.track")}</span>
                 </Link>
               </Button>
             ) : null}
@@ -282,7 +288,7 @@ export function OrderForm({
                 setRequestId("");
               }}
             >
-              Start Another Enquiry
+              {t("orderForm.another")}
             </Button>
           </div>
         </CardContent>
@@ -308,14 +314,14 @@ export function OrderForm({
             <div className="flex items-center justify-between border-b border-border pb-3">
               <div>
                 <legend className="text-lg font-extrabold text-foreground">
-                  1. Products & Quantities
+                  {t("orderForm.productsQuantities")}
                 </legend>
                 <p className="text-xs text-muted-foreground">
-                  Select your required items and specify carton or packet units.
+                  {t("orderForm.selectProducts")}
                 </p>
               </div>
               <span className="rounded-full bg-fresh/10 px-3 py-1 text-xs font-bold text-fresh">
-                {items.length} {items.length === 1 ? "item" : "items"}
+                {items.length} {items.length === 1 ? t("orderForm.item") : t("orderForm.items")}
               </span>
             </div>
 
@@ -323,10 +329,10 @@ export function OrderForm({
               <div className="rounded-2xl border border-dashed border-border bg-background p-6 text-center">
                 <Boxes className="mx-auto h-8 w-8 text-muted-foreground" />
                 <p className="mt-2 text-sm font-bold text-foreground">
-                  No published items currently listed in online catalogue
+                  {t("orderForm.noProducts")}
                 </p>
                 <p className="mt-1 text-xs text-muted-foreground">
-                  You can contact our godown sales desk directly on WhatsApp with your product list for immediate pricing.
+                  {t("orderForm.contactSales")}
                 </p>
               </div>
             ) : (
@@ -349,9 +355,9 @@ export function OrderForm({
                       className="grid gap-3 rounded-2xl border border-border bg-background p-4 sm:grid-cols-[1.5fr_1.2fr_0.9fr_auto] sm:items-end"
                     >
                       {/* Product Selector */}
-                      <Field label="Product" error={errors.items}>
+                      <Field label={t("orderForm.product")} error={errors.items}>
                         <select
-                          aria-label="Product"
+                          aria-label={t("orderForm.product")}
                           value={item.product_id}
                           onChange={(e) =>
                             updateLine(index, { product_id: e.target.value, variant_id: "" })
@@ -368,14 +374,14 @@ export function OrderForm({
                       </Field>
 
                       {/* Variant Selector */}
-                      <Field label="Variant / Packaging">
+                      <Field label={t("orderForm.variant")}>
                         <select
-                          aria-label="Variant or packaging option"
+                          aria-label={t("orderForm.variant")}
                           value={item.variant_id}
                           onChange={(e) => updateLine(index, { variant_id: e.target.value })}
                           className="h-11 w-full rounded-xl border border-border bg-card px-3 text-sm text-foreground focus:border-fresh focus:outline-none"
                         >
-                          <option value="">Standard Pack ({product.packing || "Carton"})</option>
+                          <option value="">{t("orderForm.standardPack")} ({product.packing || t("orderForm.carton")})</option>
                           {variants.map((v) => (
                             <option key={v.id} value={v.id}>
                               {v.name}
@@ -386,7 +392,7 @@ export function OrderForm({
                       </Field>
 
                       {/* Quantity Input */}
-                      <Field label={`Qty (${product.unit || "units"})`}>
+                      <Field label={`${t("orderForm.quantity")} (${product.unit || t("product.units")})`}>
                         <Input
                           type="number"
                           min="1"
@@ -394,9 +400,9 @@ export function OrderForm({
                           inputMode="numeric"
                           value={item.quantity}
                           onChange={(e) => updateLine(index, { quantity: e.target.value })}
-                          aria-label={`Quantity for ${product.name}`}
+                          aria-label={`${t("orderForm.quantity")} for ${product.name}`}
                           className="h-11 rounded-xl text-sm"
-                          placeholder="e.g. 10"
+                          placeholder={t("orderForm.exampleQuantity")}
                         />
                       </Field>
 
@@ -405,7 +411,7 @@ export function OrderForm({
                         type="button"
                         variant="outline"
                         size="icon"
-                        aria-label={`Remove ${product.name}`}
+                        aria-label={`${t("orderForm.removeProduct")}: ${product.name}`}
                         onClick={() => removeProduct(index)}
                         className="rounded-xl border-border hover:bg-vermilion/10 hover:text-vermilion"
                       >
@@ -414,7 +420,7 @@ export function OrderForm({
 
                       {product.moq ? (
                         <p className="text-[11px] font-semibold text-muted-foreground sm:col-span-4 flex items-center gap-1.5">
-                          <Truck className="h-3 w-3 text-fresh" /> MOQ: {product.moq}
+                          <Truck className="h-3 w-3 text-fresh" /> {t("product.minOrder")}: {product.moq}
                         </p>
                       ) : null}
                     </div>
@@ -428,7 +434,7 @@ export function OrderForm({
                     className="w-fit gap-2 border-dashed border-border hover:border-fresh"
                     onClick={addProduct}
                   >
-                    <Plus className="h-4 w-4 text-fresh" /> Add Another Product
+                    <Plus className="h-4 w-4 text-fresh" /> {t("orderForm.addProduct")}
                   </Button>
                 ) : null}
               </div>
@@ -439,39 +445,39 @@ export function OrderForm({
           <fieldset className="space-y-4 border-t border-border pt-6">
             <div>
               <legend className="text-lg font-extrabold text-foreground">
-                2. Business & Contact Information
+                {t("orderForm.businessContact")}
               </legend>
               <p className="text-xs text-muted-foreground">
-                Required for freight estimation, billing details, and GST invoicing.
+                {t("orderForm.businessContactHint")}
               </p>
             </div>
 
             <div className="grid gap-4 sm:grid-cols-2">
-              <Field label="Store / Business Name" error={errors.business_name} required>
+              <Field label={t("orderForm.storeName")} error={errors.business_name} required>
                 <Input
                   value={form.business_name}
                   onChange={(e) => updateForm("business_name", e.target.value)}
-                  placeholder="e.g. Shree Ganesh Kirana Store"
+                  placeholder={t("orderForm.storeExample")}
                   autoComplete="organization"
                   className="rounded-xl"
                 />
               </Field>
 
-              <Field label="Contact Person Name" error={errors.contact_person} required>
+              <Field label={t("orderForm.contactPerson")} error={errors.contact_person} required>
                 <Input
                   value={form.contact_person}
                   onChange={(e) => updateForm("contact_person", e.target.value)}
-                  placeholder="e.g. Ramesh Kumar"
+                  placeholder={t("orderForm.contactExample")}
                   autoComplete="name"
                   className="rounded-xl"
                 />
               </Field>
 
-              <Field label="Mobile / WhatsApp Number" error={errors.phone} required>
+              <Field label={t("orderForm.mobile")} error={errors.phone} required>
                 <Input
                   value={form.phone}
                   onChange={(e) => updateForm("phone", e.target.value)}
-                  placeholder="10-digit mobile number"
+                  placeholder={t("orderForm.mobileHint")}
                   inputMode="numeric"
                   autoComplete="tel"
                   maxLength={10}
@@ -479,7 +485,7 @@ export function OrderForm({
                 />
               </Field>
 
-              <Field label="Email Address (Optional)" error={errors.email}>
+              <Field label={t("orderForm.emailOptional")} error={errors.email}>
                 <Input
                   type="email"
                   value={form.email}
@@ -490,11 +496,11 @@ export function OrderForm({
                 />
               </Field>
 
-              <Field label="City / Town" error={errors.city} required>
+              <Field label={t("orderForm.city")} error={errors.city} required>
                 <Input
                   value={form.city}
                   onChange={(e) => updateForm("city", e.target.value)}
-                  placeholder="e.g. Ahmedabad, Indore, Surat"
+                  placeholder={t("orderForm.cityExample")}
                   autoComplete="address-level2"
                   className="rounded-xl"
                 />
@@ -504,17 +510,17 @@ export function OrderForm({
                 <Input
                   value={form.state}
                   onChange={(e) => updateForm("state", e.target.value)}
-                  placeholder="e.g. Gujarat, Madhya Pradesh"
+                  placeholder={t("orderForm.stateExample")}
                   autoComplete="address-level1"
                   className="rounded-xl"
                 />
               </Field>
 
-              <Field label="PIN Code" error={errors.pin_code} required>
+              <Field label={t("orderForm.pin")} error={errors.pin_code} required>
                 <Input
                   value={form.pin_code}
                   onChange={(e) => updateForm("pin_code", e.target.value)}
-                  placeholder="6-digit PIN code"
+                  placeholder={t("orderForm.pinHint")}
                   inputMode="numeric"
                   autoComplete="postal-code"
                   maxLength={6}
@@ -522,7 +528,7 @@ export function OrderForm({
                 />
               </Field>
 
-              <Field label="GSTIN (Optional for Registered Buyers)" error={errors.gstin}>
+              <Field label={t("orderForm.gst")} error={errors.gstin}>
                 <Input
                   value={form.gstin}
                   onChange={(e) => updateForm("gstin", e.target.value.toUpperCase())}
@@ -538,28 +544,28 @@ export function OrderForm({
           <fieldset className="space-y-4 border-t border-border pt-6">
             <div>
               <legend className="text-lg font-extrabold text-foreground">
-                3. Delivery Requirements & Notes
+                {t("orderForm.deliveryNotes")}
               </legend>
               <p className="text-xs text-muted-foreground">
-                Preferred transport carrier, delivery address, or packing instructions.
+                {t("orderForm.deliveryHint")}
               </p>
             </div>
 
-            <Field label="Delivery / Transport Instructions" error={errors.delivery_requirements}>
+            <Field label={t("orderForm.deliveryInstructions")} error={errors.delivery_requirements}>
               <Textarea
                 value={form.delivery_requirements}
                 onChange={(e) => updateForm("delivery_requirements", e.target.value)}
-                placeholder="Mention preferred transport service, godown drop location, or special timing..."
+                placeholder={t("orderForm.deliveryPlaceholder")}
                 maxLength={1000}
                 className="rounded-xl min-h-[80px]"
               />
             </Field>
 
-            <Field label="Additional Inquiries / Notes" error={errors.message}>
+            <Field label={t("orderForm.additionalNotes")} error={errors.message}>
               <Textarea
                 value={form.message}
                 onChange={(e) => updateForm("message", e.target.value)}
-                placeholder="Any special packing or bulk discount request..."
+                placeholder={t("orderForm.notesPlaceholder")}
                 maxLength={2000}
                 className="rounded-xl min-h-[80px]"
               />
@@ -578,17 +584,17 @@ export function OrderForm({
               {loading ? (
                 <>
                   <Loader2 className="h-5 w-5 animate-spin" />
-                  <span>Submitting Wholesale Quotation...</span>
+                  <span>{t("orderForm.submitting")}</span>
                 </>
               ) : (
                 <>
                   <Send className="h-5 w-5" />
-                  <span>Submit Wholesale Quotation Request</span>
+                  <span>{t("orderForm.submit")}</span>
                 </>
               )}
             </Button>
             <p className="mt-2.5 text-center text-xs text-muted-foreground">
-              By submitting, your request is logged with an official reference code. No payment is charged online.
+              {t("orderForm.submitNotice")}
             </p>
           </div>
         </form>

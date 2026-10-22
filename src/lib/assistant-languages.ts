@@ -16,9 +16,9 @@ export const assistantLanguages = [
   { code: "sa", label: "Sanskrit", nativeName: "संस्कृतम्" },
   { code: "ks", label: "Kashmiri", nativeName: "कॉशुर" },
   { code: "kok", label: "Konkani", nativeName: "कोंकणी" },
-  { code: "mni", label: "Manipuri", nativeName: "মেইতেইলোন্" },
+  { code: "mni", label: "Manipuri", nativeName: "মৈতৈলোন্" },
   { code: "ne", label: "Nepali", nativeName: "नेपाली" },
-  { code: "sd", label: "Sindhi", nativeName: "सिन्धी" },
+  { code: "sd", label: "Sindhi", nativeName: "سنڌي" },
   { code: "doi", label: "Dogri", nativeName: "डोगरी" },
   { code: "sat", label: "Santali", nativeName: "ᱥᱟᱱᱛᱟᱲᱤ" }
 ] as const;

@@ -1,24 +1,31 @@
+"use client";
+
 import Image from "next/image";
 import Link from "next/link";
 import { Boxes, PackageCheck, Truck } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
 import type { Product } from "@/lib/products";
+import { useLanguage } from "@/context/language-context";
 
 export function ProductCard({ product }: { product: Product }) {
+  const { t } = useLanguage();
   const imageUrl = product.imageUrl || "/images/product-placeholder.svg";
+  const detailHref = `/products/${encodeURIComponent(product.slug)}`;
 
   return (
     <Card className="group flex h-full flex-col overflow-hidden rounded-2xl border border-border bg-card shadow-xs transition-all duration-300 hover:-translate-y-1 hover:border-fresh/40 hover:shadow-lg">
       {/* Image Area */}
       <div className="relative aspect-[4/3] w-full overflow-hidden bg-secondary/50">
-        <Image
-          src={imageUrl}
-          alt={product.name}
-          fill
-          sizes="(min-width: 1280px) 25vw, (min-width: 1024px) 33vw, (min-width: 640px) 50vw, 100vw"
-          className="object-cover transition-transform duration-500 ease-out group-hover:scale-105"
-        />
+        <Link href={detailHref} aria-label={`${t("catalogue.details")}: ${product.name}`} className="absolute inset-0 focus-visible:outline-none focus-visible:ring-4 focus-visible:ring-inset focus-visible:ring-ring">
+          <Image
+            src={imageUrl}
+            alt={product.name}
+            fill
+            sizes="(min-width: 1280px) 25vw, (min-width: 1024px) 33vw, (min-width: 640px) 50vw, 100vw"
+            className="object-contain p-3 transition-transform duration-300 group-hover:scale-[1.02]"
+          />
+        </Link>
         {/* Category or Stock Status Badge */}
         <div className="absolute left-3 top-3 flex flex-wrap gap-1.5">
           {product.brandName ? (
@@ -28,7 +35,7 @@ export function ProductCard({ product }: { product: Product }) {
           ) : null}
           {product.stockStatus === "in_stock" ? (
             <span className="rounded-lg bg-fresh px-2.5 py-1 text-[11px] font-bold text-white shadow-xs">
-              In Stock
+              {t("catalogue.inStockBadge")}
             </span>
           ) : null}
         </div>
@@ -44,17 +51,14 @@ export function ProductCard({ product }: { product: Product }) {
           ) : null}
 
           <h3 className="mt-1.5 text-base font-bold leading-snug text-foreground transition-colors group-hover:text-primary">
-            <Link
-              href={`/products/${encodeURIComponent(product.slug)}`}
-              className="inline-flex items-center gap-1 hover:underline"
-            >
+            <Link href={detailHref} className="inline-flex items-center gap-1 hover:underline">
               <span>{product.name}</span>
             </Link>
           </h3>
 
           <div className="mt-2.5 flex items-baseline gap-2">
             <span className="text-sm font-extrabold text-primary dark:text-accent">
-              {product.price || "Wholesale Quote on Request"}
+              {product.price || t("catalogue.priceOnRequest")}
             </span>
           </div>
 
@@ -63,7 +67,7 @@ export function ProductCard({ product }: { product: Product }) {
             {product.moq ? (
               <div className="flex items-center justify-between gap-2">
                 <dt className="flex items-center gap-1.5 text-muted-foreground">
-                  <Truck className="h-3.5 w-3.5 text-fresh" /> MOQ
+                  <Truck className="h-3.5 w-3.5 text-fresh" /> {t("catalogue.moq")}
                 </dt>
                 <dd className="font-semibold text-foreground">{product.moq}</dd>
               </div>
@@ -72,7 +76,7 @@ export function ProductCard({ product }: { product: Product }) {
             {product.packing ? (
               <div className="flex items-center justify-between gap-2">
                 <dt className="flex items-center gap-1.5 text-muted-foreground">
-                  <Boxes className="h-3.5 w-3.5 text-fresh" /> Packing
+                  <Boxes className="h-3.5 w-3.5 text-fresh" /> {t("catalogue.packing")}
                 </dt>
                 <dd className="font-semibold text-foreground text-right">{product.packing}</dd>
               </div>
@@ -85,7 +89,7 @@ export function ProductCard({ product }: { product: Product }) {
           <Button asChild variant="gold" className="w-full justify-center rounded-xl shadow-xs">
             <Link href={`/order?product=${encodeURIComponent(product.id)}`}>
               <PackageCheck className="h-4 w-4" />
-              <span>Request Wholesale Price</span>
+              <span>{t("catalogue.requestPrice")}</span>
             </Link>
           </Button>
         </div>

@@ -1,7 +1,6 @@
 import type { Metadata } from "next";
 import { Suspense } from "react";
 import { ProductCatalogue } from "@/components/product-catalogue";
-import { SectionHeading } from "@/components/section-heading";
 import { getStoreProductsPage, type ProductCataloguePage } from "@/lib/products";
 
 export const revalidate = 60;
@@ -16,11 +15,6 @@ export default function ProductsPage() {
   return (
     <section className="py-12 md:py-16">
       <div className="container-page">
-        <SectionHeading
-          eyebrow="Direct Wholesale Catalogue"
-          title="Products Published for Business Buyers"
-          description="Browse by brand, category, or SKU. Select products and add them directly to your bulk quotation request."
-        />
         <Suspense fallback={<CatalogueSkeleton />}>
           <ProductCatalogueContent />
         </Suspense>

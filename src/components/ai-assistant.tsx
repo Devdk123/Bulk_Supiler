@@ -3,15 +3,19 @@
 import { FormEvent, useEffect, useRef, useState } from "react";
 import { Bot, Languages, LoaderCircle, MessageCircle, Send, Sparkles, X } from "lucide-react";
 import { assistantLanguages, type AssistantLanguage } from "@/lib/assistant-languages";
+import { useLanguage } from "@/context/language-context";
 
+type AssistantProduct = { id: string; name: string; slug: string; brand: string | null; quoteOnly: boolean; price: string | null };
 type ChatMessage = {
   role: "user" | "assistant";
   content: string;
+  products?: AssistantProduct[];
 };
 
-export function AiAssistant() {
-  const [open, setOpen] = useState(false);
-  const [language, setLanguage] = useState<AssistantLanguage>("en");
+export function AiAssistant({ embedded = false, onClose }: { embedded?: boolean; onClose?: () => void }) {
+  const { language: appLanguage, t } = useLanguage();
+  const [open, setOpen] = useState(embedded);
+  const [language, setLanguage] = useState<AssistantLanguage>(appLanguage === "hi" ? "hi" : "en");
   const [messages, setMessages] = useState<ChatMessage[]>([]);
   const [draft, setDraft] = useState("");
   const [sending, setSending] = useState(false);
@@ -45,11 +49,11 @@ export function AiAssistant() {
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ language, messages: nextMessages.slice(-12) })
       });
-      const result: { reply?: string; error?: string } = await response.json();
+      const result: { reply?: string; error?: string; products?: AssistantProduct[] } = await response.json();
       if (!response.ok || !result.reply) {
         throw new Error(result.error || "The assistant is temporarily unavailable. Please try again.");
       }
-      setMessages([...nextMessages, { role: "assistant", content: result.reply }]);
+      setMessages([...nextMessages, { role: "assistant", content: result.reply, products: result.products }]);
     } catch (requestError) {
       setError(requestError instanceof Error ? requestError.message : "The assistant is temporarily unavailable. Please try again.");
     } finally {
@@ -58,10 +62,10 @@ export function AiAssistant() {
   }
 
   return (
-    <div className="fixed bottom-16 right-4 z-40 sm:bottom-6 sm:right-24 sm:z-50">
+    <div className={embedded ? "relative" : "fixed bottom-16 right-4 z-40 sm:bottom-6 sm:right-24 sm:z-50"}>
       {open ? (
         <section
-          aria-label="Multilingual wholesale assistant"
+          aria-label={t("assistant.name")}
           className="absolute bottom-16 right-0 flex max-h-[min(70vh,600px)] w-[calc(100vw-2.5rem)] max-w-[390px] flex-col overflow-hidden rounded-3xl border border-border bg-card shadow-2xl animate-in slide-in-from-bottom-3 duration-200"
         >
           <div className="flex items-center justify-between gap-3 bg-primary px-4 py-4 text-primary-foreground">
@@ -70,14 +74,14 @@ export function AiAssistant() {
                 <Bot className="h-5 w-5" />
               </span>
               <div className="min-w-0">
-                <h2 className="truncate text-sm font-bold">Gayatri Store Assistant</h2>
-                <p className="text-xs text-primary-foreground/75">Here to help with bulk orders</p>
+                <h2 className="truncate text-sm font-bold">{t("assistant.name")}</h2>
+                <p className="text-xs text-primary-foreground/75">{t("assistant.subtitle")}</p>
               </div>
             </div>
             <button
               type="button"
-              onClick={() => setOpen(false)}
-              aria-label="Close assistant"
+              onClick={() => { setOpen(false); onClose?.(); }}
+              aria-label={t("assistant.close")}
               className="flex h-9 w-9 shrink-0 items-center justify-center rounded-full text-primary-foreground/80 transition-colors hover:bg-white/10 hover:text-white"
             >
               <X className="h-5 w-5" />
@@ -86,7 +90,7 @@ export function AiAssistant() {
 
           <label className="flex items-center gap-2 border-b border-border bg-background px-4 py-3 text-xs font-semibold text-muted-foreground">
             <Languages className="h-4 w-4 text-fresh" />
-            <span>Reply language</span>
+            <span>{t("assistant.language")}</span>
             <select
               value={language}
               onChange={(event) => handleLanguageChange(event.target.value)}
@@ -105,28 +109,34 @@ export function AiAssistant() {
                 <span className="flex h-9 w-9 items-center justify-center rounded-xl bg-fresh/10 text-fresh">
                   <Sparkles className="h-4 w-4" />
                 </span>
-                <p className="mt-3 text-sm font-bold text-foreground">Namaste! How can we help?</p>
+                <p className="mt-3 text-sm font-bold text-foreground">{t("assistant.greeting")}</p>
                 <p className="mt-1 text-xs leading-relaxed text-muted-foreground">
-                  Ask about bulk ordering, product categories, or how to request a quote. Replies are available in 22 Indian languages.
+                  {t("assistant.suggestions")}
                 </p>
               </div>
             ) : (
               messages.map((message, index) => (
-                <p
-                  key={`${index}-${message.role}`}
-                  className={`max-w-[88%] whitespace-pre-wrap rounded-2xl px-3.5 py-2.5 text-sm leading-relaxed ${
-                    message.role === "user"
-                      ? "ml-auto rounded-br-md bg-primary text-primary-foreground"
-                      : "mr-auto rounded-bl-md border border-border bg-card text-foreground"
-                  }`}
-                >
-                  {message.content}
-                </p>
+                <div key={`${index}-${message.role}`} className={message.role === "user" ? "ml-auto max-w-[88%]" : "mr-auto max-w-[92%]"}>
+                  <p className={`whitespace-pre-wrap rounded-2xl px-3.5 py-2.5 text-sm leading-relaxed ${message.role === "user" ? "rounded-br-md bg-primary text-primary-foreground" : "rounded-bl-md border border-border bg-card text-foreground"}`}>
+                    {message.content}
+                  </p>
+                  {message.products?.length ? (
+                    <div className="mt-2 grid gap-2">
+                      {message.products.map((product) => (
+                        <a key={product.id} href={`/products/${encodeURIComponent(product.slug)}`} className="rounded-xl border border-border bg-card p-3 text-xs hover:border-fresh/50">
+                          <span className="block font-bold text-primary">{product.name}</span>
+                          {product.brand ? <span className="mt-1 block text-muted-foreground">{product.brand}</span> : null}
+                          <span className="mt-1 block font-semibold text-fresh">{product.quoteOnly ? t("catalogue.priceOnRequest") : product.price}</span>
+                        </a>
+                      ))}
+                    </div>
+                  ) : null}
+                </div>
               ))
             )}
             {sending ? (
               <p className="mr-auto inline-flex items-center gap-2 rounded-2xl border border-border bg-card px-3.5 py-2.5 text-xs text-muted-foreground">
-                <LoaderCircle className="h-4 w-4 animate-spin" /> Preparing a reply…
+                <LoaderCircle className="h-4 w-4 animate-spin" /> {t("assistant.typing")}
               </p>
             ) : null}
             <div ref={endOfMessages} />
@@ -139,7 +149,7 @@ export function AiAssistant() {
           ) : null}
 
           <p className="px-4 pt-2 text-[10px] leading-relaxed text-muted-foreground">
-            AI-generated guidance only. Please don&apos;t share sensitive information.
+            {t("assistant.disclaimer")}
           </p>
           <form onSubmit={handleSubmit} className="flex items-end gap-2 border-t border-border bg-card p-3">
             <textarea
@@ -147,14 +157,14 @@ export function AiAssistant() {
               onChange={(event) => setDraft(event.target.value)}
               maxLength={1200}
               rows={1}
-              placeholder="Type your message…"
-              aria-label="Message the wholesale assistant"
+              placeholder={t("assistant.placeholder")}
+              aria-label={t("assistant.placeholder")}
               className="max-h-28 min-h-11 flex-1 resize-y rounded-xl border border-border bg-background px-3.5 py-3 text-sm text-foreground outline-none placeholder:text-muted-foreground focus:border-fresh focus:ring-1 focus:ring-fresh"
             />
             <button
               type="submit"
               disabled={!draft.trim() || sending}
-              aria-label="Send message"
+              aria-label={t("assistant.send")}
               className="flex h-11 w-11 shrink-0 items-center justify-center rounded-xl bg-primary text-primary-foreground transition-colors hover:bg-fresh disabled:cursor-not-allowed disabled:opacity-45"
             >
               {sending ? <LoaderCircle className="h-4 w-4 animate-spin" /> : <Send className="h-4 w-4" />}
@@ -163,16 +173,17 @@ export function AiAssistant() {
         </section>
       ) : null}
 
-      <button
+      {!embedded ? <button
         type="button"
         onClick={() => setOpen(!open)}
-        aria-label={open ? "Close wholesale assistant" : "Open multilingual wholesale assistant"}
+        aria-label={open ? t("assistant.close") : t("assistant.open")}
         aria-expanded={open}
         className="group flex h-14 items-center gap-2.5 rounded-full bg-primary px-4 text-primary-foreground shadow-xl ring-1 ring-white/15 transition-all duration-300 hover:-translate-y-1 hover:bg-fresh hover:shadow-2xl focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring"
       >
         {open ? <X className="h-5 w-5" /> : <MessageCircle className="h-5 w-5" />}
-        <span className="pr-1 text-sm font-bold">Ask AI</span>
+        <span className="pr-1 text-sm font-bold">{t("assistant.name")}</span>
       </button>
+      : null}
     </div>
   );
 }

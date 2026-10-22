@@ -17,6 +17,8 @@ import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import type { ProductCataloguePage } from "@/lib/products";
 import Link from "next/link";
+import { SectionHeading } from "@/components/section-heading";
+import { useLanguage } from "@/context/language-context";
 
 export function ProductCatalogue({
   initialPage,
@@ -27,6 +29,7 @@ export function ProductCatalogue({
 }) {
   const searchParams = useSearchParams();
   const router = useRouter();
+  const { t } = useLanguage();
 
   const urlCategory = searchParams.get("category") || "";
   const urlBrand = searchParams.get("brand") || "";
@@ -163,6 +166,7 @@ export function ProductCatalogue({
 
   return (
     <div className="mt-8">
+      <SectionHeading eyebrow={t("catalogue.eyebrow")} title={t("catalogue.title")} description={t("catalogue.description")} />
       {/* Quick Category Filter Bar */}
       <div className="no-scrollbar mb-6 flex items-center gap-2 overflow-x-auto pb-2">
         <button
@@ -177,7 +181,7 @@ export function ProductCatalogue({
               : "border border-border bg-card text-foreground hover:bg-secondary"
           }`}
         >
-          All Categories
+          {t("catalogue.allCategories")}
         </button>
         {categories.map((cat) => (
           <button
@@ -208,7 +212,7 @@ export function ProductCatalogue({
             className="h-11 rounded-xl pl-9 pr-8 text-sm"
             value={search}
             onChange={(e) => { setOffset(0); setSearch(e.target.value); }}
-            placeholder="Search products, brands, SKU..."
+            placeholder={t("catalogue.searchPlaceholder")}
           />
           {search ? (
             <button
@@ -226,7 +230,7 @@ export function ProductCatalogue({
 
         {/* Brand Dropdown */}
         <label className="grid gap-1 text-xs font-bold text-muted-foreground">
-          Brand Filter
+          {t("catalogue.brandFilter")}
           <select
             value={effectiveBrand}
             onChange={(e) => {
@@ -236,7 +240,7 @@ export function ProductCatalogue({
             }}
             className="h-11 rounded-xl border border-border bg-background px-3 text-sm text-foreground focus:border-fresh focus:outline-none"
           >
-            <option value="">All Brands</option>
+            <option value="">{t("catalogue.allBrands")}</option>
             {brands.map((b) => (
               <option key={b} value={b}>
                 {b}
@@ -247,7 +251,7 @@ export function ProductCatalogue({
 
         {/* Category Dropdown */}
         <label className="grid gap-1 text-xs font-bold text-muted-foreground">
-          Category Filter
+          {t("catalogue.categoryFilter")}
           <select
             value={effectiveCategory}
             onChange={(e) => {
@@ -257,7 +261,7 @@ export function ProductCatalogue({
             }}
             className="h-11 rounded-xl border border-border bg-background px-3 text-sm text-foreground focus:border-fresh focus:outline-none"
           >
-            <option value="">All Categories</option>
+            <option value="">{t("catalogue.allCategories")}</option>
             {categories.map((c) => (
               <option key={c} value={c}>
                 {c}
@@ -268,7 +272,7 @@ export function ProductCatalogue({
 
         {/* Sort Dropdown */}
         <label className="grid gap-1 text-xs font-bold text-muted-foreground">
-          Sort Order
+          {t("catalogue.sortOrder")}
           <select
             value={sort}
             onChange={(e) => {
@@ -277,10 +281,10 @@ export function ProductCatalogue({
             }}
             className="h-11 rounded-xl border border-border bg-background px-3 text-sm text-foreground focus:border-fresh focus:outline-none"
           >
-            <option value="newest">Recently Added</option>
-            <option value="name">Product Name (A-Z)</option>
-            <option value="name_desc">Product Name (Z-A)</option>
-            <option value="category">Category (A-Z)</option>
+            <option value="newest">{t("catalogue.recentlyAdded")}</option>
+            <option value="name">{t("catalogue.nameAscending")}</option>
+            <option value="name_desc">{t("catalogue.nameDescending")}</option>
+            <option value="category">{t("catalogue.categoryAscending")}</option>
           </select>
         </label>
       </div>
@@ -289,7 +293,7 @@ export function ProductCatalogue({
       <div className="mt-3 flex flex-wrap items-center justify-between gap-3 rounded-xl border border-border/80 bg-secondary/40 px-4 py-2.5">
         <div className="flex flex-wrap items-center gap-2">
           <span className="text-xs font-bold text-muted-foreground flex items-center gap-1">
-            <SlidersHorizontal className="h-3.5 w-3.5 text-fresh" /> MOQ Tier:
+            <SlidersHorizontal className="h-3.5 w-3.5 text-fresh" /> {t("catalogue.moqTier")}
           </span>
           <button
             type="button"
@@ -300,7 +304,7 @@ export function ProductCatalogue({
                 : "bg-card text-foreground hover:bg-card/80 border border-border"
             }`}
           >
-            All MOQs
+            {t("catalogue.allMoqs")}
           </button>
           <button
             type="button"
@@ -311,7 +315,7 @@ export function ProductCatalogue({
                 : "bg-card text-foreground hover:bg-card/80 border border-border"
             }`}
           >
-            Kirana Trial (≤ 20 pcs)
+            {t("catalogue.smallOrder")}
           </button>
           <button
             type="button"
@@ -322,7 +326,7 @@ export function ProductCatalogue({
                 : "bg-card text-foreground hover:bg-card/80 border border-border"
             }`}
           >
-            Bulk Cases (20+ pcs)
+            {t("catalogue.bulkCases")}
           </button>
         </div>
 
@@ -340,7 +344,7 @@ export function ProductCatalogue({
               onlyInStock ? "bg-fresh animate-pulse" : "bg-muted-foreground/40"
             }`}
           />
-          In-Stock Only
+          {t("catalogue.inStockOnly")}
           {onlyInStock ? <CheckCircle2 className="h-3.5 w-3.5 text-fresh" /> : null}
         </button>
       </div>
@@ -349,8 +353,8 @@ export function ProductCatalogue({
       <div className="mt-6 flex flex-wrap items-center justify-between gap-3 text-sm">
         <div className="flex flex-wrap items-center gap-3">
           <p className="font-semibold text-foreground">
-            Showing <span className="font-bold text-primary dark:text-accent">{filteredProducts.length}</span>{" "}
-            {totalCount === 1 ? "of 1 wholesale item" : `of ${totalCount} wholesale items`}
+            {t("catalogue.showing")} <span className="font-bold text-primary dark:text-accent">{filteredProducts.length}</span>{" "}
+            {totalCount === 1 ? t("catalogue.oneItem") : `${t("catalogue.of")} ${totalCount} ${t("catalogue.items")}`}
           </p>
           <RateCardModal
             products={filteredProducts}
@@ -363,7 +367,7 @@ export function ProductCatalogue({
           <div className="flex flex-wrap items-center gap-2">
             {effectiveCategory ? (
               <span className="inline-flex items-center gap-1 rounded-lg bg-fresh/10 px-2.5 py-1 text-xs font-bold text-fresh">
-                Category: {effectiveCategory}
+                {t("catalogue.category")} {effectiveCategory}
                 <button
                   type="button"
           onClick={() => {
@@ -380,7 +384,7 @@ export function ProductCatalogue({
 
             {effectiveBrand ? (
               <span className="inline-flex items-center gap-1 rounded-lg bg-fresh/10 px-2.5 py-1 text-xs font-bold text-fresh">
-                Brand: {effectiveBrand}
+                {t("catalogue.brand")} {effectiveBrand}
                 <button
                   type="button"
                   onClick={() => {
@@ -396,7 +400,7 @@ export function ProductCatalogue({
 
             {effectiveSearch ? (
               <span className="inline-flex items-center gap-1 rounded-lg bg-fresh/10 px-2.5 py-1 text-xs font-bold text-fresh">
-                Search: &ldquo;{effectiveSearch}&rdquo;
+                {t("catalogue.search")} &ldquo;{effectiveSearch}&rdquo;
                 <button
                   type="button"
                   onClick={() => {
@@ -412,7 +416,7 @@ export function ProductCatalogue({
 
             {onlyInStock ? (
               <span className="inline-flex items-center gap-1 rounded-lg bg-fresh/10 px-2.5 py-1 text-xs font-bold text-fresh">
-                In Stock Only
+                {t("catalogue.inStockOnly")}
                 <button
                   type="button"
                   onClick={() => setOnlyInStock(false)}
@@ -425,7 +429,7 @@ export function ProductCatalogue({
 
             {moqTier !== "all" ? (
               <span className="inline-flex items-center gap-1 rounded-lg bg-fresh/10 px-2.5 py-1 text-xs font-bold text-fresh">
-                MOQ: {moqTier === "low" ? "≤ 20 pcs" : "Bulk (20+ pcs)"}
+                {t("catalogue.moqTier")} {moqTier === "low" ? t("catalogue.smallOrder") : t("catalogue.bulkCases")}
                 <button
                   type="button"
                   onClick={() => setMoqTier("all")}
@@ -441,7 +445,7 @@ export function ProductCatalogue({
               onClick={resetFilters}
               className="inline-flex items-center gap-1 text-xs font-semibold text-vermilion hover:underline"
             >
-              <RotateCcw className="h-3 w-3" /> Clear all ({activeFilterCount})
+              <RotateCcw className="h-3 w-3" /> {t("catalogue.clearAll")} ({activeFilterCount})
             </button>
           </div>
         ) : null}
@@ -450,10 +454,10 @@ export function ProductCatalogue({
       {error ? (
         <div role="alert" className="mt-5 flex flex-wrap items-center justify-between gap-3 rounded-xl border border-destructive/20 bg-destructive/5 p-4 text-sm text-destructive">
           <span>{error}</span>
-          <Button type="button" variant="outline" onClick={() => setRetryCount((count) => count + 1)}>Retry</Button>
+          <Button type="button" variant="outline" onClick={() => setRetryCount((count) => count + 1)}>{t("common.retry")}</Button>
         </div>
       ) : null}
-      {loading ? <p role="status" className="mt-4 text-xs text-muted-foreground">Updating catalogue…</p> : null}
+      {loading ? <p role="status" className="mt-4 text-xs text-muted-foreground">{t("catalogue.updateLoading")}</p> : null}
 
       {/* Product Grid or Empty State */}
       {filteredProducts.length > 0 ? (
@@ -469,24 +473,24 @@ export function ProductCatalogue({
           </div>
           <h3 className="mt-4 text-lg font-bold text-foreground">
             {products.length > 0 || totalCount > 0
-              ? "No products match your current filters"
-              : "No published catalogue products yet"}
+              ? t("catalogue.noFilterMatches")
+              : t("catalogue.noProductsYet")}
           </h3>
           <p className="mx-auto mt-2 max-w-md text-sm text-muted-foreground">
             {products.length > 0 || totalCount > 0
-              ? "Try clearing your search query or choosing a different brand or category."
-              : "Ask the Gayatri Store team about current product availability or request a quotation."}
+              ? t("catalogue.clearFilterHint")
+              : t("catalogue.noProductsHint")}
           </p>
 
           <div className="mt-6 flex flex-wrap justify-center gap-3">
             {hasActiveFilters ? (
               <Button type="button" variant="outline" onClick={resetFilters}>
-                <RotateCcw className="h-4 w-4" /> Reset Filters
+                <RotateCcw className="h-4 w-4" /> {t("catalogue.resetFilters")}
               </Button>
             ) : null}
             <Button asChild variant="gold">
               <Link href="/order" className="gap-2">
-                <Send className="h-4 w-4" /> Build Custom Bulk Quote
+                <Send className="h-4 w-4" /> {t("catalogue.customQuote")}
               </Link>
             </Button>
           </div>
@@ -495,9 +499,9 @@ export function ProductCatalogue({
 
       {totalCount > 24 ? (
         <nav aria-label="Catalogue pages" className="mt-8 flex items-center justify-center gap-4">
-          <Button type="button" variant="outline" disabled={offset === 0 || loading} onClick={() => setOffset((value) => Math.max(0, value - 24))}>Previous</Button>
-          <span className="text-sm text-muted-foreground">Page {Math.floor(offset / 24) + 1} of {Math.ceil(totalCount / 24)}</span>
-          <Button type="button" variant="outline" disabled={offset + 24 >= totalCount || loading} onClick={() => setOffset((value) => value + 24)}>Next</Button>
+          <Button type="button" variant="outline" disabled={offset === 0 || loading} onClick={() => setOffset((value) => Math.max(0, value - 24))}>{t("catalogue.previous")}</Button>
+          <span className="text-sm text-muted-foreground">{t("catalogue.page")} {Math.floor(offset / 24) + 1} {t("catalogue.of")} {Math.ceil(totalCount / 24)}</span>
+          <Button type="button" variant="outline" disabled={offset + 24 >= totalCount || loading} onClick={() => setOffset((value) => value + 24)}>{t("catalogue.next")}</Button>
         </nav>
       ) : null}
     </div>

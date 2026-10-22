@@ -5,12 +5,22 @@ import { SiteFooter } from "@/components/site-footer";
 import { SiteHeader } from "@/components/site-header";
 import { WhatsAppFloat } from "@/components/whatsapp-float";
 import { MobileWholesaleDock } from "@/components/mobile-wholesale-dock";
-import { AiAssistant } from "@/components/ai-assistant";
+import { AiAssistantLoader } from "@/components/ai-assistant-loader";
 import { AuthProvider } from "@/context/auth-context";
+import { LanguageProvider } from "@/context/language-context";
+import { ServiceWorkerManager } from "@/components/service-worker-manager";
+import { OfflineBanner } from "@/components/offline-banner";
 import { getDefaultBusinessSettings } from "@/lib/business-settings";
 
 export const metadata: Metadata = {
   metadataBase: new URL(process.env.NEXT_PUBLIC_SITE_URL || "https://bulksupiler.in"),
+  icons: {
+    icon: [
+      { url: "/icons/gayatri-store-192.png", type: "image/png", sizes: "192x192" },
+      { url: "/icons/gayatri-store-512.png", type: "image/png", sizes: "512x512" }
+    ],
+    apple: [{ url: "/icons/gayatri-store-192.png", type: "image/png", sizes: "192x192" }]
+  },
   title: {
     default: "Gayatri Store | B2B Wholesale & FMCG Distribution",
     template: "%s | Gayatri Store"
@@ -79,15 +89,19 @@ export default async function RootLayout({ children }: Readonly<{ children: Reac
         />
       </head>
       <body className="min-h-screen bg-background text-foreground antialiased selection:bg-accent selection:text-primary">
-        <AuthProvider>
-          <SiteHeader whatsappNumber={businessSettings.whatsapp_number} />
-          <main className="flex-1 pb-16 md:pb-0">{children}</main>
-          <SiteFooter settings={businessSettings} />
-          <AiAssistant />
-          <WhatsAppFloat whatsappNumber={businessSettings.whatsapp_number} />
-          <MobileWholesaleDock whatsappNumber={businessSettings.whatsapp_number} />
-          <SpeedInsights />
-        </AuthProvider>
+        <LanguageProvider>
+          <AuthProvider>
+            <ServiceWorkerManager />
+            <OfflineBanner />
+            <SiteHeader whatsappNumber={businessSettings.whatsapp_number} />
+            <main className="flex-1 pb-[calc(5rem+env(safe-area-inset-bottom))] md:pb-0">{children}</main>
+            <SiteFooter settings={businessSettings} />
+            <AiAssistantLoader />
+            <WhatsAppFloat whatsappNumber={businessSettings.whatsapp_number} />
+            <MobileWholesaleDock whatsappNumber={businessSettings.whatsapp_number} />
+            <SpeedInsights />
+          </AuthProvider>
+        </LanguageProvider>
       </body>
     </html>
   );

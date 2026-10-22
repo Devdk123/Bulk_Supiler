@@ -20,10 +20,12 @@ import {
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { useAuth } from "@/context/auth-context";
+import { useLanguage } from "@/context/language-context";
 
 export default function RegisterPage() {
   const router = useRouter();
   const { signUp, user, loading: authLoading } = useAuth();
+  const { t } = useLanguage();
 
   const [fullName, setFullName] = useState("");
   const [phone, setPhone] = useState("");
@@ -52,17 +54,17 @@ export default function RegisterPage() {
     setSuccess(null);
 
     if (!fullName.trim() || !phone.trim() || !email.trim() || !password) {
-      setError("Please fill in all mandatory fields.");
+      setError(t("auth.requiredFields"));
       return;
     }
 
     if (password.length < 6) {
-      setError("Password must be at least 6 characters long.");
+      setError(t("auth.passwordLength"));
       return;
     }
 
     if (password !== confirmPassword) {
-      setError("Passwords do not match. Please re-enter.");
+      setError(t("auth.passwordMismatch"));
       return;
     }
 
@@ -86,7 +88,7 @@ export default function RegisterPage() {
     if (result.error) {
       setError(result.error);
     } else if (result.requiresVerification) {
-      setSuccess("Account registered! A verification link has been sent to your email. Please click the link to activate your account.");
+      setSuccess(t("auth.verificationSent"));
     } else {
       router.push("/account");
     }
@@ -97,13 +99,13 @@ export default function RegisterPage() {
       <div className="w-full max-w-xl space-y-8 rounded-3xl border border-border bg-card p-8 shadow-xl sm:p-10">
         <div className="text-center">
           <span className="inline-block rounded-full bg-fresh/10 px-3 py-1 text-xs font-bold text-fresh">
-            Kirana &amp; Retail Registration
+            {t("auth.registerEyebrow")}
           </span>
           <h1 className="mt-3 text-2xl font-black tracking-tight text-foreground sm:text-3xl">
-            Register for Direct Wholesale Supply
+            {t("auth.registerTitle")}
           </h1>
           <p className="mt-2 text-xs leading-relaxed text-muted-foreground">
-            Create your Gayatri Store business account to receive verified volume rate cards, order tracking, and priority godown dispatch.
+            {t("auth.registerDescription")}
           </p>
         </div>
 
@@ -125,7 +127,7 @@ export default function RegisterPage() {
           <div className="grid gap-4 sm:grid-cols-2">
             <div>
               <label className="block text-xs font-bold text-foreground">
-                Store Owner Full Name *
+                {t("auth.ownerName")}
               </label>
               <div className="relative mt-1.5">
                 <User className="pointer-events-none absolute left-3.5 top-1/2 h-4 w-4 -translate-y-1/2 text-muted-foreground" />
@@ -141,7 +143,7 @@ export default function RegisterPage() {
 
             <div>
               <label className="block text-xs font-bold text-foreground">
-                WhatsApp / Mobile Number *
+                {t("auth.phone")}
               </label>
               <div className="relative mt-1.5">
                 <Phone className="pointer-events-none absolute left-3.5 top-1/2 h-4 w-4 -translate-y-1/2 text-muted-foreground" />
@@ -160,7 +162,7 @@ export default function RegisterPage() {
           <div className="grid gap-4 sm:grid-cols-2">
             <div>
               <label className="block text-xs font-bold text-foreground">
-                Business / Kirana Shop Name
+                {t("auth.businessName")}
               </label>
               <div className="relative mt-1.5">
                 <Store className="pointer-events-none absolute left-3.5 top-1/2 h-4 w-4 -translate-y-1/2 text-muted-foreground" />
@@ -175,7 +177,7 @@ export default function RegisterPage() {
 
             <div>
               <label className="block text-xs font-bold text-foreground">
-                Business Email Address *
+                {t("auth.email")} *
               </label>
               <div className="relative mt-1.5">
                 <Mail className="pointer-events-none absolute left-3.5 top-1/2 h-4 w-4 -translate-y-1/2 text-muted-foreground" />
@@ -194,7 +196,7 @@ export default function RegisterPage() {
           <div className="grid gap-3 sm:grid-cols-3">
             <div>
               <label className="block text-xs font-bold text-foreground">
-                City / Market Zone
+                {t("auth.city")}
               </label>
               <Input
                 value={city}
@@ -205,7 +207,7 @@ export default function RegisterPage() {
             </div>
             <div>
               <label className="block text-xs font-bold text-foreground">
-                State
+                {t("auth.state")}
               </label>
               <Input
                 value={state}
@@ -216,7 +218,7 @@ export default function RegisterPage() {
             </div>
             <div>
               <label className="block text-xs font-bold text-foreground">
-                Pincode
+                {t("auth.pincode")}
               </label>
               <Input
                 value={pincode}
@@ -230,7 +232,7 @@ export default function RegisterPage() {
           <div className="grid gap-4 sm:grid-cols-2">
             <div>
               <label className="block text-xs font-bold text-foreground">
-                Create Password *
+                {t("auth.createPassword")}
               </label>
               <div className="relative mt-1.5">
                 <Lock className="pointer-events-none absolute left-3.5 top-1/2 h-4 w-4 -translate-y-1/2 text-muted-foreground" />
@@ -254,7 +256,7 @@ export default function RegisterPage() {
 
             <div>
               <label className="block text-xs font-bold text-foreground">
-                Confirm Password *
+                {t("auth.confirmPassword")}
               </label>
               <div className="relative mt-1.5">
                 <Lock className="pointer-events-none absolute left-3.5 top-1/2 h-4 w-4 -translate-y-1/2 text-muted-foreground" />
@@ -276,14 +278,14 @@ export default function RegisterPage() {
             variant="gold"
             className="w-full h-11 justify-center rounded-xl font-bold shadow-xs mt-3"
           >
-            {submitting ? "Registering Store..." : "Create Wholesale Account"}
+            {submitting ? t("auth.registering") : t("auth.createAccount")}
           </Button>
         </form>
 
         <div className="border-t border-border pt-5 text-center text-xs text-muted-foreground">
-          Already registered?{" "}
+          {t("auth.alreadyRegistered")}{" "}
           <Link href="/login" className="font-bold text-primary dark:text-accent hover:underline">
-            Sign in here
+            {t("auth.signInHere")}
           </Link>
         </div>
       </div>

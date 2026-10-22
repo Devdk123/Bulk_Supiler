@@ -32,6 +32,7 @@ import { Card, CardContent } from "@/components/ui/card";
 import { useAuth } from "@/context/auth-context";
 import { getSupabaseBrowser } from "@/lib/supabase-browser";
 import { buildWhatsAppLink } from "@/lib/utils";
+import { useLanguage } from "@/context/language-context";
 
 type EnquiryItem = {
   id: string;
@@ -66,6 +67,7 @@ type CustomerEnquiry = {
 export default function AccountPage() {
   const router = useRouter();
   const { user, profile, session, signOut, refreshProfile, loading: authLoading } = useAuth();
+  const { t } = useLanguage();
 
   const [activeTab, setActiveTab] = useState<"enquiries" | "profile" | "security">("enquiries");
   const [enquiries, setEnquiries] = useState<CustomerEnquiry[]>([]);
@@ -243,7 +245,7 @@ export default function AccountPage() {
       <div className="flex min-h-[50vh] items-center justify-center">
         <div className="flex items-center gap-3 text-sm text-muted-foreground">
           <LoaderCircle className="h-5 w-5 animate-spin text-fresh" />
-          <span>Loading your business account...</span>
+          <span>{t("account.loading")}</span>
         </div>
       </div>
     );
@@ -257,17 +259,17 @@ export default function AccountPage() {
             <Store className="h-8 w-8 text-primary" />
           </div>
           <h1 className="mt-6 text-2xl font-black text-foreground">
-            Kirana &amp; Retail Account
+            {t("account.title")}
           </h1>
           <p className="mt-2 text-sm text-muted-foreground">
-            Sign in to track your wholesale quotations, live dispatch status, and godown order history.
+            {t("account.signInPrompt")}
           </p>
           <div className="mt-8 flex flex-wrap justify-center gap-3">
             <Button asChild variant="gold" className="rounded-xl px-6">
-              <Link href="/login?redirect=/account">Sign In to Account</Link>
+              <Link href="/login?redirect=/account">{t("account.signIn")}</Link>
             </Button>
             <Button asChild variant="outline" className="rounded-xl px-6">
-              <Link href="/register">Register New Store</Link>
+              <Link href="/register">{t("account.register")}</Link>
             </Button>
           </div>
         </div>
@@ -287,10 +289,10 @@ export default function AccountPage() {
             <div>
               <div className="flex items-center gap-2">
                 <h1 className="text-xl font-extrabold text-foreground sm:text-2xl">
-                  {profile?.full_name || "Wholesale Partner"}
+                  {profile?.full_name || t("account.wholesalePartner")}
                 </h1>
                 <span className="rounded-full bg-fresh/15 px-2.5 py-0.5 text-[11px] font-bold text-fresh">
-                  {profile?.role === "admin" ? "Store Administrator" : "Verified Retailer"}
+                  {profile?.role === "admin" ? t("account.administrator") : t("account.retailer")}
                 </span>
               </div>
               <p className="mt-0.5 text-xs text-muted-foreground">

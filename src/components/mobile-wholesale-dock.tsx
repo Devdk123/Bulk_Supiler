@@ -5,10 +5,12 @@ import { usePathname } from "next/navigation";
 import { MessageCircle, PackageCheck, Search, User } from "lucide-react";
 import { buildWhatsAppLink } from "@/lib/utils";
 import { useAuth } from "@/context/auth-context";
+import { useLanguage } from "@/context/language-context";
 
 export function MobileWholesaleDock({ whatsappNumber }: { whatsappNumber: string }) {
   const pathname = usePathname();
   const { user } = useAuth();
+  const { t } = useLanguage();
   const whatsappHref = buildWhatsAppLink(
     "Hello Gayatri Store, I am inquiring about wholesale product pricing and minimum order quantities.",
     whatsappNumber
@@ -24,7 +26,7 @@ export function MobileWholesaleDock({ whatsappNumber }: { whatsappNumber: string
   const isOrder = pathname.startsWith("/order");
 
   return (
-    <div className="fixed inset-x-0 bottom-0 z-40 block border-t border-border bg-card/95 px-3 py-2 backdrop-blur-md shadow-[0_-4px_20px_rgba(0,0,0,0.06)] md:hidden">
+    <div className="fixed inset-x-0 bottom-0 z-40 block border-t border-border bg-card/95 px-3 pb-[calc(0.5rem+env(safe-area-inset-bottom))] pt-2 backdrop-blur-md shadow-[0_-4px_20px_rgba(0,0,0,0.06)] md:hidden">
       <div className="mx-auto flex max-w-md items-center justify-between gap-1.5">
         <Link
           href="/products"
@@ -35,7 +37,7 @@ export function MobileWholesaleDock({ whatsappNumber }: { whatsappNumber: string
           }`}
         >
           <Search className="mb-0.5 h-4 w-4" />
-          <span>Catalogue</span>
+          <span>{t("nav.catalogue")}</span>
         </Link>
 
         <Link
@@ -47,7 +49,7 @@ export function MobileWholesaleDock({ whatsappNumber }: { whatsappNumber: string
           }`}
         >
           <User className="mb-0.5 h-4 w-4" />
-          <span>{user ? "Account" : "Sign In"}</span>
+          <span>{user ? t("nav.account") : t("nav.signIn")}</span>
         </Link>
 
         {whatsappHref ? (
@@ -58,7 +60,7 @@ export function MobileWholesaleDock({ whatsappNumber }: { whatsappNumber: string
             className="flex flex-1 flex-col items-center justify-center rounded-xl py-1 text-[11px] font-bold text-muted-foreground transition-colors hover:text-[#25D366]"
           >
             <MessageCircle className="mb-0.5 h-4 w-4 text-[#25D366]" />
-            <span>WhatsApp</span>
+            <span>{t("nav.whatsapp")}</span>
           </a>
         ) : null}
 
@@ -71,7 +73,7 @@ export function MobileWholesaleDock({ whatsappNumber }: { whatsappNumber: string
           }`}
         >
           <PackageCheck className="h-4 w-4 shrink-0" />
-          <span>Build Quote</span>
+          <span>{t("nav.buildQuote")}</span>
         </Link>
       </div>
     </div>

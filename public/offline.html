@@ -1,0 +1,34 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
+    <meta name="theme-color" content="#174735" />
+    <title>Gayatri Store — Offline</title>
+    <style>
+      :root { color-scheme: light; font-family: system-ui, sans-serif; background: #fff9f0; color: #252a24; }
+      body { box-sizing: border-box; min-height: 100svh; margin: 0; display: grid; place-items: center; padding: 24px; padding-bottom: calc(24px + env(safe-area-inset-bottom)); }
+      main { max-width: 420px; padding: 28px; border: 1px solid #eae3d7; border-radius: 24px; background: white; text-align: center; box-shadow: 0 16px 40px #17473512; }
+      img { width: 72px; height: 72px; }
+      h1 { color: #174735; font-size: 1.5rem; }
+      p { line-height: 1.6; }
+      button { min-height: 48px; border: 0; border-radius: 12px; padding: 0 20px; background: #174735; color: white; font: inherit; font-weight: 700; }
+    </style>
+  </head>
+  <body>
+    <main>
+      <img src="/icons/gayatri-store-192.svg" alt="Gayatri Store" />
+      <h1 id="heading">You’re offline</h1>
+      <p id="message">Reconnect to browse the latest products and send a wholesale enquiry. Nothing has been submitted.</p>
+      <button type="button" onclick="location.reload()" id="retry">Try again</button>
+    </main>
+    <script>
+      if (localStorage.getItem("gayatristore-language") === "hi") {
+        document.documentElement.lang = "hi";
+        document.getElementById("heading").textContent = "आप ऑफलाइन हैं";
+        document.getElementById("message").textContent = "नए उत्पाद देखने और थोक पूछताछ भेजने के लिए इंटरनेट से जुड़ें। आपकी कोई पूछताछ भेजी नहीं गई है।";
+        document.getElementById("retry").textContent = "फिर कोशिश करें";
+      }
+    </script>
+  </body>
+</html>

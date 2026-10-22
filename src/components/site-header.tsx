@@ -8,15 +8,18 @@ import { useState, useSyncExternalStore, FormEvent, useEffect, useRef } from "re
 import { Button } from "@/components/ui/button";
 import { cn, buildWhatsAppLink } from "@/lib/utils";
 import { useAuth } from "@/context/auth-context";
+import { LanguageSelector } from "@/components/language-selector";
+import { InstallPrompt } from "@/components/install-prompt";
+import { useLanguage } from "@/context/language-context";
 
 const links = [
-  { href: "/", label: "Home" },
-  { href: "/products", label: "Products" },
-  { href: "/#categories", label: "Categories" },
-  { href: "/#brands", label: "Brands" },
-  { href: "/order", label: "Bulk Order" },
-  { href: "/about", label: "About" },
-  { href: "/contact", label: "Contact" }
+  { href: "/", label: "nav.home" },
+  { href: "/products", label: "nav.products" },
+  { href: "/#categories", label: "nav.categories" },
+  { href: "/#brands", label: "nav.brands" },
+  { href: "/order", label: "nav.bulkOrder" },
+  { href: "/about", label: "nav.about" },
+  { href: "/contact", label: "nav.contact" }
 ];
 
 function subscribeToTheme(onChange: () => void) {
@@ -35,6 +38,7 @@ export function SiteHeader({ whatsappNumber }: { whatsappNumber: string }) {
   const [open, setOpen] = useState(false);
   const [searchQuery, setSearchQuery] = useState("");
   const { user, profile } = useAuth();
+  const { t } = useLanguage();
   const searchInputRef = useRef<HTMLInputElement>(null);
   const theme = useSyncExternalStore(subscribeToTheme, getThemeSnapshot, () => "light");
   const whatsappLink = buildWhatsAppLink("Hello Gayatri Store, I want to request a wholesale quote for my store.", whatsappNumber);
@@ -128,7 +132,7 @@ export function SiteHeader({ whatsappNumber }: { whatsappNumber: string }) {
                       : "text-foreground/80 hover:bg-secondary hover:text-primary"
                   )}
                 >
-                  {link.label}
+                  {t(link.label)}
                 </Link>
               );
             })}
@@ -143,7 +147,7 @@ export function SiteHeader({ whatsappNumber }: { whatsappNumber: string }) {
                 type="text"
                 value={searchQuery}
                 onChange={(e) => setSearchQuery(e.target.value)}
-                placeholder="Search products, brands..."
+                placeholder={t("search.placeholder")}
                 className="h-10 w-full rounded-xl border border-border bg-background pl-9 pr-8 text-xs font-medium text-foreground placeholder:text-muted-foreground/70 transition-all focus:border-fresh focus:outline-none focus:ring-1 focus:ring-fresh"
               />
               <kbd className="pointer-events-none absolute right-2.5 top-1/2 -translate-y-1/2 hidden rounded border border-border bg-secondary/80 px-1.5 py-0.5 text-[10px] font-mono font-medium text-muted-foreground lg:inline-block">
@@ -154,6 +158,8 @@ export function SiteHeader({ whatsappNumber }: { whatsappNumber: string }) {
 
           {/* Actions & Buttons */}
           <div className="hidden items-center gap-2.5 sm:flex">
+            <LanguageSelector compact />
+            <span className="hidden md:inline-flex"><InstallPrompt /></span>
             {/* Theme Switcher */}
             <button
               type="button"
@@ -172,7 +178,7 @@ export function SiteHeader({ whatsappNumber }: { whatsappNumber: string }) {
             <Button asChild variant="outline" size="sm" className="h-10 rounded-xl px-3.5 text-xs font-bold gap-1.5 border-border">
               <Link href={user ? "/account" : "/login"}>
                 <User className={`h-4 w-4 ${user ? "text-fresh" : "text-muted-foreground"}`} />
-                <span>{user ? (profile?.business_name || profile?.full_name?.split(" ")[0] || "Account") : "Sign In"}</span>
+                <span>{user ? (profile?.business_name || profile?.full_name?.split(" ")[0] || t("nav.account")) : t("nav.signIn")}</span>
               </Link>
             </Button>
 
@@ -180,7 +186,7 @@ export function SiteHeader({ whatsappNumber }: { whatsappNumber: string }) {
             <Button asChild variant="gold" size="sm" className="h-10 rounded-xl px-4 font-bold shadow-xs">
               <Link href="/order" className="gap-2">
                 <PackageCheck className="h-4 w-4" />
-                <span>Request a Quote</span>
+                <span>{t("nav.requestQuote")}</span>
               </Link>
             </Button>
             {whatsappLink ? (
@@ -195,6 +201,8 @@ export function SiteHeader({ whatsappNumber }: { whatsappNumber: string }) {
 
         {/* Mobile Controls */}
         <div className="flex items-center gap-2 xl:hidden">
+          <LanguageSelector compact />
+          <span className="hidden sm:inline-flex md:hidden"><InstallPrompt /></span>
           <button
             type="button"
             onClick={toggleTheme}
@@ -233,14 +241,14 @@ export function SiteHeader({ whatsappNumber }: { whatsappNumber: string }) {
                 type="text"
                 value={searchQuery}
                 onChange={(e) => setSearchQuery(e.target.value)}
-                placeholder="Search products, brands, FMCG items..."
+                placeholder={t("search.mobilePlaceholder")}
                 className="h-11 w-full rounded-xl border border-border bg-background pl-9 pr-4 text-sm font-medium text-foreground placeholder:text-muted-foreground focus:border-fresh focus:outline-none focus:ring-1 focus:ring-fresh"
               />
             </form>
 
             {/* Quick Search Chips */}
             <div className="mb-4 flex flex-wrap items-center gap-1.5">
-              <span className="text-[11px] font-bold text-muted-foreground">Quick:</span>
+              <span className="text-[11px] font-bold text-muted-foreground">{t("search.quick")}</span>
               {["Masala", "Edible Oils", "Agarbatti", "Matchsticks", "Dhoop"].map((cat) => (
                 <button
                   key={cat}
@@ -278,7 +286,7 @@ export function SiteHeader({ whatsappNumber }: { whatsappNumber: string }) {
                         : "text-foreground hover:bg-secondary"
                     )}
                   >
-                    <span>{link.label}</span>
+                    <span>{t(link.label)}</span>
                     <ArrowRight className="h-4 w-4 opacity-40" />
                   </Link>
                 );
@@ -287,23 +295,24 @@ export function SiteHeader({ whatsappNumber }: { whatsappNumber: string }) {
 
             {/* Mobile CTAs */}
             <div className="mt-5 grid gap-2.5 border-t border-border pt-4">
+              <div className="flex justify-center"><InstallPrompt /></div>
               <Button asChild variant="outline" size="lg" className="w-full justify-center">
                 <Link href={user ? "/account" : "/login"} onClick={() => setOpen(false)}>
                   <User className={`h-5 w-5 mr-1.5 ${user ? "text-fresh" : ""}`} />
-                  <span>{user ? "My Store Account & Enquiries" : "Sign In to Account"}</span>
+                  <span>{user ? t("nav.account") : t("account.signIn")}</span>
                 </Link>
               </Button>
 
               <Button asChild variant="gold" size="lg" className="w-full justify-center">
                 <Link href="/order" onClick={() => setOpen(false)}>
-                  <PackageCheck className="h-5 w-5" /> Build Bulk Order
+                  <PackageCheck className="h-5 w-5" /> {t("nav.buildQuote")}
                 </Link>
               </Button>
 
               {whatsappLink ? (
                 <Button asChild variant="outline" size="lg" className="w-full justify-center border-fresh/30 text-fresh hover:bg-fresh/10">
                   <a href={whatsappLink} target="_blank" rel="noreferrer">
-                    <MessageCircle className="h-5 w-5 text-fresh" /> Chat with Godown Team
+                    <MessageCircle className="h-5 w-5 text-fresh" /> {t("nav.whatsapp")}
                   </a>
                 </Button>
               ) : null}

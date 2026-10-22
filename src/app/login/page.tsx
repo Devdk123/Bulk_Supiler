@@ -7,6 +7,7 @@ import { Eye, EyeOff, Lock, Mail, ArrowRight, LoaderCircle, ShieldAlert } from "
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { useAuth } from "@/context/auth-context";
+import { useLanguage } from "@/context/language-context";
 
 export default function LoginPage() {
   return (
@@ -21,6 +22,7 @@ function LoginForm() {
   const searchParams = useSearchParams();
   const redirectTo = searchParams.get("redirect") || "/account";
   const { signIn, user, role, loading: authLoading } = useAuth();
+  const { t } = useLanguage();
 
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
@@ -44,7 +46,7 @@ function LoginForm() {
     setError(null);
 
     if (!email.trim() || !password) {
-      setError("Please enter both email and password.");
+      setError(t("auth.checkCredentials"));
       return;
     }
 
@@ -64,13 +66,13 @@ function LoginForm() {
       <div className="w-full max-w-md space-y-8 rounded-3xl border border-border bg-card p-8 shadow-xl sm:p-10">
         <div className="text-center">
           <span className="inline-block rounded-full bg-fresh/10 px-3 py-1 text-xs font-bold text-fresh">
-            Wholesale Customer Portal
+            {t("auth.loginEyebrow")}
           </span>
           <h1 className="mt-3 text-2xl font-black tracking-tight text-foreground sm:text-3xl">
-            Welcome to Gayatri Store
+            {t("auth.loginTitle")}
           </h1>
           <p className="mt-2 text-xs leading-relaxed text-muted-foreground">
-            Sign in to track bulk enquiries, download verified wholesale quotations, and manage your Kirana store details.
+            {t("auth.loginDescription")}
           </p>
         </div>
 
@@ -84,7 +86,7 @@ function LoginForm() {
         <form onSubmit={handleSubmit} className="mt-6 space-y-4">
           <div>
             <label className="block text-xs font-bold text-foreground">
-              Business Email Address
+              {t("auth.email")}
             </label>
             <div className="relative mt-1.5">
               <Mail className="pointer-events-none absolute left-3.5 top-1/2 h-4 w-4 -translate-y-1/2 text-muted-foreground" />
@@ -102,13 +104,13 @@ function LoginForm() {
           <div>
             <div className="flex items-center justify-between">
               <label className="block text-xs font-bold text-foreground">
-                Password
+                {t("auth.password")}
               </label>
               <Link
                 href="/forgot-password"
                 className="text-xs font-semibold text-fresh hover:underline"
               >
-                Forgot password?
+                {t("auth.forgotPassword")}
               </Link>
             </div>
             <div className="relative mt-1.5">
@@ -139,20 +141,20 @@ function LoginForm() {
           >
             {submitting ? (
               <span className="flex items-center gap-2">
-                <LoaderCircle className="h-4 w-4 animate-spin" /> Verifying...
+                <LoaderCircle className="h-4 w-4 animate-spin" /> {t("auth.verifying")}
               </span>
             ) : (
               <span className="flex items-center gap-2">
-                Sign In to Account <ArrowRight className="h-4 w-4" />
+                {t("auth.signIn")} <ArrowRight className="h-4 w-4" />
               </span>
             )}
           </Button>
         </form>
 
         <div className="border-t border-border pt-5 text-center text-xs text-muted-foreground">
-          Don&apos;t have a registered account yet?{" "}
+          {t("auth.noAccount")}{" "}
           <Link href="/register" className="font-bold text-primary dark:text-accent hover:underline">
-            Register your Kirana Store
+            {t("auth.registerLink")}
           </Link>
         </div>
       </div>

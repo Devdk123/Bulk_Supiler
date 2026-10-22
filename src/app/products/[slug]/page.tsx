@@ -11,6 +11,8 @@ import { Button } from "@/components/ui/button";
 import { getStoreProductBySlug, productImageUrl } from "@/lib/products";
 import { getDefaultBusinessSettings } from "@/lib/business-settings";
 import { buildWhatsAppLink } from "@/lib/utils";
+import { TranslatedText } from "@/components/translated-text";
+import type { ReactNode } from "react";
 
 export const revalidate = 60;
 
@@ -24,9 +26,7 @@ export async function generateMetadata({
   if (!product) return { title: "Product not found | Gayatri Store" };
 
   const title = `${product.name} Wholesale Rates | Gayatri Store`;
-  const description =
-    product.description ||
-    `Wholesale pricing, carton packaging and MOQ details for ${product.name}. Request a direct quote from Gayatri Store.`;
+  const description = product.description || `Request a wholesale quotation for ${product.name} from Gayatri Store.`;
   const image = product.imageUrl || productImageUrl();
 
   return {
@@ -87,7 +87,7 @@ export default async function ProductDetailsPage({
           href="/products"
           className="inline-flex items-center gap-2 text-sm font-semibold text-fresh hover:underline"
         >
-          <ArrowLeft className="h-4 w-4" /> Back to Wholesale Catalogue
+          <ArrowLeft className="h-4 w-4" /> <TranslatedText id="product.backCatalogue" />
         </Link>
 
         {/* Main Details Grid */}
@@ -102,7 +102,7 @@ export default async function ProductDetailsPage({
                 priority
                 sizes="(min-width: 1024px) 45vw, 100vw"
                 unoptimized={images[0].image_url?.startsWith("https://") || false}
-                className="object-cover"
+                className="object-contain p-4"
               />
               {product.brandName ? (
                 <div className="absolute left-4 top-4 rounded-xl bg-card/90 px-3 py-1.5 text-xs font-bold uppercase tracking-wider text-primary shadow-xs backdrop-blur-xs">
@@ -124,7 +124,7 @@ export default async function ProductDetailsPage({
                       fill
                       sizes="15vw"
                       unoptimized={image.image_url?.startsWith("https://") || false}
-                      className="object-cover"
+                      className="object-contain p-1"
                     />
                   </div>
                 ))}
@@ -147,10 +147,10 @@ export default async function ProductDetailsPage({
             {/* Wholesale Pricing State */}
             <div className="mt-4 inline-flex items-center gap-3">
               <span className="text-2xl font-black text-primary dark:text-accent">
-                {product.price || "Wholesale Quote on Request"}
+                {product.price || <TranslatedText id="product.wholesaleQuote" />}
               </span>
               <span className="rounded-full bg-fresh/10 px-3 py-0.5 text-xs font-bold text-fresh">
-                B2B Godown Rate
+                <TranslatedText id="product.b2bRate" />
               </span>
             </div>
 
@@ -163,16 +163,16 @@ export default async function ProductDetailsPage({
             {/* Technical Trade Specs */}
             <div className="mt-6 rounded-2xl border border-border bg-card p-5 shadow-xs">
               <h2 className="text-xs font-bold uppercase tracking-wider text-muted-foreground">
-                Wholesale Specifications
+                <TranslatedText id="product.specifications" />
               </h2>
               <dl className="mt-3 divide-y divide-border text-sm">
-                {product.sku ? <SpecRow label="SKU / Batch Code" value={product.sku} /> : null}
-                {product.moq ? <SpecRow label="Minimum Order Quantity (MOQ)" value={product.moq} /> : null}
-                {product.packSize ? <SpecRow label="Master Pack Size" value={product.packSize} /> : null}
-                {product.unit ? <SpecRow label="Unit of Measurement" value={product.unit} /> : null}
+                {product.sku ? <SpecRow label={<TranslatedText id="product.sku" />} value={product.sku} /> : null}
+                {product.moq ? <SpecRow label={<TranslatedText id="product.minOrder" />} value={product.moq} /> : null}
+                {product.packSize ? <SpecRow label={<TranslatedText id="product.packSize" />} value={product.packSize} /> : null}
+                {product.unit ? <SpecRow label={<TranslatedText id="product.unit" />} value={product.unit} /> : null}
                 {product.stockStatus !== "unknown" ? (
                   <SpecRow
-                    label="Availability"
+                    label={<TranslatedText id="product.availability" />}
                     value={product.stockStatus.replaceAll("_", " ")}
                   />
                 ) : null}
@@ -182,7 +182,7 @@ export default async function ProductDetailsPage({
             {/* Product Variants (if configured) */}
             {product.variants.length > 0 ? (
               <div className="mt-6">
-                <h2 className="text-sm font-bold text-foreground">Available Pack Variants</h2>
+                <h2 className="text-sm font-bold text-foreground"><TranslatedText id="product.variants" /></h2>
                 <div className="mt-3 grid gap-2.5">
                   {product.variants.map((v) => (
                     <div
@@ -198,14 +198,14 @@ export default async function ProductDetailsPage({
                             v.moq_quantity ? `MOQ: ${v.moq_quantity}` : ""
                           ]
                             .filter(Boolean)
-                            .join(" • ") || "Inquire for details"}
+                            .join(" • ") || "Ask for pack details"}
                         </p>
                       </div>
                       <Link
                         href={`/order?product=${encodeURIComponent(product.id)}&variant=${encodeURIComponent(v.id)}`}
                         className="rounded-lg bg-fresh/15 px-3 py-1.5 text-xs font-bold text-fresh hover:bg-fresh hover:text-white transition-colors"
                       >
-                        Select
+                        <TranslatedText id="product.selectVariant" />
                       </Link>
                     </div>
                   ))}
@@ -216,19 +216,19 @@ export default async function ProductDetailsPage({
             {/* Price Tiers (if configured) */}
             {product.priceTiers.length > 0 ? (
               <div className="mt-6">
-                <h2 className="text-sm font-bold text-foreground">Configured Tier Pricing</h2>
+                <h2 className="text-sm font-bold text-foreground"><TranslatedText id="product.tierPricing" /></h2>
                 <div className="mt-2 overflow-x-auto rounded-xl border border-border">
                   <table className="w-full text-left text-xs">
                     <thead className="bg-secondary/50 text-muted-foreground">
                       <tr>
-                        <th className="p-3 font-semibold">Tier Minimum Quantity</th>
-                        <th className="p-3 font-semibold">Wholesale Unit Price</th>
+                        <th className="p-3 font-semibold"><TranslatedText id="product.tierMinimum" /></th>
+                        <th className="p-3 font-semibold"><TranslatedText id="product.unitPrice" /></th>
                       </tr>
                     </thead>
                     <tbody className="divide-y divide-border">
                       {product.priceTiers.map((tier, idx) => (
                         <tr key={idx} className="bg-card">
-                          <td className="p-3 font-medium text-foreground">{tier.minimum_quantity} units</td>
+                          <td className="p-3 font-medium text-foreground">{tier.minimum_quantity} <TranslatedText id="product.units" /></td>
                           <td className="p-3 font-bold text-primary dark:text-accent">
                             {tier.currency} {tier.unit_price}
                             {tier.price_unit ? ` / ${tier.price_unit}` : ""}
@@ -246,7 +246,7 @@ export default async function ProductDetailsPage({
               <Button asChild variant="gold" size="lg" className="shadow-md">
                 <Link href={`/order?product=${encodeURIComponent(product.id)}`} className="gap-2">
                   <PackageCheck className="h-5 w-5" />
-                  <span>Request Wholesale Price</span>
+                  <TranslatedText id="catalogue.requestPrice" />
                 </Link>
               </Button>
 
@@ -254,7 +254,7 @@ export default async function ProductDetailsPage({
                 <Button asChild variant="outline" size="lg" className="border-fresh/30 text-fresh hover:bg-fresh/10">
                   <a href={whatsappLink} target="_blank" rel="noreferrer" className="gap-2">
                     <MessageCircle className="h-5 w-5 text-fresh" />
-                    <span>Inquire on WhatsApp</span>
+                    <TranslatedText id="product.whatsappInquiry" />
                   </a>
                 </Button>
               ) : null}
@@ -266,7 +266,7 @@ export default async function ProductDetailsPage({
   );
 }
 
-function SpecRow({ label, value }: { label: string; value: string }) {
+function SpecRow({ label, value }: { label: ReactNode; value: string }) {
   return (
     <div className="flex items-center justify-between py-2.5">
       <dt className="text-muted-foreground">{label}</dt>
