@@ -11,6 +11,10 @@ import { useAuth } from "@/context/auth-context";
 import { LanguageSelector } from "@/components/language-selector";
 import { InstallPrompt } from "@/components/install-prompt";
 import { useLanguage } from "@/context/language-context";
+import { LocalizedCatalogueLabel } from "@/components/localized-product-description";
+import type { ProductCataloguePage } from "@/lib/products";
+
+type QuickCategory = Pick<ProductCataloguePage["categories"][number], "name" | "name_hi">;
 
 const links = [
   { href: "/", label: "nav.home" },
@@ -37,6 +41,9 @@ export function SiteHeader({ whatsappNumber }: { whatsappNumber: string }) {
   const router = useRouter();
   const [open, setOpen] = useState(false);
   const [searchQuery, setSearchQuery] = useState("");
+  const [quickCategories, setQuickCategories] = useState<QuickCategory[]>([]);
+  const [quickCategoriesLoading, setQuickCategoriesLoading] = useState(false);
+  const [quickCategoriesLoaded, setQuickCategoriesLoaded] = useState(false);
   const { user, profile } = useAuth();
   const { t } = useLanguage();
   const searchInputRef = useRef<HTMLInputElement>(null);
@@ -73,6 +80,25 @@ export function SiteHeader({ whatsappNumber }: { whatsappNumber: string }) {
     }
   }
 
+  function toggleMobileMenu() {
+    const nextOpen = !open;
+    setOpen(nextOpen);
+    if (!nextOpen || quickCategoriesLoaded || quickCategoriesLoading) return;
+
+    setQuickCategoriesLoading(true);
+    void fetch("/api/catalogue?limit=1&offset=0")
+      .then(async (response) => {
+        if (!response.ok) throw new Error("Could not load categories");
+        const result = await response.json() as ProductCataloguePage;
+        setQuickCategories(result.categories || []);
+      })
+      .catch(() => setQuickCategories([]))
+      .finally(() => {
+        setQuickCategoriesLoaded(true);
+        setQuickCategoriesLoading(false);
+      });
+  }
+
   return (
     <>
       {/* 3A. Modern Announcement Strip */}
@@ -80,10 +106,10 @@ export function SiteHeader({ whatsappNumber }: { whatsappNumber: string }) {
         <div className="container-page flex flex-wrap items-center justify-between gap-2">
           <div className="flex items-center gap-2">
             <span className="inline-block h-2 w-2 rounded-full bg-accent animate-pulse" />
-            <span>Serving Maya Bazar &amp; Nearby Markets • Wholesale Inquiries &amp; Godown Supply</span>
+            <span>{t("nav.marketService")}</span>
           </div>
           <div className="hidden items-center gap-4 text-[11px] sm:flex">
-            <span className="text-[#FFF9F0]/80">Har Dukaan Tak, Bharosemand Supply.</span>
+            <span className="text-[#FFF9F0]/80">{t("nav.tagline")}</span>
             {whatsappLink ? (
               <a
                 href={whatsappLink}
@@ -91,7 +117,7 @@ export function SiteHeader({ whatsappNumber }: { whatsappNumber: string }) {
                 rel="noreferrer"
                 className="inline-flex items-center gap-1 font-bold text-accent hover:underline"
               >
-                <MessageCircle className="h-3 w-3" /> WhatsApp Desk
+                <MessageCircle className="h-3 w-3" /> {t("nav.whatsappDesk")}
               </a>
             ) : null}
           </div>
@@ -99,15 +125,15 @@ export function SiteHeader({ whatsappNumber }: { whatsappNumber: string }) {
       </div>
 
       <header className="sticky top-0 z-40 border-b border-border bg-card/95 backdrop-blur-md transition-colors duration-200">
-        <div className="container-page flex h-20 items-center justify-between gap-4">
-          <Link href="/" className="group flex shrink-0 items-center focus-visible:outline-none" aria-label="Gayatri Store home">
+        <div className="container-page flex h-20 items-center justify-between gap-2 sm:gap-4">
+          <Link href="/" className="group flex shrink-0 items-center focus-visible:outline-none" aria-label={`Gayatri Store ${t("nav.home")}`}>
             <Image
               src="/images/gayatri-store-wordmark.svg"
               alt="Gayatri Store Logo"
               width={215}
               height={56}
               priority
-              className="h-12 w-auto transition-transform duration-300 group-hover:scale-[1.02]"
+              className="h-10 w-auto transition-transform duration-300 group-hover:scale-[1.02] sm:h-12"
             />
           </Link>
 
@@ -157,14 +183,14 @@ export function SiteHeader({ whatsappNumber }: { whatsappNumber: string }) {
           </div>
 
           {/* Actions & Buttons */}
-          <div className="hidden items-center gap-2.5 sm:flex">
+          <div className="hidden items-center gap-2.5 xl:flex">
             <LanguageSelector compact />
             <span className="hidden sm:inline-flex"><InstallPrompt /></span>
             {/* Theme Switcher */}
             <button
               type="button"
               onClick={toggleTheme}
-              aria-label={`Switch to ${theme === "dark" ? "light" : "dark"} mode`}
+              aria-label={t(theme === "dark" ? "theme.switchToLight" : "theme.switchToDark")}
               className="flex h-10 w-10 items-center justify-center rounded-xl border border-border bg-background text-foreground transition-colors hover:bg-secondary hover:text-primary focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring"
             >
               {theme === "dark" ? (
@@ -202,27 +228,13 @@ export function SiteHeader({ whatsappNumber }: { whatsappNumber: string }) {
         {/* Mobile Controls */}
         <div className="flex items-center gap-2 xl:hidden">
           <LanguageSelector compact />
-          <span className="sm:hidden"><InstallPrompt /></span>
-          <button
-            type="button"
-            onClick={toggleTheme}
-            aria-label={`Switch to ${theme === "dark" ? "light" : "dark"} mode`}
-            className="flex h-10 w-10 items-center justify-center rounded-xl border border-border bg-background text-foreground sm:hidden"
-          >
-            {theme === "dark" ? (
-              <Sun className="h-4 w-4 text-accent" />
-            ) : (
-              <Moon className="h-4 w-4 text-muted-foreground" />
-            )}
-          </button>
-
           <Button
             type="button"
             variant="outline"
             size="icon"
-            aria-label={open ? "Close navigation menu" : "Open navigation menu"}
+            aria-label={t(open ? "nav.closeMenu" : "nav.openMenu")}
             aria-expanded={open}
-            onClick={() => setOpen(!open)}
+            onClick={toggleMobileMenu}
             className="rounded-xl border-border bg-background"
           >
             {open ? <X className="h-5 w-5" /> : <Menu className="h-5 w-5" />}
@@ -249,19 +261,21 @@ export function SiteHeader({ whatsappNumber }: { whatsappNumber: string }) {
             {/* Quick Search Chips */}
             <div className="mb-4 flex flex-wrap items-center gap-1.5">
               <span className="text-[11px] font-bold text-muted-foreground">{t("search.quick")}</span>
-              {["Masala", "Edible Oils", "Agarbatti", "Matchsticks", "Dhoop"].map((cat) => (
+              {quickCategoriesLoading ? <span role="status" className="text-xs text-muted-foreground">{t("search.loadingCategories")}</span> : null}
+              {quickCategories.map((category) => (
                 <button
-                  key={cat}
+                  key={category.name}
                   type="button"
                   onClick={() => {
-                    router.push(`/products?category=${encodeURIComponent(cat)}`);
+                    router.push(`/products?category=${encodeURIComponent(category.name)}`);
                     setOpen(false);
                   }}
                   className="rounded-lg border border-border bg-background px-2.5 py-1 text-xs font-semibold text-foreground hover:border-fresh hover:text-fresh"
                 >
-                  {cat}
+                  <LocalizedCatalogueLabel english={category.name} hindi={category.name_hi || null} />
                 </button>
               ))}
+              {quickCategoriesLoaded && quickCategories.length === 0 ? <Link href="/products" onClick={() => setOpen(false)} className="text-xs font-semibold text-fresh">{t("search.browseAll")}</Link> : null}
             </div>
 
             {/* Mobile Links */}
@@ -295,7 +309,20 @@ export function SiteHeader({ whatsappNumber }: { whatsappNumber: string }) {
 
             {/* Mobile CTAs */}
             <div className="mt-5 grid gap-2.5 border-t border-border pt-4">
-              <div className="flex justify-center"><InstallPrompt /></div>
+              <div className="flex items-center justify-between gap-3 rounded-xl border border-border bg-background p-3">
+                <span className="text-sm font-semibold text-foreground">{t("theme.label")}</span>
+                <div className="flex items-center gap-2">
+                  <InstallPrompt showLabel />
+                  <button
+                    type="button"
+                    onClick={toggleTheme}
+                    aria-label={t(theme === "dark" ? "theme.switchToLight" : "theme.switchToDark")}
+                    className="flex h-10 w-10 items-center justify-center rounded-xl border border-border bg-card text-foreground"
+                  >
+                    {theme === "dark" ? <Sun className="h-4 w-4 text-accent" /> : <Moon className="h-4 w-4 text-muted-foreground" />}
+                  </button>
+                </div>
+              </div>
               <Button asChild variant="outline" size="lg" className="w-full justify-center">
                 <Link href={user ? "/account" : "/login"} onClick={() => setOpen(false)}>
                   <User className={`h-5 w-5 mr-1.5 ${user ? "text-fresh" : ""}`} />

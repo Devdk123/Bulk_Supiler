@@ -27,13 +27,21 @@ const hi = {
     whatsapp: "WhatsApp",
     catalogue: "कैटलॉग",
     requestQuote: "भाव पूछें",
-    buildQuote: "कोटेशन बनाएं"
+    buildQuote: "कोटेशन बनाएं",
+    openMenu: "नेविगेशन मेनू खोलें",
+    closeMenu: "नेविगेशन मेनू बंद करें",
+    marketService: "माया बाज़ार और आसपास के बाज़ारों में सेवा • थोक पूछताछ और गोदाम सप्लाई",
+    tagline: "हर दुकान तक, भरोसेमंद सप्लाई।",
+    whatsappDesk: "WhatsApp सहायता"
   },
   search: {
     placeholder: "उत्पाद या ब्रांड खोजें...",
     mobilePlaceholder: "उत्पाद, ब्रांड या सामान खोजें...",
-    quick: "जल्दी खोजें:"
+    quick: "जल्दी खोजें:",
+    loadingCategories: "श्रेणियाँ लोड हो रही हैं…",
+    browseAll: "सभी उत्पाद देखें"
   },
+  theme: { label: "थीम", switchToDark: "डार्क मोड चालू करें", switchToLight: "लाइट मोड चालू करें" },
   account: {
     loading: "आपका व्यावसायिक खाता खुल रहा है...",
     title: "किराना और रिटेल खाता",

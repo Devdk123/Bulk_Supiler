@@ -225,3 +225,20 @@ test("homepage featured products use the existing public catalogue API", async (
   assert.match(featured, /fetch\("\/api\/catalogue\?limit=6&offset=0"/);
   assert.match(featured, /home\.featuredLoadError/);
 });
+
+test("mobile header quick categories are read from the catalogue and use exact category values", async () => {
+  const header = await readFile("src/components/site-header.tsx", "utf8");
+  assert.match(header, /fetch\("\/api\/catalogue\?limit=1&offset=0"\)/);
+  assert.match(header, /encodeURIComponent\(category\.name\)/);
+  assert.match(header, /LocalizedCatalogueLabel english=\{category\.name\} hindi=\{category\.name_hi \|\| null\}/);
+  assert.doesNotMatch(header, /\["Masala", "Edible Oils", "Agarbatti"/);
+});
+
+test("narrow header keeps only language and menu controls in its top row", async () => {
+  const header = await readFile("src/components/site-header.tsx", "utf8");
+  assert.match(header, /className="h-10 w-auto[^\"]*sm:h-12"/);
+  assert.match(header, /hidden items-center gap-2\.5 xl:flex/);
+  assert.match(header, /className="flex items-center gap-2 xl:hidden">\s*<LanguageSelector compact \/>\s*<Button/);
+  assert.match(header, /<InstallPrompt showLabel \/>/);
+  assert.match(header, /theme\.switchToLight/);
+});

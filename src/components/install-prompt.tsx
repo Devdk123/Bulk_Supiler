@@ -11,7 +11,7 @@ type InstallPromptEvent = Event & {
 
 const DISMISSED_KEY = "gayatristore-install-dismissed";
 
-export function InstallPrompt() {
+export function InstallPrompt({ showLabel = false }: { showLabel?: boolean }) {
   const { t } = useLanguage();
   const [installEvent, setInstallEvent] = useState<InstallPromptEvent | null>(null);
   const [ios] = useState(() => typeof navigator !== "undefined" && /iphone|ipad|ipod/i.test(navigator.userAgent));
@@ -56,7 +56,7 @@ export function InstallPrompt() {
     <>
       <button type="button" onClick={() => void install()} className="inline-flex min-h-10 items-center gap-1.5 rounded-xl border border-fresh/30 bg-card px-2.5 text-xs font-bold text-fresh hover:bg-fresh/5" aria-label={t("pwa.install")}>
         {ios ? <Share className="h-4 w-4" /> : <Download className="h-4 w-4" />}
-        <span className="hidden 2xl:inline">{t("pwa.install")}</span>
+        <span className={showLabel ? "" : "hidden 2xl:inline"}>{t("pwa.install")}</span>
       </button>
       {instructions ? (
         <div className="fixed inset-0 z-[80] flex items-end justify-center bg-black/45 p-4 sm:items-center" role="presentation" onMouseDown={(event) => { if (event.target === event.currentTarget) setInstructions(false); }}>

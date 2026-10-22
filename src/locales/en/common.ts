@@ -27,13 +27,21 @@ const en = {
     whatsapp: "WhatsApp",
     catalogue: "Catalogue",
     requestQuote: "Request a Quote",
-    buildQuote: "Build Quote"
+    buildQuote: "Build Quote",
+    openMenu: "Open navigation menu",
+    closeMenu: "Close navigation menu",
+    marketService: "Serving Maya Bazar & Nearby Markets • Wholesale Inquiries & Godown Supply",
+    tagline: "Har Dukaan Tak, Bharosemand Supply.",
+    whatsappDesk: "WhatsApp Desk"
   },
   search: {
     placeholder: "Search products, brands...",
     mobilePlaceholder: "Search products, brands, FMCG items...",
-    quick: "Quick:"
+    quick: "Quick:",
+    loadingCategories: "Loading categories…",
+    browseAll: "Browse all products"
   },
+  theme: { label: "Theme", switchToDark: "Switch to dark mode", switchToLight: "Switch to light mode" },
   account: {
     loading: "Loading your business account...",
     title: "Kirana & Retail Account",
