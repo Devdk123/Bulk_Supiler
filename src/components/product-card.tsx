@@ -17,7 +17,6 @@ export function ProductCard({ product }: { product: Product }) {
           alt={product.name}
           fill
           sizes="(min-width: 1280px) 25vw, (min-width: 1024px) 33vw, (min-width: 640px) 50vw, 100vw"
-          unoptimized={imageUrl.startsWith("https://")}
           className="object-cover transition-transform duration-500 ease-out group-hover:scale-105"
         />
         {/* Category or Stock Status Badge */}
@@ -86,7 +85,7 @@ export function ProductCard({ product }: { product: Product }) {
           <Button asChild variant="gold" className="w-full justify-center rounded-xl shadow-xs">
             <Link href={`/order?product=${encodeURIComponent(product.id)}`}>
               <PackageCheck className="h-4 w-4" />
-              <span>Add to Bulk Order</span>
+              <span>Request Wholesale Price</span>
             </Link>
           </Button>
         </div>
