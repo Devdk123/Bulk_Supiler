@@ -15,7 +15,8 @@ type ChatMessage = {
 export function AiAssistant({ embedded = false, onClose }: { embedded?: boolean; onClose?: () => void }) {
   const { language: appLanguage, t } = useLanguage();
   const [open, setOpen] = useState(embedded);
-  const [language, setLanguage] = useState<AssistantLanguage>(appLanguage === "hi" ? "hi" : "en");
+  const [languageOverride, setLanguageOverride] = useState<AssistantLanguage | null>(null);
+  const language: AssistantLanguage = languageOverride ?? (appLanguage === "hi" ? "hi" : "en");
   const [messages, setMessages] = useState<ChatMessage[]>([]);
   const [draft, setDraft] = useState("");
   const [sending, setSending] = useState(false);
@@ -24,13 +25,14 @@ export function AiAssistant({ embedded = false, onClose }: { embedded?: boolean;
   const endOfMessages = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
-    endOfMessages.current?.scrollIntoView({ behavior: "smooth", block: "nearest" });
+    const reducedMotion = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+    endOfMessages.current?.scrollIntoView({ behavior: reducedMotion ? "auto" : "smooth", block: "nearest" });
   }, [messages, sending, open]);
 
   function handleLanguageChange(value: string) {
     const nextLanguage = assistantLanguages.find((item) => item.code === value);
     if (!nextLanguage) return;
-    setLanguage(nextLanguage.code);
+    setLanguageOverride(nextLanguage.code);
   }
 
   async function sendMessages(nextMessages: ChatMessage[]) {
@@ -89,7 +91,7 @@ export function AiAssistant({ embedded = false, onClose }: { embedded?: boolean;
       {open ? (
         <section
           aria-label={t("assistant.name")}
-          className="absolute bottom-16 right-0 flex max-h-[min(70vh,600px)] w-[calc(100vw-2.5rem)] max-w-[390px] flex-col overflow-hidden rounded-3xl border border-border bg-card shadow-2xl animate-in slide-in-from-bottom-3 duration-200"
+          className="absolute bottom-16 right-0 flex max-h-[min(70dvh,600px)] w-[calc(100vw-2.5rem)] max-w-[390px] flex-col overflow-hidden rounded-3xl border border-border bg-card shadow-2xl animate-in slide-in-from-bottom-3 duration-200"
         >
           <div className="flex items-center justify-between gap-3 bg-primary px-4 py-4 text-primary-foreground">
             <div className="flex min-w-0 items-center gap-3">
@@ -118,7 +120,7 @@ export function AiAssistant({ embedded = false, onClose }: { embedded?: boolean;
               value={language}
               onChange={(event) => handleLanguageChange(event.target.value)}
               className="ml-auto max-w-[175px] rounded-lg border border-border bg-card px-2.5 py-1.5 text-xs font-semibold text-foreground outline-none focus:ring-2 focus:ring-ring"
-              aria-label="Assistant reply language"
+              aria-label={t("assistant.language")}
             >
               {assistantLanguages.map((item) => (
                 <option key={item.code} value={item.code}>{item.nativeName}</option>
@@ -158,7 +160,7 @@ export function AiAssistant({ embedded = false, onClose }: { embedded?: boolean;
               ))
             )}
             {sending ? (
-              <p className="mr-auto inline-flex items-center gap-2 rounded-2xl border border-border bg-card px-3.5 py-2.5 text-xs text-muted-foreground">
+              <p role="status" aria-live="polite" className="mr-auto inline-flex items-center gap-2 rounded-2xl border border-border bg-card px-3.5 py-2.5 text-xs text-muted-foreground">
                 <LoaderCircle className="h-4 w-4 animate-spin" /> {t("assistant.typing")}
               </p>
             ) : null}

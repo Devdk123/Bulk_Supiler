@@ -199,3 +199,11 @@ test("assistant is server-side, database-grounded, bounded, and configured witho
   assert.match(widget, /dynamic\(\(\) => import\("@\/components\/ai-assistant"\)/);
   assert.match(widget, /onClick=\{\(\) => setOpen\(true\)\}/);
 });
+
+test("assistant chat adapts to mobile keyboard viewports and app language changes", async () => {
+  const assistant = await readFile("src/components/ai-assistant.tsx", "utf8");
+  assert.match(assistant, /max-h-\[min\(70dvh,600px\)\]/);
+  assert.match(assistant, /aria-label=\{t\("assistant\.language"\)\}/);
+  assert.match(assistant, /languageOverride \?\? \(appLanguage === "hi" \? "hi" : "en"\)/);
+  assert.match(assistant, /prefers-reduced-motion/);
+});

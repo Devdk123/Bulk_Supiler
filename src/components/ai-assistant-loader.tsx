@@ -7,7 +7,7 @@ import { useLanguage } from "@/context/language-context";
 
 const AssistantPanel = dynamic(() => import("@/components/ai-assistant").then((module) => module.AiAssistant), {
   ssr: false,
-  loading: () => <div className="absolute bottom-16 right-0 flex h-64 w-[min(390px,calc(100vw-2rem))] items-center justify-center rounded-3xl border border-border bg-card shadow-2xl"><LoaderCircle className="h-6 w-6 animate-spin text-fresh" aria-label="Loading assistant" /></div>
+  loading: () => <div role="status" className="absolute bottom-16 right-0 flex h-64 w-[min(390px,calc(100vw-2rem))] items-center justify-center rounded-3xl border border-border bg-card shadow-2xl"><LoaderCircle className="h-6 w-6 animate-spin text-fresh" aria-label="Loading assistant" /></div>
 });
 
 export function AiAssistantLoader() {
