@@ -96,18 +96,15 @@ export function SiteHeader({ whatsappNumber }: { whatsappNumber: string }) {
 
       <header className="sticky top-0 z-40 border-b border-border bg-card/95 backdrop-blur-md transition-colors duration-200">
         <div className="container-page flex h-20 items-center justify-between gap-4">
-          <Link href="/" className="group flex items-center gap-3 focus-visible:outline-none">
+          <Link href="/" className="group flex shrink-0 items-center focus-visible:outline-none" aria-label="Gayatri Store home">
             <Image
-              src="/images/gayatri-store-logo.svg"
+              src="/images/gayatri-store-wordmark.svg"
               alt="Gayatri Store Logo"
-              width={48}
-              height={48}
+              width={215}
+              height={56}
               priority
-              className="h-11 w-11 shrink-0 rounded-xl shadow-sm transition-transform duration-300 group-hover:scale-105"
+              className="h-12 w-auto transition-transform duration-300 group-hover:scale-[1.02]"
             />
-            <span className="text-xl sm:text-2xl font-black tracking-tight text-primary transition-colors">
-              Gayatri Store
-            </span>
           </Link>
 
           {/* Desktop Navigation */}
