@@ -91,6 +91,8 @@ export default function AccountPage() {
   // Populate profile fields when profile loads
   useEffect(() => {
     if (profile) {
+      // The signed-in profile arrives asynchronously and initializes editable fields.
+      // eslint-disable-next-line react-hooks/set-state-in-effect
       setFullName(profile.full_name || "");
       setPhone(profile.phone || "");
       setBusinessName(profile.business_name || "");
@@ -122,12 +124,15 @@ export default function AccountPage() {
     } finally {
       setLoadingEnquiries(false);
     }
-  }, [session?.access_token]);
+  }, [session]);
 
   useEffect(() => {
-    if (user && session) {
-      loadEnquiries();
-    }
+    if (!user || !session) return;
+    let active = true;
+    queueMicrotask(() => {
+      if (active) void loadEnquiries();
+    });
+    return () => { active = false; };
   }, [user, session, loadEnquiries]);
 
   // Real-time subscription for customer's enquiry status changes

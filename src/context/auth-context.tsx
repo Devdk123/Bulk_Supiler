@@ -90,7 +90,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     if (user?.id) {
       await fetchProfile(user.id);
     }
-  }, [user?.id, fetchProfile]);
+  }, [user, fetchProfile]);
 
   useEffect(() => {
     const supabase = getSupabaseBrowser();
@@ -157,7 +157,9 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
         email: data.email.trim(),
         password: data.password,
         options: {
-          emailRedirectTo: typeof window !== "undefined" ? `${window.location.origin}/account` : undefined,
+          emailRedirectTo: typeof window !== "undefined"
+            ? `${window.location.origin}/auth/confirm?next=/account`
+            : undefined,
           data: {
             full_name: data.fullName.trim(),
             phone: data.phone.trim(),

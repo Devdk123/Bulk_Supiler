@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { useCallback, useEffect, useState } from "react";
 import { RefreshCw, ShieldAlert } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
@@ -21,7 +21,7 @@ export function AdminAuditTab() {
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
 
-  async function loadLogs() {
+  const loadLogs = useCallback(async () => {
     setLoading(true);
     setError(null);
     try {
@@ -36,11 +36,15 @@ export function AdminAuditTab() {
     } finally {
       setLoading(false);
     }
-  }
+  }, []);
 
   useEffect(() => {
-    loadLogs();
-  }, []);
+    let active = true;
+    queueMicrotask(() => {
+      if (active) void loadLogs();
+    });
+    return () => { active = false; };
+  }, [loadLogs]);
 
   return (
     <Card className="mt-6 rounded-3xl border border-border bg-card shadow-sm">

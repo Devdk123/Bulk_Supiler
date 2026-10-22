@@ -67,17 +67,21 @@ export default function RegisterPage() {
     }
 
     setSubmitting(true);
-    const result = await signUp({
-      fullName: fullName.trim(),
-      phone: phone.trim(),
-      email: email.trim(),
-      businessName: businessName.trim() || undefined,
-      city: city.trim() || undefined,
-      state: state.trim() || undefined,
-      pincode: pincode.trim() || undefined,
-      password
-    });
-    setSubmitting(false);
+    let result: Awaited<ReturnType<typeof signUp>>;
+    try {
+      result = await signUp({
+        fullName: fullName.trim(),
+        phone: phone.trim(),
+        email: email.trim(),
+        businessName: businessName.trim() || undefined,
+        city: city.trim() || undefined,
+        state: state.trim() || undefined,
+        pincode: pincode.trim() || undefined,
+        password
+      });
+    } finally {
+      setSubmitting(false);
+    }
 
     if (result.error) {
       setError(result.error);

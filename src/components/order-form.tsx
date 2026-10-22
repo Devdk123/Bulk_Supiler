@@ -92,6 +92,8 @@ export function OrderForm({
 
   useEffect(() => {
     if (profile) {
+      // The auth profile arrives asynchronously; initialize only untouched form fields.
+      // eslint-disable-next-line react-hooks/set-state-in-effect
       setForm((prev) => ({
         ...prev,
         contact_person: prev.contact_person || profile.full_name || "",
