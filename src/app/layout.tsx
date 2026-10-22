@@ -8,6 +8,7 @@ import { MobileWholesaleDock } from "@/components/mobile-wholesale-dock";
 import { AiAssistantLoader } from "@/components/ai-assistant-loader";
 import { AuthProvider } from "@/context/auth-context";
 import { LanguageProvider } from "@/context/language-context";
+import { QuoteCartProvider } from "@/context/quote-cart-context";
 import { ServiceWorkerManager } from "@/components/service-worker-manager";
 import { OfflineBanner } from "@/components/offline-banner";
 import { getDefaultBusinessSettings } from "@/lib/business-settings";
@@ -91,6 +92,7 @@ export default async function RootLayout({ children }: Readonly<{ children: Reac
       <body className="min-h-screen bg-background text-foreground antialiased selection:bg-accent selection:text-primary">
         <LanguageProvider>
           <AuthProvider>
+            <QuoteCartProvider>
             <ServiceWorkerManager />
             <OfflineBanner />
             <SiteHeader whatsappNumber={businessSettings.whatsapp_number} />
@@ -100,6 +102,7 @@ export default async function RootLayout({ children }: Readonly<{ children: Reac
             <WhatsAppFloat whatsappNumber={businessSettings.whatsapp_number} />
             <MobileWholesaleDock whatsappNumber={businessSettings.whatsapp_number} />
             <SpeedInsights />
+            </QuoteCartProvider>
           </AuthProvider>
         </LanguageProvider>
       </body>

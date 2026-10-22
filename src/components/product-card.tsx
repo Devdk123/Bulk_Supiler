@@ -2,15 +2,19 @@
 
 import Image from "next/image";
 import Link from "next/link";
-import { Boxes, PackageCheck, Truck } from "lucide-react";
+import { Boxes, Check, PackageCheck, Truck } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
 import type { Product } from "@/lib/products";
 import { useLanguage } from "@/context/language-context";
 import { LocalizedCatalogueLabel } from "@/components/localized-product-description";
+import { useQuoteCart } from "@/context/quote-cart-context";
+import { useState } from "react";
 
 export function ProductCard({ product }: { product: Product }) {
   const { t } = useLanguage();
+  const { addItem } = useQuoteCart();
+  const [added, setAdded] = useState(false);
   const imageUrl = product.imageUrl || "/images/product-placeholder.svg";
   const detailHref = `/products/${encodeURIComponent(product.slug)}`;
 
@@ -87,12 +91,14 @@ export function ProductCard({ product }: { product: Product }) {
 
         {/* Action Button */}
         <div className="mt-5 pt-2">
-          <Button asChild variant="gold" className="w-full justify-center rounded-xl shadow-xs">
-            <Link href={`/order?product=${encodeURIComponent(product.id)}`}>
-              <PackageCheck className="h-4 w-4" />
-              <span>{t("catalogue.requestPrice")}</span>
-            </Link>
+          <Button type="button" variant="gold" className="w-full justify-center rounded-xl shadow-xs" onClick={() => {
+            addItem({ product_id: product.id, variant_id: "", quantity: "1" });
+            setAdded(true);
+          }}>
+            {added ? <Check className="h-4 w-4" /> : <PackageCheck className="h-4 w-4" />}
+            <span>{added ? t("catalogue.addedToQuote") : t("catalogue.addToQuote")}</span>
           </Button>
+          {added ? <span role="status" className="sr-only">{t("catalogue.addedToQuote")}</span> : null}
         </div>
       </CardContent>
     </Card>

@@ -199,13 +199,13 @@ export default async function ProductDetailsPage({
                         <p className="text-xs text-muted-foreground">
                           {v.pack_size ? <><TranslatedText id="product.packSize" />: {v.pack_size}</> : null}
                           {v.unit ? <> · <TranslatedText id="product.unit" />: {v.unit}</> : null}
-                          {v.moq_quantity ? <> · MOQ: {v.moq_quantity}</> : null}
+                          {v.moq_quantity ? <> · <TranslatedText id="product.minOrder" />: {v.moq_quantity}</> : null}
                           {!v.pack_size && !v.unit && !v.moq_quantity ? <TranslatedText id="product.inquireDetails" /> : null}
                         </p>
                       </div>
                       <Link
                         href={`/order?product=${encodeURIComponent(product.id)}&variant=${encodeURIComponent(v.id)}`}
-                        className="rounded-lg bg-fresh/15 px-3 py-1.5 text-xs font-bold text-fresh hover:bg-fresh hover:text-white transition-colors"
+                        className="inline-flex min-h-11 items-center rounded-lg bg-fresh/15 px-4 py-2 text-xs font-bold text-fresh transition-colors hover:bg-fresh hover:text-white"
                       >
                         <TranslatedText id="product.selectVariant" />
                       </Link>

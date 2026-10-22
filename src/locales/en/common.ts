@@ -428,7 +428,8 @@ const en = {
     stockUnknown: "Availability confirmed with quotation",
     unavailable: "Catalogue temporarily unavailable. Please try again.",
     empty: "No products match your search.",
-    tryAgain: "Try again"
+    tryAgain: "Try again",
+    addToQuote: "Add to quote", addedToQuote: "Added to quote",
   },
   product: {
     backCatalogue: "Back to Wholesale Catalogue",

@@ -118,6 +118,12 @@ export async function POST(request: Request) {
 
   try {
     const publicSupabase = getSupabasePublic();
+    let authenticatedCustomerId = "";
+    const accessToken = request.headers.get("authorization")?.replace(/^Bearer\s+/i, "").trim();
+    if (accessToken) {
+      const { data: { user } } = await publicSupabase.auth.getUser(accessToken);
+      authenticatedCustomerId = user?.id || "";
+    }
     const { data: products, error: productsError } = await publicSupabase
       .from("products")
       .select(`
@@ -176,7 +182,10 @@ export async function POST(request: Request) {
     const { data, error } = await supabase.rpc("create_enquiry_with_items", {
       p_enquiry: {
         client_request_id: enquiry.client_request_id,
-        customer_id: enquiry.customer_id || "",
+        // Never trust a customer ID supplied in JSON. Link account history only
+        // to the user verified from Supabase Auth; unauthenticated enquiries
+        // remain supported and are findable by the submitted email address.
+        customer_id: authenticatedCustomerId,
         business_name: enquiry.business_name,
         contact_person: enquiry.contact_person,
         phone: enquiry.phone,

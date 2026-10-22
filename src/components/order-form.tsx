@@ -23,6 +23,7 @@ import { Textarea } from "@/components/ui/textarea";
 import type { Product } from "@/lib/products";
 import { buildWhatsAppLink } from "@/lib/utils";
 import { useLanguage } from "@/context/language-context";
+import { useQuoteCart } from "@/context/quote-cart-context";
 
 type QuoteForm = {
   business_name: string;
@@ -73,17 +74,17 @@ export function OrderForm({
   const initialProduct = searchParams.get("product") || "";
   const initialVariant = searchParams.get("variant") || "";
   const initialQty = searchParams.get("quantity") || "";
+  const quoteCart = useQuoteCart();
 
   const [form, setForm] = useState(initialForm);
+  const [cartReady, setCartReady] = useState(false);
   const [items, setItems] = useState<QuoteLine[]>(() =>
     products.some((p) => p.id === initialProduct)
       ? [{ product_id: initialProduct, variant_id: initialVariant, quantity: initialQty || "1" }]
-      : products.length > 0
-      ? [{ product_id: products[0].id, variant_id: "", quantity: "1" }]
       : []
   );
 
-  const { user, profile } = useAuth();
+  const { user, session, profile } = useAuth();
   const { t } = useLanguage();
   const [errors, setErrors] = useState<Record<string, string>>({});
   const [loading, setLoading] = useState(false);
@@ -91,6 +92,29 @@ export function OrderForm({
   const [savedEnquiry, setSavedEnquiry] = useState<SavedEnquiry | null>(null);
   const [whatsappLink, setWhatsappLink] = useState<string | null>(null);
   const [requestId, setRequestId] = useState("");
+
+  useEffect(() => {
+    if (!quoteCart.hydrated || cartReady) return;
+    const merged = quoteCart.items.filter((item) => products.some((product) => product.id === item.product_id));
+    if (products.some((product) => product.id === initialProduct)) {
+      const existing = merged.find((item) => item.product_id === initialProduct);
+      if (existing) {
+        existing.variant_id = initialVariant || existing.variant_id;
+        existing.quantity = initialQty || existing.quantity;
+      } else if (merged.length < 30) {
+        merged.push({ product_id: initialProduct, variant_id: initialVariant, quantity: initialQty || "1" });
+      }
+    }
+    // Hydrate the form once from the saved quote basket and current product URL.
+    // eslint-disable-next-line react-hooks/set-state-in-effect
+    setItems(merged);
+    quoteCart.replaceItems(merged);
+    setCartReady(true);
+  }, [cartReady, initialProduct, initialQty, initialVariant, products, quoteCart]);
+
+  useEffect(() => {
+    if (cartReady) quoteCart.replaceItems(items);
+  }, [cartReady, items, quoteCart]);
 
   useEffect(() => {
     if (profile) {
@@ -181,7 +205,10 @@ export function OrderForm({
     try {
       const response = await fetch("/api/enquiries", {
         method: "POST",
-        headers: { "Content-Type": "application/json" },
+        headers: {
+          "Content-Type": "application/json",
+          ...(session?.access_token ? { Authorization: `Bearer ${session.access_token}` } : {})
+        },
         body: JSON.stringify({
           ...form,
           customer_id: user?.id || null,
@@ -207,6 +234,7 @@ export function OrderForm({
         notificationWarning: data.notificationWarning || null
       };
       setSavedEnquiry(saved);
+      quoteCart.clear();
       setWhatsappLink(
         buildWhatsAppLink(
           `Wholesale Quote Enquiry — Gayatri Store\nReference: ${saved.reference}\n\n${whatsappMessage}`,
@@ -284,6 +312,7 @@ export function OrderForm({
               onClick={() => {
                 setSavedEnquiry(null);
                 setItems([]);
+                quoteCart.clear();
                 setForm(initialForm);
                 setRequestId("");
               }}
@@ -433,6 +462,7 @@ export function OrderForm({
                     variant="outline"
                     className="w-fit gap-2 border-dashed border-border hover:border-fresh"
                     onClick={addProduct}
+                    disabled={!cartReady}
                   >
                     <Plus className="h-4 w-4 text-fresh" /> {t("orderForm.addProduct")}
                   </Button>

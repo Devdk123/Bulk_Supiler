@@ -6,11 +6,13 @@ import { MessageCircle, PackageCheck, Search, User } from "lucide-react";
 import { buildWhatsAppLink } from "@/lib/utils";
 import { useAuth } from "@/context/auth-context";
 import { useLanguage } from "@/context/language-context";
+import { useQuoteCart } from "@/context/quote-cart-context";
 
 export function MobileWholesaleDock({ whatsappNumber }: { whatsappNumber: string }) {
   const pathname = usePathname();
   const { user } = useAuth();
   const { t } = useLanguage();
+  const { items, hydrated } = useQuoteCart();
   const whatsappHref = buildWhatsAppLink(
     "Hello Gayatri Store, I am inquiring about wholesale product pricing and minimum order quantities.",
     whatsappNumber
@@ -73,7 +75,7 @@ export function MobileWholesaleDock({ whatsappNumber }: { whatsappNumber: string
           }`}
         >
           <PackageCheck className="h-4 w-4 shrink-0" />
-          <span>{t("nav.buildQuote")}</span>
+          <span>{t("nav.buildQuote")}{hydrated && items.length ? ` (${items.length})` : ""}</span>
         </Link>
       </div>
     </div>

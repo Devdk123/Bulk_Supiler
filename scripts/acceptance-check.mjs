@@ -76,6 +76,32 @@ test("Supabase URL and JWT public key mismatches are detected without exposing c
   assert.doesNotMatch(SUPABASE_PROJECT_MISMATCH_MESSAGE, /projectalpha|projectbravo|eyJ/);
 });
 
+test("quote basket only persists validated product identifiers, variants, and quantities", async () => {
+  const { addQuoteCartLine, parseQuoteCart } = await importTypeScript("src/lib/quote-cart.ts");
+  const lines = parseQuoteCart(JSON.stringify([
+    { product_id: "product-1", variant_id: "variant-1", quantity: "4", price: 0.01 },
+    { product_id: "product-1", variant_id: "variant-2", quantity: "2" },
+    { product_id: "bad id", quantity: "1" },
+    { product_id: "product-2", quantity: "-4" }
+  ]));
+  assert.deepEqual(lines, [{ product_id: "product-1", variant_id: "variant-1", quantity: "4" }]);
+  assert.deepEqual(addQuoteCartLine(lines, { product_id: "product-1", variant_id: "variant-2", quantity: "1" }), [
+    { product_id: "product-1", variant_id: "variant-2", quantity: "5" }
+  ]);
+  assert.deepEqual(parseQuoteCart("broken"), []);
+  const provider = await read("src/context/quote-cart-context.tsx");
+  const card = await read("src/components/product-card.tsx");
+  const orderForm = await read("src/components/order-form.tsx");
+  const enquiryRoute = await read("src/app/api/enquiries/route.ts");
+  assert.match(provider, /localStorage\.getItem\(STORAGE_KEY\)/);
+  assert.match(card, /addItem\(\{ product_id: product\.id/);
+  assert.match(orderForm, /quoteCart\.replaceItems\(merged\)/);
+  assert.match(orderForm, /Authorization: `Bearer \$\{session\.access_token\}`/);
+  assert.match(enquiryRoute, /auth\.getUser\(accessToken\)/);
+  assert.match(enquiryRoute, /customer_id: authenticatedCustomerId/);
+  assert.doesNotMatch(enquiryRoute, /customer_id: enquiry\.customer_id/);
+});
+
 test("static translation references resolve in both languages", async () => {
   const sourceFiles = [
     "src/app", "src/components"
