@@ -1,4 +1,5 @@
 import type { Metadata } from "next";
+import { Suspense } from "react";
 import Image from "next/image";
 import Link from "next/link";
 import {
@@ -23,7 +24,7 @@ import { SectionHeading } from "@/components/section-heading";
 import { WholesaleCalculator } from "@/components/wholesale-calculator";
 import { Button } from "@/components/ui/button";
 import { getStoreProducts } from "@/lib/products";
-import { getPublicBusinessSettings } from "@/lib/business-settings";
+import { getDefaultBusinessSettings } from "@/lib/business-settings";
 import { buildWhatsAppLink } from "@/lib/utils";
 
 export const revalidate = 60;
@@ -173,11 +174,8 @@ const advantages = [
   }
 ];
 
-export default async function HomePage() {
-  const [products, businessSettings] = await Promise.all([
-    getStoreProducts({ limit: 6 }),
-    getPublicBusinessSettings()
-  ]);
+export default function HomePage() {
+  const businessSettings = getDefaultBusinessSettings();
 
   const whatsappLink = buildWhatsAppLink(
     "Hello Gayatri Store, I want to discuss wholesale rates for my store.",
@@ -396,56 +394,9 @@ export default async function HomePage() {
         </div>
       </section>
 
-      {/* 4. SECTION C: FEATURED WHOLESALE PRODUCTS */}
-      <section className="border-b border-border bg-card py-16 md:py-24 transition-colors">
-        <div className="container-page">
-          <div className="flex flex-col md:flex-row md:items-end md:justify-between gap-4">
-            <SectionHeading
-              eyebrow="Available Inventory"
-              title="Products Ready for Bulk Quotation"
-              description="Live packaging specifications, master carton details, and direct enquiry actions for store owners."
-            />
-            <Button asChild variant="gold">
-              <Link href="/products" className="gap-2">
-                <span>View Full Catalogue</span>
-                <ArrowRight className="h-4 w-4" />
-              </Link>
-            </Button>
-          </div>
-
-          {products.length > 0 ? (
-            <div className="mt-12 grid auto-rows-fr gap-6 sm:grid-cols-2 lg:grid-cols-3">
-              {products.map((product) => (
-                <ProductCard key={product.id} product={product} />
-              ))}
-            </div>
-          ) : (
-            <div className="mt-10 rounded-3xl border border-dashed border-border bg-background p-8 text-center sm:p-12">
-              <div className="mx-auto flex h-14 w-14 items-center justify-center rounded-2xl bg-fresh/10 text-fresh">
-                <Boxes className="h-7 w-7" />
-              </div>
-              <h3 className="mt-4 text-lg font-extrabold text-foreground">
-                Digital Inventory Syncing
-              </h3>
-              <p className="mx-auto mt-2 max-w-md text-sm text-muted-foreground">
-                Our active godown lots across Spices, Edible Oils, Incense, and Matches are being catalogued. You can build a custom quotation or contact the Gayatri Store team directly for live lot rates.
-              </p>
-              <div className="mt-6 flex flex-wrap justify-center gap-3">
-                <Button asChild variant="gold">
-                  <Link href="/order">Submit Custom Quotation</Link>
-                </Button>
-                {whatsappLink ? (
-                  <Button asChild variant="outline">
-                    <a href={whatsappLink} target="_blank" rel="noreferrer">
-                      <MessageCircle className="h-4 w-4 text-fresh" /> Chat with Godown Team
-                    </a>
-                  </Button>
-                ) : null}
-              </div>
-            </div>
-          )}
-        </div>
-      </section>
+      <Suspense fallback={<FeaturedProductsSkeleton />}>
+        <FeaturedProductsSection whatsappLink={whatsappLink} />
+      </Suspense>
 
       {/* 5. INTERACTIVE WHOLESALE SAVINGS CALCULATOR */}
       <section className="border-b border-border bg-background py-16 md:py-24 transition-colors">
@@ -562,5 +513,56 @@ export default async function HomePage() {
         </div>
       </section>
     </div>
+  );
+}
+
+function FeaturedProductsSkeleton() {
+  return (
+    <section aria-label="Loading featured products" className="border-b border-border bg-card py-16 md:py-24">
+      <div className="container-page">
+        <div className="h-8 w-72 max-w-full animate-pulse rounded-lg bg-secondary" />
+        <div className="mt-3 h-4 w-[32rem] max-w-full animate-pulse rounded bg-secondary" />
+        <div className="mt-12 grid gap-6 sm:grid-cols-2 lg:grid-cols-3">
+          {[0, 1, 2].map((item) => <div key={item} className="h-80 animate-pulse rounded-2xl bg-secondary/70" />)}
+        </div>
+      </div>
+    </section>
+  );
+}
+
+async function FeaturedProductsSection({ whatsappLink }: { whatsappLink: string | null }) {
+  const products = await getStoreProducts({ limit: 6 });
+
+  return (
+    <section className="border-b border-border bg-card py-16 md:py-24 transition-colors">
+      <div className="container-page">
+        <div className="flex flex-col gap-4 md:flex-row md:items-end md:justify-between">
+          <SectionHeading
+            eyebrow="Available Inventory"
+            title="Products Ready for Bulk Quotation"
+            description="Browse public product listings and request current wholesale pricing from the Gayatri Store team."
+          />
+          <Button asChild variant="gold">
+            <Link href="/products" className="gap-2"><span>View Full Catalogue</span><ArrowRight className="h-4 w-4" /></Link>
+          </Button>
+        </div>
+
+        {products.length > 0 ? (
+          <div className="mt-12 grid auto-rows-fr gap-6 sm:grid-cols-2 lg:grid-cols-3">
+            {products.map((product) => <ProductCard key={product.id} product={product} />)}
+          </div>
+        ) : (
+          <div className="mt-10 rounded-3xl border border-dashed border-border bg-background p-8 text-center sm:p-12">
+            <div className="mx-auto flex h-14 w-14 items-center justify-center rounded-2xl bg-fresh/10 text-fresh"><Boxes className="h-7 w-7" /></div>
+            <h3 className="mt-4 text-lg font-extrabold text-foreground">No published products yet</h3>
+            <p className="mx-auto mt-2 max-w-md text-sm text-muted-foreground">You can still contact the Gayatri Store team to ask about current wholesale availability.</p>
+            <div className="mt-6 flex flex-wrap justify-center gap-3">
+              <Button asChild variant="gold"><Link href="/order">Request a Wholesale Quote</Link></Button>
+              {whatsappLink ? <Button asChild variant="outline"><a href={whatsappLink} target="_blank" rel="noreferrer"><MessageCircle className="h-4 w-4 text-fresh" /> WhatsApp</a></Button> : null}
+            </div>
+          </div>
+        )}
+      </div>
+    </section>
   );
 }

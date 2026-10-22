@@ -8,7 +8,7 @@ import { SectionHeading } from "@/components/section-heading";
 import { OrderForm } from "@/components/order-form";
 import { Button } from "@/components/ui/button";
 import { getStoreProducts } from "@/lib/products";
-import { getPublicBusinessSettings } from "@/lib/business-settings";
+import { getDefaultBusinessSettings } from "@/lib/business-settings";
 import { buildWhatsAppLink } from "@/lib/utils";
 
 export const metadata: Metadata = {
@@ -19,12 +19,8 @@ export const metadata: Metadata = {
 
 export const revalidate = 60;
 
-export default async function OrderPage() {
-  const [products, businessSettings] = await Promise.all([
-    getStoreProducts(),
-    getPublicBusinessSettings()
-  ]);
-
+export default function OrderPage() {
+  const businessSettings = getDefaultBusinessSettings();
   const whatsappLink = buildWhatsAppLink(
     "Hello Gayatri Store, I want to discuss a bulk wholesale quotation for my business.",
     businessSettings.whatsapp_number
@@ -91,10 +87,15 @@ export default async function OrderPage() {
         {/* Right Side: Interactive Order Form */}
         <div>
           <Suspense fallback={<div className="rounded-3xl border border-border bg-card p-12 text-center text-sm text-muted-foreground">Loading quotation system...</div>}>
-            <OrderForm products={products} whatsappNumber={businessSettings.whatsapp_number} />
+            <OrderFormContent whatsappNumber={businessSettings.whatsapp_number} />
           </Suspense>
         </div>
       </div>
     </section>
   );
+}
+
+async function OrderFormContent({ whatsappNumber }: { whatsappNumber: string }) {
+  const products = await getStoreProducts();
+  return <OrderForm products={products} whatsappNumber={whatsappNumber} />;
 }

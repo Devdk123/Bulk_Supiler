@@ -1,11 +1,10 @@
 "use client";
 
-import { useMemo, useState } from "react";
+import { useEffect, useMemo, useRef, useState } from "react";
 import { useSearchParams, useRouter } from "next/navigation";
 import {
   Boxes,
   CheckCircle2,
-  Filter,
   RotateCcw,
   Search,
   Send,
@@ -16,29 +15,16 @@ import { ProductCard } from "@/components/product-card";
 import { RateCardModal } from "@/components/rate-card-modal";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
-import type { Product } from "@/lib/products";
+import type { ProductCataloguePage } from "@/lib/products";
 import Link from "next/link";
 
-const allKnownCategories = [
-  "Masala & Spices",
-  "Edible Oils",
-  "Matchsticks",
-  "Agarbatti",
-  "Dhoop",
-  "Kapoor & Pooja Products",
-  "Other FMCG Essentials"
-];
-
-const allKnownBrands = [
-  "Jhaveri's Mast!",
-  "Kisan",
-  "Bharat Jyoti",
-  "Bhola",
-  "GrahShanti",
-  "Sukoon"
-];
-
-export function ProductCatalogue({ products }: { products: Product[] }) {
+export function ProductCatalogue({
+  initialPage,
+  initialError = ""
+}: {
+  initialPage: ProductCataloguePage | null;
+  initialError?: string;
+}) {
   const searchParams = useSearchParams();
   const router = useRouter();
 
@@ -52,27 +38,63 @@ export function ProductCatalogue({ products }: { products: Product[] }) {
   const [sort, setSort] = useState("newest");
   const [onlyInStock, setOnlyInStock] = useState(false);
   const [moqTier, setMoqTier] = useState<"all" | "low" | "bulk">("all");
+  const [products, setProducts] = useState(initialPage?.products || []);
+  const [totalCount, setTotalCount] = useState(initialPage?.totalCount || 0);
+  const [brands, setBrands] = useState(initialPage?.brands.map((item) => item.name) || []);
+  const [categories, setCategories] = useState(initialPage?.categories.map((item) => item.name) || []);
+  const [offset, setOffset] = useState(0);
+  const [loading, setLoading] = useState(false);
+  const [error, setError] = useState(initialError);
+  const [retryCount, setRetryCount] = useState(0);
+  const firstRequest = useRef(true);
 
   // If user hasn't modified local state, fallback to URL params
   const effectiveCategory = category || urlCategory;
   const effectiveBrand = brand || urlBrand;
   const effectiveSearch = search || urlSearch;
 
-  const brands = useMemo(() => {
-    const list = [...new Set([
-      ...allKnownBrands,
-      ...products.map((p) => p.brandName).filter((v): v is string => Boolean(v))
-    ])].sort();
-    return list;
-  }, [products]);
+  useEffect(() => {
+    const initialPageHasActiveFilters = Boolean(urlSearch || urlCategory || urlBrand);
+    if (firstRequest.current) {
+      firstRequest.current = false;
+      if (initialPage && !initialPageHasActiveFilters && !initialError) return;
+    }
 
-  const categories = useMemo(() => {
-    const list = [...new Set([
-      ...allKnownCategories,
-      ...products.map((p) => p.categoryName).filter((v): v is string => Boolean(v))
-    ])].sort();
-    return list;
-  }, [products]);
+    const controller = new AbortController();
+    const timer = setTimeout(async () => {
+      const params = new URLSearchParams({ limit: "24", offset: String(offset), sort });
+      if (effectiveSearch.trim()) params.set("search", effectiveSearch.trim());
+      if (effectiveCategory) params.set("category", effectiveCategory);
+      if (effectiveBrand) params.set("brand", effectiveBrand);
+      if (onlyInStock) params.set("stock", "true");
+      if (moqTier !== "all") params.set("moq", moqTier);
+
+      setLoading(true);
+      setError("");
+      try {
+        const response = await fetch(`/api/catalogue?${params}`, { signal: controller.signal });
+        const result = await response.json() as ProductCataloguePage & { error?: string };
+        if (!response.ok) throw new Error(result.error || "The catalogue is temporarily unavailable.");
+        setProducts(result.products);
+        setTotalCount(result.totalCount);
+        setBrands(result.brands.map((item) => item.name));
+        setCategories(result.categories.map((item) => item.name));
+      } catch (requestError) {
+        if (controller.signal.aborted) return;
+        setError(requestError instanceof Error ? requestError.message : "The catalogue is temporarily unavailable.");
+      } finally {
+        if (!controller.signal.aborted) setLoading(false);
+      }
+    }, 220);
+
+    return () => {
+      clearTimeout(timer);
+      controller.abort();
+    };
+  }, [
+    initialError, initialPage, effectiveBrand, effectiveCategory, effectiveSearch,
+    moqTier, offset, onlyInStock, retryCount, sort, urlBrand, urlCategory, urlSearch
+  ]);
 
   const filteredProducts = useMemo(() => {
     const query = effectiveSearch.trim().toLowerCase();
@@ -126,6 +148,7 @@ export function ProductCatalogue({ products }: { products: Product[] }) {
     setSort("newest");
     setOnlyInStock(false);
     setMoqTier("all");
+    setOffset(0);
     router.push("/products");
   }
 
@@ -184,7 +207,7 @@ export function ProductCatalogue({ products }: { products: Product[] }) {
           <Input
             className="h-11 rounded-xl pl-9 pr-8 text-sm"
             value={search}
-            onChange={(e) => setSearch(e.target.value)}
+            onChange={(e) => { setOffset(0); setSearch(e.target.value); }}
             placeholder="Search products, brands, SKU..."
           />
           {search ? (
@@ -207,6 +230,7 @@ export function ProductCatalogue({ products }: { products: Product[] }) {
           <select
             value={effectiveBrand}
             onChange={(e) => {
+              setOffset(0);
               setBrand(e.target.value);
               if (urlBrand) router.push("/products");
             }}
@@ -227,6 +251,7 @@ export function ProductCatalogue({ products }: { products: Product[] }) {
           <select
             value={effectiveCategory}
             onChange={(e) => {
+              setOffset(0);
               setCategory(e.target.value);
               if (urlCategory) router.push("/products");
             }}
@@ -246,7 +271,10 @@ export function ProductCatalogue({ products }: { products: Product[] }) {
           Sort Order
           <select
             value={sort}
-            onChange={(e) => setSort(e.target.value)}
+            onChange={(e) => {
+              setOffset(0);
+              setSort(e.target.value);
+            }}
             className="h-11 rounded-xl border border-border bg-background px-3 text-sm text-foreground focus:border-fresh focus:outline-none"
           >
             <option value="newest">Recently Added</option>
@@ -265,7 +293,7 @@ export function ProductCatalogue({ products }: { products: Product[] }) {
           </span>
           <button
             type="button"
-            onClick={() => setMoqTier("all")}
+            onClick={() => { setOffset(0); setMoqTier("all"); }}
             className={`rounded-lg px-2.5 py-1 text-xs font-semibold transition-all ${
               moqTier === "all"
                 ? "bg-primary text-white shadow-xs"
@@ -276,7 +304,7 @@ export function ProductCatalogue({ products }: { products: Product[] }) {
           </button>
           <button
             type="button"
-            onClick={() => setMoqTier("low")}
+            onClick={() => { setOffset(0); setMoqTier("low"); }}
             className={`rounded-lg px-2.5 py-1 text-xs font-semibold transition-all ${
               moqTier === "low"
                 ? "bg-fresh text-white shadow-xs"
@@ -287,7 +315,7 @@ export function ProductCatalogue({ products }: { products: Product[] }) {
           </button>
           <button
             type="button"
-            onClick={() => setMoqTier("bulk")}
+            onClick={() => { setOffset(0); setMoqTier("bulk"); }}
             className={`rounded-lg px-2.5 py-1 text-xs font-semibold transition-all ${
               moqTier === "bulk"
                 ? "bg-fresh text-white shadow-xs"
@@ -300,7 +328,7 @@ export function ProductCatalogue({ products }: { products: Product[] }) {
 
         <button
           type="button"
-          onClick={() => setOnlyInStock(!onlyInStock)}
+          onClick={() => { setOffset(0); setOnlyInStock(!onlyInStock); }}
           className={`inline-flex items-center gap-2 rounded-lg border px-3 py-1.5 text-xs font-bold transition-all ${
             onlyInStock
               ? "border-fresh bg-fresh/15 text-fresh"
@@ -322,7 +350,7 @@ export function ProductCatalogue({ products }: { products: Product[] }) {
         <div className="flex flex-wrap items-center gap-3">
           <p className="font-semibold text-foreground">
             Showing <span className="font-bold text-primary dark:text-accent">{filteredProducts.length}</span>{" "}
-            {filteredProducts.length === 1 ? "wholesale item" : "wholesale items"}
+            {totalCount === 1 ? "of 1 wholesale item" : `of ${totalCount} wholesale items`}
           </p>
           <RateCardModal
             products={filteredProducts}
@@ -338,8 +366,9 @@ export function ProductCatalogue({ products }: { products: Product[] }) {
                 Category: {effectiveCategory}
                 <button
                   type="button"
-                  onClick={() => {
-                    setCategory("");
+          onClick={() => {
+            setOffset(0);
+            setCategory("");
                     if (urlCategory) router.push("/products");
                   }}
                   className="hover:opacity-75"
@@ -418,9 +447,17 @@ export function ProductCatalogue({ products }: { products: Product[] }) {
         ) : null}
       </div>
 
+      {error ? (
+        <div role="alert" className="mt-5 flex flex-wrap items-center justify-between gap-3 rounded-xl border border-destructive/20 bg-destructive/5 p-4 text-sm text-destructive">
+          <span>{error}</span>
+          <Button type="button" variant="outline" onClick={() => setRetryCount((count) => count + 1)}>Retry</Button>
+        </div>
+      ) : null}
+      {loading ? <p role="status" className="mt-4 text-xs text-muted-foreground">Updating catalogue…</p> : null}
+
       {/* Product Grid or Empty State */}
       {filteredProducts.length > 0 ? (
-        <div className="mt-6 grid auto-rows-fr gap-6 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
+        <div aria-busy={loading} className={`mt-6 grid auto-rows-fr gap-6 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 ${loading ? "opacity-60" : ""}`}>
           {filteredProducts.map((product) => (
             <ProductCard key={product.id} product={product} />
           ))}
@@ -431,14 +468,14 @@ export function ProductCatalogue({ products }: { products: Product[] }) {
             <Boxes className="h-7 w-7" />
           </div>
           <h3 className="mt-4 text-lg font-bold text-foreground">
-            {products.length > 0
+            {products.length > 0 || totalCount > 0
               ? "No products match your current filters"
-              : "Wholesale Catalogue is Being Updated"}
+              : "No published catalogue products yet"}
           </h3>
           <p className="mx-auto mt-2 max-w-md text-sm text-muted-foreground">
-            {products.length > 0
+            {products.length > 0 || totalCount > 0
               ? "Try clearing your search query or choosing a different brand or category."
-              : "Our godown catalogue across Spices, Oils, Matchsticks and Pooja items is active for custom wholesale quotation. Request a direct quotation below."}
+              : "Ask the Gayatri Store team about current product availability or request a quotation."}
           </p>
 
           <div className="mt-6 flex flex-wrap justify-center gap-3">
@@ -455,6 +492,14 @@ export function ProductCatalogue({ products }: { products: Product[] }) {
           </div>
         </div>
       )}
+
+      {totalCount > 24 ? (
+        <nav aria-label="Catalogue pages" className="mt-8 flex items-center justify-center gap-4">
+          <Button type="button" variant="outline" disabled={offset === 0 || loading} onClick={() => setOffset((value) => Math.max(0, value - 24))}>Previous</Button>
+          <span className="text-sm text-muted-foreground">Page {Math.floor(offset / 24) + 1} of {Math.ceil(totalCount / 24)}</span>
+          <Button type="button" variant="outline" disabled={offset + 24 >= totalCount || loading} onClick={() => setOffset((value) => value + 24)}>Next</Button>
+        </nav>
+      ) : null}
     </div>
   );
 }

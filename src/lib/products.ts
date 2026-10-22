@@ -1,5 +1,6 @@
 import { cache } from "react";
 import { unstable_cache } from "next/cache";
+import { getCatalogueFacets } from "@/lib/catalogue";
 import { getSupabasePublic, isSupabasePublicConfigured } from "@/lib/supabase";
 
 export type ProductVariant = {
@@ -84,9 +85,9 @@ type ProductRow = {
   stock_status: string;
   brand: { name: string } | { name: string }[] | null;
   category: { name: string } | { name: string }[] | null;
-  variants: ProductVariant[];
-  images: ProductImage[];
-  price_tiers: ProductPriceTier[];
+  variants?: ProductVariant[];
+  images?: ProductImage[];
+  price_tiers?: ProductPriceTier[];
 };
 
 function slugify(value: string) {
@@ -155,11 +156,96 @@ const storeProductSelect = `
   id, name, slug, price, moq, quality, packing, image_url, active, created_at,
   status, sku, description, variant, unit, pack_size, units_per_carton,
   moq_quantity, order_increment, price_amount, price_currency, price_unit,
-  quote_only, stock_status, brand:brands(name), category:categories(name),
+  quote_only, stock_status, brand:brands(name), category:categories(name)
+`;
+
+const storeProductDetailSelect = `${storeProductSelect},
   variants:product_variants(id, name, unit, pack_size, units_per_carton, moq_quantity, order_increment, active),
   images:product_images(id, image_url, alt_text, sort_order),
   price_tiers:product_price_tiers(variant_id, minimum_quantity, unit_price, currency, price_unit)
 `;
+
+export type ProductCatalogueOptions = {
+  limit?: number;
+  offset?: number;
+  search?: string;
+  brand?: string;
+  category?: string;
+  stockOnly?: boolean;
+  moqTier?: "all" | "low" | "bulk";
+  sort?: "newest" | "name" | "name_desc";
+};
+
+export type ProductCataloguePage = {
+  products: Product[];
+  totalCount: number;
+  limit: number;
+  offset: number;
+  brands: { id: string; name: string; slug: string }[];
+  categories: { id: string; name: string; slug: string }[];
+};
+
+async function fetchStoreProductsPage(options: ProductCatalogueOptions = {}): Promise<ProductCataloguePage> {
+  if (!isSupabasePublicConfigured()) throw new Error("Product catalogue is not configured.");
+
+  const limit = Math.min(Math.max(Math.trunc(options.limit || 24), 1), 48);
+  const offset = Math.min(Math.max(Math.trunc(options.offset || 0), 0), 100_000);
+  const supabase = getSupabasePublic();
+  const facets = await getCatalogueFacets();
+  let query = supabase.from("products").select(storeProductSelect, { count: "exact" })
+    .eq("status", "published").eq("active", true);
+
+  const search = options.search?.trim().replace(/[%,]/g, " ").slice(0, 80);
+  if (search) query = query.ilike("name", `%${search}%`);
+  const brandFilter = options.brand?.slice(0, 80);
+  if (brandFilter) {
+    const brandId = facets.brands.find((item) => item.name === brandFilter)?.id;
+    if (!brandId) return { products: [], totalCount: 0, limit, offset, brands: facets.brands, categories: facets.categories };
+    query = query.eq("brand_id", brandId);
+  }
+  const categoryFilter = options.category?.slice(0, 80);
+  if (categoryFilter) {
+    const categoryId = facets.categories.find((item) => item.name === categoryFilter)?.id;
+    if (!categoryId) return { products: [], totalCount: 0, limit, offset, brands: facets.brands, categories: facets.categories };
+    query = query.eq("category_id", categoryId);
+  }
+  if (options.stockOnly) query = query.eq("stock_status", "in_stock");
+  if (options.moqTier === "low") query = query.or("moq_quantity.is.null,moq_quantity.lte.20");
+  if (options.moqTier === "bulk") query = query.gt("moq_quantity", 20);
+
+  if (options.sort === "name") query = query.order("name", { ascending: true });
+  else if (options.sort === "name_desc") query = query.order("name", { ascending: false });
+  else query = query.order("created_at", { ascending: false });
+
+  let timer: NodeJS.Timeout | undefined;
+  const timeoutPromise = new Promise<never>((_, reject) => {
+    timer = setTimeout(() => reject(new Error("Product catalogue request timed out.")), 3500);
+  });
+
+  try {
+    const result = await Promise.race([query.range(offset, offset + limit - 1), timeoutPromise]);
+    if (result.error) throw new Error(result.error.message);
+    return {
+      products: ((result.data || []) as ProductRow[]).map(mapProductRow),
+      totalCount: result.count || 0,
+      limit,
+      offset,
+      brands: facets.brands,
+      categories: facets.categories
+    };
+  } finally {
+    if (timer) clearTimeout(timer);
+  }
+}
+
+const getCachedStoreProductsPage = unstable_cache(fetchStoreProductsPage, ["store-products-page-v1"], {
+  revalidate: 60,
+  tags: ["store-products"]
+});
+
+export const getStoreProductsPage = cache(async (options: ProductCatalogueOptions = {}) =>
+  getCachedStoreProductsPage(options)
+);
 
 async function fetchStoreProducts(limit?: number): Promise<Product[]> {
   if (!isSupabasePublicConfigured()) {
@@ -232,7 +318,7 @@ async function fetchStoreProductBySlug(slug: string): Promise<Product | null> {
     const supabase = getSupabasePublic();
     const query = supabase
       .from("products")
-      .select(storeProductSelect)
+      .select(storeProductDetailSelect)
       .eq("slug", slug)
       .eq("status", "published")
       .eq("active", true)

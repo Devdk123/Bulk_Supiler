@@ -9,7 +9,7 @@ import {
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { getStoreProductBySlug, productImageUrl } from "@/lib/products";
-import { getPublicBusinessSettings } from "@/lib/business-settings";
+import { getDefaultBusinessSettings } from "@/lib/business-settings";
 import { buildWhatsAppLink } from "@/lib/utils";
 
 export const revalidate = 60;
@@ -57,10 +57,8 @@ export default async function ProductDetailsPage({
   params: Promise<{ slug: string }>;
 }) {
   const { slug } = await params;
-  const [product, businessSettings] = await Promise.all([
-    getStoreProductBySlug(slug),
-    getPublicBusinessSettings()
-  ]);
+  const product = await getStoreProductBySlug(slug);
+  const businessSettings = getDefaultBusinessSettings();
 
   if (!product) notFound();
 
@@ -248,7 +246,7 @@ export default async function ProductDetailsPage({
               <Button asChild variant="gold" size="lg" className="shadow-md">
                 <Link href={`/order?product=${encodeURIComponent(product.id)}`} className="gap-2">
                   <PackageCheck className="h-5 w-5" />
-                  <span>Add to Bulk Order</span>
+                  <span>Request Wholesale Price</span>
                 </Link>
               </Button>
 

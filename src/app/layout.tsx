@@ -1,4 +1,5 @@
 import type { Metadata } from "next";
+import { SpeedInsights } from "@vercel/speed-insights/next";
 import "./globals.css";
 import { SiteFooter } from "@/components/site-footer";
 import { SiteHeader } from "@/components/site-header";
@@ -6,7 +7,7 @@ import { WhatsAppFloat } from "@/components/whatsapp-float";
 import { MobileWholesaleDock } from "@/components/mobile-wholesale-dock";
 import { AiAssistant } from "@/components/ai-assistant";
 import { AuthProvider } from "@/context/auth-context";
-import { getPublicBusinessSettings } from "@/lib/business-settings";
+import { getDefaultBusinessSettings } from "@/lib/business-settings";
 
 export const metadata: Metadata = {
   metadataBase: new URL(process.env.NEXT_PUBLIC_SITE_URL || "https://bulksupiler.in"),
@@ -44,7 +45,7 @@ export const metadata: Metadata = {
 export const revalidate = 300;
 
 export default async function RootLayout({ children }: Readonly<{ children: React.ReactNode }>) {
-  const businessSettings = await getPublicBusinessSettings();
+  const businessSettings = getDefaultBusinessSettings();
   const siteUrl = process.env.NEXT_PUBLIC_SITE_URL || "https://bulksupiler.in";
   const jsonLd = {
     "@context": "https://schema.org",
@@ -85,6 +86,7 @@ export default async function RootLayout({ children }: Readonly<{ children: Reac
           <AiAssistant />
           <WhatsAppFloat whatsappNumber={businessSettings.whatsapp_number} />
           <MobileWholesaleDock whatsappNumber={businessSettings.whatsapp_number} />
+          <SpeedInsights />
         </AuthProvider>
       </body>
     </html>

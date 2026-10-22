@@ -21,7 +21,7 @@ const publicKeys = [
   "delivery_coverage"
 ] as const;
 
-function getDefaultSettings(): BusinessSettings {
+export function getDefaultBusinessSettings(): BusinessSettings {
   return {
     contact_phone: process.env.NEXT_PUBLIC_WHATSAPP_NUMBER || "+918849263377",
     whatsapp_number: process.env.NEXT_PUBLIC_WHATSAPP_NUMBER || "+918849263377",
@@ -34,7 +34,7 @@ function getDefaultSettings(): BusinessSettings {
 }
 
 async function fetchSettingsFromSupabase(): Promise<BusinessSettings> {
-  const settings = getDefaultSettings();
+  const settings = getDefaultBusinessSettings();
 
   if (!isSupabasePublicConfigured()) {
     return settings;
