@@ -55,7 +55,9 @@ function LoginForm() {
     setSubmitting(false);
 
     if (result.error) {
-      setError(result.error);
+      setError(/Supabase configuration error:.*does not match/i.test(result.error)
+        ? t("auth.projectMismatch")
+        : result.error);
     } else {
       router.push(redirectTo);
     }

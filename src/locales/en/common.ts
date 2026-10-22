@@ -119,7 +119,8 @@ const en = {
     passwordLength: "Password must be at least 6 characters long.",
     passwordMismatch: "Passwords do not match. Please re-enter.",
     checkCredentials: "Please enter both email and password.",
-    verificationSent: "Account registered! A verification link has been sent to your email. Please click the link to activate your account."
+    verificationSent: "Account registered! A verification link has been sent to your email. Please click the link to activate your account.",
+    projectMismatch: "Supabase settings point to different projects. Ask the store administrator to use the matching project URL and public key, then redeploy.",
   },
   home: {
     heroEyebrow: "YOUR LOCAL WHOLESALE PARTNER",

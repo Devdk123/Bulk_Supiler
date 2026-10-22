@@ -66,6 +66,16 @@ test("English and Hindi resources have matching key structure and valid Hindi te
   assert.doesNotMatch(source, /à¤/, "Hindi resource must not contain UTF-8 mojibake");
 });
 
+test("Supabase URL and JWT public key mismatches are detected without exposing credentials", async () => {
+  const { hasSupabaseProjectMismatch, SUPABASE_PROJECT_MISMATCH_MESSAGE } = await importTypeScript("src/lib/supabase-project.ts");
+  const token = (ref) => `eyJhbGciOiJIUzI1NiJ9.${Buffer.from(JSON.stringify({ ref })).toString("base64url")}.signature`;
+  assert.equal(hasSupabaseProjectMismatch("https://projectalpha.supabase.co", token("projectalpha")), false);
+  assert.equal(hasSupabaseProjectMismatch("https://projectalpha.supabase.co", token("projectbravo")), true);
+  assert.equal(hasSupabaseProjectMismatch("https://custom.example.com", token("projectbravo")), false);
+  assert.match(SUPABASE_PROJECT_MISMATCH_MESSAGE, /NEXT_PUBLIC_SUPABASE_URL/);
+  assert.doesNotMatch(SUPABASE_PROJECT_MISMATCH_MESSAGE, /projectalpha|projectbravo|eyJ/);
+});
+
 test("static translation references resolve in both languages", async () => {
   const sourceFiles = [
     "src/app", "src/components"

@@ -1,5 +1,6 @@
 import { createClient, SupabaseClient } from "@supabase/supabase-js";
 import { normalizeSupabaseUrl } from "@/lib/supabase";
+import { hasSupabaseProjectMismatch, SUPABASE_PROJECT_MISMATCH_MESSAGE } from "@/lib/supabase-project";
 
 let browserClient: SupabaseClient | null = null;
 
@@ -28,6 +29,7 @@ export function getSupabaseBrowser(): SupabaseClient {
         "Account registration is unavailable because the Supabase URL or public API key is missing. Configure NEXT_PUBLIC_SUPABASE_URL and NEXT_PUBLIC_SUPABASE_ANON_KEY, then rebuild the site."
       );
     }
+    if (hasSupabaseProjectMismatch(url, key)) throw new Error(SUPABASE_PROJECT_MISMATCH_MESSAGE);
 
     browserClient = createClient(url, key, {
       auth: {
