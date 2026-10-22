@@ -191,7 +191,27 @@ async function fetchStoreProductsPage(options: ProductCatalogueOptions = {}): Pr
   const limit = Math.min(Math.max(Math.trunc(options.limit || 24), 1), 48);
   const offset = Math.min(Math.max(Math.trunc(options.offset || 0), 0), 100_000);
   const supabase = getSupabasePublic();
-  const facets = await getCatalogueFacets();
+  const needsFacetIds = Boolean(options.brand || options.category);
+  const emptyFacets: Awaited<ReturnType<typeof getCatalogueFacets>> = { brands: [], categories: [] };
+  let facets = emptyFacets;
+  const facetRequest = getCatalogueFacets();
+  const safeFacetRequest = facetRequest.catch((error) => {
+    if (needsFacetIds) throw error;
+    return emptyFacets;
+  });
+  let facetTimer: NodeJS.Timeout | undefined;
+  const facetTimeout = new Promise<typeof emptyFacets>((resolve) => {
+    facetTimer = setTimeout(() => resolve(emptyFacets), 2500);
+  });
+  if (needsFacetIds) {
+    try {
+      facets = await Promise.race([safeFacetRequest, facetTimeout]);
+    } catch (error) {
+      throw new Error("Catalogue filters are temporarily unavailable.", { cause: error });
+    } finally {
+      if (facetTimer) clearTimeout(facetTimer);
+    }
+  }
   let query = supabase.from("products").select(storeProductSelect, { count: "exact" })
     .eq("status", "published").eq("active", true);
 
@@ -223,7 +243,11 @@ async function fetchStoreProductsPage(options: ProductCatalogueOptions = {}): Pr
   });
 
   try {
-    const result = await Promise.race([query.range(offset, offset + limit - 1), timeoutPromise]);
+    const productRequest = Promise.race([query.range(offset, offset + limit - 1), timeoutPromise]);
+    const [result, concurrentFacets] = needsFacetIds
+      ? [await productRequest, facets] as const
+      : await Promise.all([productRequest, Promise.race([safeFacetRequest, facetTimeout])]);
+    facets = concurrentFacets;
     if (result.error) throw new Error(result.error.message);
     return {
       products: ((result.data || []) as ProductRow[]).map(mapProductRow),
@@ -235,6 +259,7 @@ async function fetchStoreProductsPage(options: ProductCatalogueOptions = {}): Pr
     };
   } finally {
     if (timer) clearTimeout(timer);
+    if (facetTimer) clearTimeout(facetTimer);
   }
 }
 
