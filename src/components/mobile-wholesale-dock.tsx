@@ -28,11 +28,11 @@ export function MobileWholesaleDock({ whatsappNumber }: { whatsappNumber: string
   const isOrder = pathname.startsWith("/order");
 
   return (
-    <div className="fixed inset-x-0 bottom-0 z-40 block border-t border-border bg-card/95 px-3 pb-[calc(0.5rem+env(safe-area-inset-bottom))] pt-2 backdrop-blur-md shadow-[0_-4px_20px_rgba(0,0,0,0.06)] md:hidden">
-      <div className="mx-auto flex max-w-md items-center justify-between gap-1.5">
+    <div className="fixed inset-x-0 bottom-0 z-40 block border-t border-border bg-card/95 px-2.5 pb-[calc(0.5rem+env(safe-area-inset-bottom))] pt-2 backdrop-blur-md shadow-[0_-4px_20px_rgba(0,0,0,0.06)] md:hidden">
+      <div className="mx-auto flex max-w-md items-center justify-between gap-1">
         <Link
           href="/products"
-          className={`flex flex-1 flex-col items-center justify-center rounded-xl py-1 text-[11px] font-bold transition-colors ${
+          className={`flex min-w-0 flex-1 flex-col items-center justify-center rounded-xl py-1 text-[11px] font-bold transition-colors ${
             isProducts
               ? "bg-fresh/15 text-fresh"
               : "text-muted-foreground hover:text-foreground"
@@ -44,7 +44,7 @@ export function MobileWholesaleDock({ whatsappNumber }: { whatsappNumber: string
 
         <Link
           href={user ? "/account" : "/login"}
-          className={`flex flex-1 flex-col items-center justify-center rounded-xl py-1 text-[11px] font-bold transition-colors ${
+          className={`flex min-w-0 flex-1 flex-col items-center justify-center rounded-xl py-1 text-[11px] font-bold transition-colors ${
             isAccount
               ? "bg-fresh/15 text-fresh"
               : "text-muted-foreground hover:text-foreground"
@@ -59,7 +59,7 @@ export function MobileWholesaleDock({ whatsappNumber }: { whatsappNumber: string
             href={whatsappHref}
             target="_blank"
             rel="noreferrer"
-            className="flex flex-1 flex-col items-center justify-center rounded-xl py-1 text-[11px] font-bold text-muted-foreground transition-colors hover:text-[#25D366]"
+            className="flex min-w-0 flex-1 flex-col items-center justify-center rounded-xl py-1 text-[11px] font-bold text-muted-foreground transition-colors hover:text-[#25D366]"
           >
             <MessageCircle className="mb-0.5 h-4 w-4 text-[#25D366]" />
             <span>{t("nav.whatsapp")}</span>
@@ -68,14 +68,14 @@ export function MobileWholesaleDock({ whatsappNumber }: { whatsappNumber: string
 
         <Link
           href="/order"
-          className={`flex flex-[1.3] items-center justify-center gap-1.5 rounded-xl px-3 py-2 text-xs font-extrabold shadow-xs transition-transform active:scale-95 ${
+          className={`flex min-w-0 flex-[1.15] items-center justify-center gap-1 rounded-xl px-1.5 py-2 text-[11px] font-extrabold shadow-xs transition-transform active:scale-95 sm:gap-1.5 sm:px-3 sm:text-xs ${
             isOrder
               ? "bg-primary text-primary-foreground"
               : "bg-accent text-accent-foreground"
           }`}
         >
           <PackageCheck className="h-4 w-4 shrink-0" />
-          <span>{t("nav.buildQuote")}{hydrated && items.length ? ` (${items.length})` : ""}</span>
+          <span className="min-w-0 truncate">{t("nav.quoteShort")}{hydrated && items.length ? ` (${items.length})` : ""}</span>
         </Link>
       </div>
     </div>

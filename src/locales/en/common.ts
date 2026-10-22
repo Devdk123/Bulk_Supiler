@@ -28,6 +28,7 @@ const en = {
     catalogue: "Catalogue",
     requestQuote: "Request a Quote",
     buildQuote: "Build Quote",
+    quoteShort: "Quote",
     openMenu: "Open navigation menu",
     closeMenu: "Close navigation menu",
     marketService: "Serving Maya Bazar & Nearby Markets • Wholesale Inquiries & Godown Supply",

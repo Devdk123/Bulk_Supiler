@@ -184,36 +184,35 @@ export default function HomePage() {
       {/* 1. SIGNATURE SPLIT-LAYOUT HERO (LIGHT-FIRST EDITORIAL) */}
       <section className="relative overflow-hidden border-b border-border bg-gradient-to-b from-[#FFF9F0] to-[#F8F1E3] py-12 md:py-20 lg:py-24 transition-colors">
         <div className="container-page">
-          <div className="grid items-center gap-10 lg:grid-cols-[1.15fr_0.95fr] lg:gap-14">
+          <div className="grid w-full min-w-0 grid-cols-1 items-center gap-10 lg:grid-cols-[1.15fr_0.95fr] lg:gap-14">
             {/* Left side (approx 55% space) */}
-            <div className="flex flex-col items-start text-left">
+            <div className="flex min-w-0 flex-col items-start text-left">
               <div className="inline-flex items-center gap-2 rounded-full border border-primary/20 bg-primary/5 px-4 py-1.5 text-xs font-bold uppercase tracking-widest text-primary dark:border-accent/40 dark:bg-accent/10 dark:text-accent">
                 <Store className="h-3.5 w-3.5" />
                 <TranslatedText id="home.heroEyebrow" />
               </div>
 
-              <h1 className="mt-5 text-3xl font-black tracking-tight text-primary sm:text-4xl md:text-5xl lg:text-[3.25rem] lg:leading-[1.12] dark:text-[#F4C542]">
-                <TranslatedText id="home.heroTitle" />
-                <br />
-                <span className="text-[#347754] dark:text-[#52B47F]"><TranslatedText id="home.heroTitleSecond" /></span>
+              <h1 className="mt-5 w-full min-w-0 max-w-full whitespace-normal break-words text-[clamp(1.375rem,7vw,1.875rem)] font-black leading-tight tracking-tight text-primary sm:text-4xl md:text-5xl lg:text-[3.25rem] lg:leading-[1.12] dark:text-[#F4C542]">
+                <span className="block max-w-full"><TranslatedText id="home.heroTitle" /></span>
+                <span className="block max-w-full text-[#347754] dark:text-[#52B47F]"><TranslatedText id="home.heroTitleSecond" /></span>
               </h1>
 
-              <p className="mt-5 text-base leading-relaxed text-[#252A24]/85 sm:text-lg dark:text-[#F8F4EC]/85 max-w-xl">
+              <p className="mt-5 w-full min-w-0 max-w-xl text-base leading-relaxed text-[#252A24]/85 sm:text-lg dark:text-[#F8F4EC]/85">
                 <TranslatedText id="home.heroDescription" />
               </p>
 
               {/* CTAs */}
               <div className="mt-8 flex w-full flex-col gap-3 sm:w-auto sm:flex-row">
-                <Button asChild variant="gold" size="lg" className="h-12 rounded-xl px-7 text-sm font-extrabold shadow-md hover:shadow-lg transition-all">
-                  <Link href="/products" className="gap-2">
+                <Button asChild variant="gold" size="lg" className="h-12 w-full min-w-0 rounded-xl px-7 text-sm font-extrabold shadow-md transition-all hover:shadow-lg sm:w-auto">
+                  <Link href="/products" className="min-w-0 gap-2">
                     <PackageSearch className="h-4.5 w-4.5" />
                     <TranslatedText id="home.explore" />
                     <ArrowRight className="h-4 w-4" />
                   </Link>
                 </Button>
 
-                <Button asChild variant="outline" size="lg" className="h-12 rounded-xl border-primary/25 bg-card px-6 text-sm font-bold text-primary hover:bg-secondary dark:border-border dark:text-foreground">
-                  <Link href="/order" className="gap-2">
+                <Button asChild variant="outline" size="lg" className="h-12 w-full min-w-0 rounded-xl border-primary/25 bg-card px-6 text-sm font-bold text-primary hover:bg-secondary dark:border-border dark:text-foreground sm:w-auto">
+                  <Link href="/order" className="min-w-0 gap-2">
                     <PackageCheck className="h-4.5 w-4.5 text-[#347754]" />
                     <TranslatedText id="home.buildOrder" />
                   </Link>

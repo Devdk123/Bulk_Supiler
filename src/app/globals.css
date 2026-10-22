@@ -148,11 +148,15 @@
 @utility container-page {
   margin-inline: auto;
   width: min(1280px, calc(100% - 32px));
+  max-width: min(100%, calc(100vw - 32px));
+  min-width: 0;
 }
 
 @utility container-wide {
   margin-inline: auto;
   width: min(1360px, calc(100% - 32px));
+  max-width: min(100%, calc(100vw - 32px));
+  min-width: 0;
 }
 
 @utility premium-shadow {

@@ -243,6 +243,21 @@ test("narrow header keeps only language and menu controls in its top row", async
   assert.match(header, /theme\.switchToLight/);
 });
 
+test("home hero and mobile actions constrain their minimum widths on narrow screens", async () => {
+  const home = await readFile("src/app/page.tsx", "utf8");
+  const dock = await readFile("src/components/mobile-wholesale-dock.tsx", "utf8");
+  const assistant = await readFile("src/components/ai-assistant-loader.tsx", "utf8");
+  const css = await readFile("src/app/globals.css", "utf8");
+  assert.match(home, /grid w-full min-w-0 grid-cols-1/);
+  assert.match(home, /text-\[clamp\(1\.375rem,7vw,1\.875rem\)\]/);
+  assert.match(home, /whitespace-normal break-words/);
+  assert.match(home, /h-12 w-full min-w-0/);
+  assert.match(dock, /className=\{`flex min-w-0 flex-\[1\.15\]/);
+  assert.match(dock, /t\("nav\.quoteShort"\)/);
+  assert.match(assistant, /max-w-\[calc\(100vw-2rem\)\]/);
+  assert.equal((css.match(/max-width: min\(100%, calc\(100vw - 32px\)\);/g) || []).length, 2);
+});
+
 test("account enquiry history has a bounded wait and localized retry states", async () => {
   const account = await readFile("src/app/account/page.tsx", "utf8");
   const endpoint = await readFile("src/app/api/customer/enquiries/route.ts", "utf8");

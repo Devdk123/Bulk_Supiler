@@ -28,6 +28,7 @@ const hi = {
     catalogue: "कैटलॉग",
     requestQuote: "भाव पूछें",
     buildQuote: "कोटेशन बनाएं",
+    quoteShort: "कोटेशन",
     openMenu: "नेविगेशन मेनू खोलें",
     closeMenu: "नेविगेशन मेनू बंद करें",
     marketService: "माया बाज़ार और आसपास के बाज़ारों में सेवा • थोक पूछताछ और गोदाम सप्लाई",
