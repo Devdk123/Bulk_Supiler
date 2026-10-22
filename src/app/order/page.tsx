@@ -17,7 +17,7 @@ export const metadata: Metadata = {
     "Select multi-product wholesale items across spices, oils, matchsticks and pooja essentials and receive proforma rates from Gayatri Store."
 };
 
-export const dynamic = "force-dynamic";
+export const revalidate = 60;
 
 export default async function OrderPage() {
   const [products, businessSettings] = await Promise.all([

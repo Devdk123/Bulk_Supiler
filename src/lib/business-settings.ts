@@ -1,4 +1,5 @@
 import { cache } from "react";
+import { unstable_cache } from "next/cache";
 import { getSupabasePublic, isSupabasePublicConfigured } from "@/lib/supabase";
 
 export type BusinessSettings = {
@@ -20,49 +21,82 @@ const publicKeys = [
   "delivery_coverage"
 ] as const;
 
-export const getPublicBusinessSettings = cache(async function getPublicBusinessSettings(): Promise<BusinessSettings> {
-  const settings: BusinessSettings = {
-    contact_phone: process.env.NEXT_PUBLIC_WHATSAPP_NUMBER || "",
-    whatsapp_number: process.env.NEXT_PUBLIC_WHATSAPP_NUMBER || "",
+function getDefaultSettings(): BusinessSettings {
+  return {
+    contact_phone: process.env.NEXT_PUBLIC_WHATSAPP_NUMBER || "+918849263377",
+    whatsapp_number: process.env.NEXT_PUBLIC_WHATSAPP_NUMBER || "+918849263377",
     contact_email: "support@gayatristore.in",
     business_address: "Maya Bazar, Main Wholesale Market",
     business_hours: "Mon – Sat: 9:00 AM – 8:00 PM",
     delivery_coverage: "Maya Bazar and surrounding 50+ km regional trade zone",
     databaseAvailable: false
   };
+}
+
+async function fetchSettingsFromSupabase(): Promise<BusinessSettings> {
+  const settings = getDefaultSettings();
 
   if (!isSupabasePublicConfigured()) {
-    console.warn("Supabase public credentials are not configured; using fallback business settings.");
     return settings;
   }
 
-  let result;
   try {
-    result = await getSupabasePublic()
+    const supabase = getSupabasePublic();
+    const queryPromise = supabase
       .from("business_settings")
       .select("key, value")
       .eq("is_public", true)
       .in("key", publicKeys);
+
+    let timer: NodeJS.Timeout | undefined;
+    const timeoutPromise = new Promise<{ data: null; error: { message: string } }>((resolve) => {
+      timer = setTimeout(() => {
+        resolve({ data: null, error: { message: "Supabase business settings query timed out (2500ms limit)." } });
+      }, 2500);
+    });
+
+    const result = await Promise.race([
+      queryPromise.then((res) => {
+        if (timer) clearTimeout(timer);
+        return res;
+      }),
+      timeoutPromise
+    ]);
+
+    if (result.error) {
+      console.warn("Unable to load public business settings from Supabase, using defaults:", result.error.message);
+      return settings;
+    }
+
+    settings.databaseAvailable = true;
+    for (const row of result.data || []) {
+      const key = row.key as (typeof publicKeys)[number];
+      if (publicKeys.includes(key)) {
+        settings[key] = typeof row.value === "string" ? row.value : "";
+      }
+    }
+    return settings;
   } catch (error) {
-    if (!(error instanceof TypeError)) {
-      throw error;
-    }
-
-    console.error("Unable to reach Supabase while loading public business settings.", error);
+    console.warn("Unable to reach Supabase while loading business settings:", error);
     return settings;
   }
+}
 
-  if (result.error) {
-    console.error("Unable to load public business settings from Supabase.", result.error);
-    return settings;
+// Next.js Data Cache: shared across requests and edge navigations
+const getCachedPublicBusinessSettings = unstable_cache(
+  fetchSettingsFromSupabase,
+  ["public-business-settings"],
+  {
+    revalidate: 300,
+    tags: ["business-settings"]
   }
+);
 
-  settings.databaseAvailable = true;
-  for (const row of result.data || []) {
-    const key = row.key as (typeof publicKeys)[number];
-    if (publicKeys.includes(key)) {
-      settings[key] = typeof row.value === "string" ? row.value : "";
-    }
+// React.cache: deduplicate calls within the same server render pass
+export const getPublicBusinessSettings = cache(async function getPublicBusinessSettings(): Promise<BusinessSettings> {
+  try {
+    return await getCachedPublicBusinessSettings();
+  } catch {
+    return fetchSettingsFromSupabase();
   }
-  return settings;
 });

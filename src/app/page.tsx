@@ -26,7 +26,7 @@ import { getStoreProducts } from "@/lib/products";
 import { getPublicBusinessSettings } from "@/lib/business-settings";
 import { buildWhatsAppLink } from "@/lib/utils";
 
-export const dynamic = "force-dynamic";
+export const revalidate = 60;
 
 export const metadata: Metadata = {
   title: "Gayatri Store | B2B Wholesale FMCG & Daily Goods",

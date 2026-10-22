@@ -4,7 +4,7 @@ import { ProductCatalogue } from "@/components/product-catalogue";
 import { SectionHeading } from "@/components/section-heading";
 import { getStoreProducts } from "@/lib/products";
 
-export const dynamic = "force-dynamic";
+export const revalidate = 60;
 
 export const metadata: Metadata = {
   title: "Wholesale Product Catalogue | Gayatri Store",

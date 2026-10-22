@@ -1,3 +1,5 @@
+import { cache } from "react";
+import { unstable_cache } from "next/cache";
 import { getSupabasePublic, isSupabasePublicConfigured } from "@/lib/supabase";
 
 export type ProductVariant = {
@@ -159,71 +161,123 @@ const storeProductSelect = `
   price_tiers:product_price_tiers(variant_id, minimum_quantity, unit_price, currency, price_unit)
 `;
 
-export async function getStoreProducts(options: { limit?: number } = {}) {
+async function fetchStoreProducts(limit?: number): Promise<Product[]> {
   if (!isSupabasePublicConfigured()) {
     return [];
   }
 
-  const supabase = getSupabasePublic();
-  let query = supabase
-    .from("products")
-    .select(storeProductSelect)
-    .eq("status", "published")
-    .eq("active", true)
-    .order("created_at", { ascending: false });
-
-  if (options.limit) {
-    query = query.limit(options.limit);
-  }
-
-  let result;
   try {
-    result = await query;
-  } catch (error) {
-    if (!(error instanceof TypeError)) {
-      throw error;
+    const supabase = getSupabasePublic();
+    let query = supabase
+      .from("products")
+      .select(storeProductSelect)
+      .eq("status", "published")
+      .eq("active", true)
+      .order("created_at", { ascending: false });
+
+    if (limit) {
+      query = query.limit(limit);
     }
 
-    console.error("Unable to reach Supabase while loading published products.", error);
+    let timer: NodeJS.Timeout | undefined;
+    const timeoutPromise = new Promise<{ data: null; error: { message: string } }>((resolve) => {
+      timer = setTimeout(() => {
+        resolve({ data: null, error: { message: "Products query timed out (3000ms limit)." } });
+      }, 3000);
+    });
+
+    const result = await Promise.race([
+      query.then((res) => {
+        if (timer) clearTimeout(timer);
+        return res;
+      }),
+      timeoutPromise
+    ]);
+
+    if (result.error) {
+      console.warn("Unable to load published products from Supabase:", result.error.message);
+      return [];
+    }
+
+    return ((result.data || []) as ProductRow[]).map(mapProductRow);
+  } catch (error) {
+    console.warn("Unable to reach Supabase while loading published products:", error);
     return [];
   }
-
-  if (result.error) {
-    console.error("Unable to load published products from Supabase.", result.error);
-    return [];
-  }
-
-  return ((result.data || []) as ProductRow[]).map(mapProductRow);
 }
 
-export async function getStoreProductBySlug(slug: string) {
+const getCachedStoreProducts = unstable_cache(
+  async (limit?: number) => fetchStoreProducts(limit),
+  ["store-products-list"],
+  {
+    revalidate: 60,
+    tags: ["store-products"]
+  }
+);
+
+export const getStoreProducts = cache(async function getStoreProducts(options: { limit?: number } = {}) {
+  try {
+    return await getCachedStoreProducts(options.limit);
+  } catch {
+    return fetchStoreProducts(options.limit);
+  }
+});
+
+async function fetchStoreProductBySlug(slug: string): Promise<Product | null> {
   if (!isSupabasePublicConfigured()) {
     return null;
   }
 
-  const supabase = getSupabasePublic();
-  let result;
   try {
-    result = await supabase
+    const supabase = getSupabasePublic();
+    const query = supabase
       .from("products")
       .select(storeProductSelect)
       .eq("slug", slug)
       .eq("status", "published")
       .eq("active", true)
       .maybeSingle();
-  } catch (error) {
-    if (!(error instanceof TypeError)) {
-      throw error;
+
+    let timer: NodeJS.Timeout | undefined;
+    const timeoutPromise = new Promise<{ data: null; error: { message: string } }>((resolve) => {
+      timer = setTimeout(() => {
+        resolve({ data: null, error: { message: "Product by slug query timed out (3000ms limit)." } });
+      }, 3000);
+    });
+
+    const result = await Promise.race([
+      query.then((res) => {
+        if (timer) clearTimeout(timer);
+        return res;
+      }),
+      timeoutPromise
+    ]);
+
+    if (result.error) {
+      console.warn("Unable to load product details from Supabase:", result.error.message);
+      return null;
     }
 
-    console.error("Unable to reach Supabase while loading product details.", error);
+    return result.data ? mapProductRow(result.data as ProductRow) : null;
+  } catch (error) {
+    console.warn("Unable to reach Supabase while loading product details:", error);
     return null;
   }
-
-  if (result.error) {
-    console.error("Unable to load product details from Supabase.", result.error);
-    return null;
-  }
-
-  return result.data ? mapProductRow(result.data as ProductRow) : null;
 }
+
+const getCachedStoreProductBySlug = unstable_cache(
+  async (slug: string) => fetchStoreProductBySlug(slug),
+  ["store-product-by-slug"],
+  {
+    revalidate: 60,
+    tags: ["store-products"]
+  }
+);
+
+export const getStoreProductBySlug = cache(async function getStoreProductBySlug(slug: string) {
+  try {
+    return await getCachedStoreProductBySlug(slug);
+  } catch {
+    return fetchStoreProductBySlug(slug);
+  }
+});
