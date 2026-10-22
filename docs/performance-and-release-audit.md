@@ -1,5 +1,7 @@
 # Performance and release audit — 22 October 2026
 
+> Historical measurements below describe the deployment checks performed at the time. They do not verify deployment of later commits.
+
 ## Measured baseline
 
 The supplied DevTools capture showed the Next.js RSC document request at 7.67 s and several category prefetch requests taking 347–577 ms. A separate live HTTP check of the deployed pages measured:
@@ -52,8 +54,18 @@ The configured Supabase project does not yet have `categories.name_hi`; the publ
 ## Release checks and external setup
 
 - `npm run build` completes successfully.
-- `npm run lint` completes with zero errors and 17 existing unused-variable warnings.
+- Latest verified lint run: zero errors and 2 existing unused-variable warnings (`src/app/api/admin/audit-logs/route.ts:56`, `src/app/not-found.tsx:2`).
 - The signup form can only complete when the deployed Vercel environment has the matching `NEXT_PUBLIC_SUPABASE_URL` and `NEXT_PUBLIC_SUPABASE_ANON_KEY`, and Supabase Auth permits the deployed origin and `/auth/confirm?next=/account` redirect. The Supabase Auth service and Vercel environment were not modified by this repository change.
 - Follow-up check on 22 October 2026 found the deployed JavaScript uses `kwwcwdodvpcljjhfhaxg.supabase.co`, which did not resolve. Workspace `.env` points to `qclojxiuynbuwtaaiozm.supabase.co`; its Auth settings endpoint responded with HTTP 200 and allowed `https://bulk-supiler.vercel.app` by CORS preflight. The deployed public key also does not match the workspace key. Vercel needs both `NEXT_PUBLIC_SUPABASE_URL` and `NEXT_PUBLIC_SUPABASE_ANON_KEY` updated together from the intended Supabase project, followed by a production redeploy.
 - The SQL seed was not run against Supabase. Review and run it from the intended project only after confirming that project is the production database.
 - No post-deployment browser trace is available yet. Compare the same routes with DevTools/Lighthouse after deployment; activate Speed Insights for ongoing real-user measurements.
+
+## Follow-up — 23 October 2026
+
+Commits `2a367f7` and `231fe03` were pushed to `main`. They bound account enquiry-history loading to 10 seconds with English/Hindi retry messages, and restrict the assistant's language selector to the supported English and Hindi interface languages while preserving its English, Devanagari Hindi, and Hinglish/Roman Hindi response guidance. The acceptance suite passed 17 checks and `npx tsc --noEmit` passed after these changes. A production build passed after `2a367f7`; it was not rerun after the small language-list change. Lint completed with zero errors and the two warnings listed above.
+
+GitHub's commit status API reports Vercel **success — Deployment has completed** for `231fe03` (updated 22 October 2026 20:53 UTC). The `gh` CLI is unavailable in the workspace. Follow-up direct requests from this workspace to the production host timed out, so the successful deployment status is verified, but current route response codes and browser behavior were not independently checked. The earlier route measurements above predate these two commits.
+
+The local `.env` contains the public Supabase URL and key, but its `OPENAI_API_KEY` is unset. The assistant endpoint responds with its setup-required state when that key is absent; the interface localizes this state in Hindi. To enable the real LLM integration in production, set `OPENAI_API_KEY` as a server-only Vercel Production environment variable and optionally set `OPENAI_MODEL` (default `gpt-4o-mini`), then redeploy. Do not use a `NEXT_PUBLIC_` prefix for either variable. Vercel environment values were not inspectable from this workspace.
+
+Still unverified: real account signup/login, live assistant provider interaction, responsive browser screenshots at 320–1440px, PWA installation, offline operation, and applying the category Hindi-content migration to the intended production Supabase project.
