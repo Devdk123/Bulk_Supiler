@@ -262,3 +262,19 @@ test("assistant offers only localized interface languages and retains Hindi for 
   assert.match(endpoint, /Understand English, conversational Hindi in Devanagari, and Hinglish\/Roman Hindi/);
   assert.match(endpoint, /answer Devanagari Hindi in Hindi and Roman Hindi\/Hinglish naturally/);
 });
+
+test("PWA installation help selects browser-specific instructions in both locales", async () => {
+  const { getInstallInstructionsKey } = await importTypeScript("src/lib/pwa-install.ts");
+  assert.equal(getInstallInstructionsKey("Mozilla/5.0 (iPhone; CPU iPhone OS 17_0 like Mac OS X)"), "iosInstructions");
+  assert.equal(getInstallInstructionsKey("Mozilla/5.0 (Linux; Android 14) SamsungBrowser/26.0 Chrome/130.0"), "samsungInstructions");
+  assert.equal(getInstallInstructionsKey("Mozilla/5.0 (Linux; Android 14) Chrome/130.0 Mobile Safari/537.36"), "androidInstructions");
+  assert.equal(getInstallInstructionsKey("Mozilla/5.0 (Android 14; Mobile; rv:130.0) Firefox/130.0"), "firefoxInstructions");
+  assert.equal(getInstallInstructionsKey("Mozilla/5.0 (Windows NT 10.0) Chrome/130.0.0.0 Safari/537.36"), "desktopInstructions");
+  assert.equal(getInstallInstructionsKey("UnknownBrowser/1.0"), "manualInstructions");
+  const installPrompt = await readFile("src/components/install-prompt.tsx", "utf8");
+  assert.match(installPrompt, /t\(`pwa\.\$\{instructionsKey\}`\)/);
+  for (const key of ["iosInstructions", "samsungInstructions", "androidInstructions", "firefoxInstructions", "desktopInstructions", "manualInstructions"]) {
+    assert.ok(getPath(en, `pwa.${key}`), `English install help missing ${key}`);
+    assert.ok(getPath(hi, `pwa.${key}`), `Hindi install help missing ${key}`);
+  }
+});

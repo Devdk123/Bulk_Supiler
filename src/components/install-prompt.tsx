@@ -3,6 +3,7 @@
 import { useEffect, useState } from "react";
 import { Download, Share } from "lucide-react";
 import { useLanguage } from "@/context/language-context";
+import { getInstallInstructionsKey } from "@/lib/pwa-install";
 
 type InstallPromptEvent = Event & {
   prompt: () => Promise<void>;
@@ -14,7 +15,8 @@ const DISMISSED_KEY = "gayatristore-install-dismissed";
 export function InstallPrompt({ showLabel = false }: { showLabel?: boolean }) {
   const { t } = useLanguage();
   const [installEvent, setInstallEvent] = useState<InstallPromptEvent | null>(null);
-  const [ios] = useState(() => typeof navigator !== "undefined" && /iphone|ipad|ipod/i.test(navigator.userAgent));
+  const [instructionsKey] = useState(() => getInstallInstructionsKey(typeof navigator === "undefined" ? "" : navigator.userAgent));
+  const ios = instructionsKey === "iosInstructions";
   const [show, setShow] = useState(false);
   const [instructions, setInstructions] = useState(false);
 
@@ -62,7 +64,7 @@ export function InstallPrompt({ showLabel = false }: { showLabel?: boolean }) {
         <div className="fixed inset-0 z-[80] flex items-end justify-center bg-black/45 p-4 sm:items-center" role="presentation" onMouseDown={(event) => { if (event.target === event.currentTarget) setInstructions(false); }}>
           <section role="dialog" aria-modal="true" aria-labelledby="install-title" className="w-full max-w-sm rounded-2xl border border-border bg-card p-5 shadow-2xl">
             <h2 id="install-title" className="text-lg font-extrabold text-primary">{t("pwa.installTitle")}</h2>
-            <p className="mt-2 text-sm leading-relaxed text-muted-foreground">{ios ? t("pwa.iosInstructions") : t("pwa.manualInstructions")}</p>
+            <p className="mt-2 text-sm leading-relaxed text-muted-foreground">{t(`pwa.${instructionsKey}`)}</p>
             <div className="mt-4 flex justify-end gap-2">
               <button type="button" onClick={() => setInstructions(false)} className="min-h-11 rounded-xl px-4 text-sm font-semibold text-muted-foreground">{t("common.close")}</button>
               <button type="button" onClick={dismiss} className="min-h-11 rounded-xl bg-primary px-4 text-sm font-bold text-primary-foreground">{t("pwa.dismiss")}</button>
