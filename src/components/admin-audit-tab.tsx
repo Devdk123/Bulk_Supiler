@@ -18,7 +18,7 @@ type AuditLog = {
 };
 
 export function AdminAuditTab() {
-  const { t } = useLanguage();
+  const { t, language } = useLanguage();
   const [logs, setLogs] = useState<AuditLog[]>([]);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
@@ -34,7 +34,7 @@ export function AdminAuditTab() {
       const data = await res.json();
       setLogs(data.logs || []);
     } catch (err) {
-      setError(err instanceof Error ? err.message : "Failed to load audit logs.");
+      setError(err instanceof Error ? err.message : t("adminUI.auditFailed"));
     } finally {
       setLoading(false);
     }
@@ -108,7 +108,7 @@ export function AdminAuditTab() {
                 {logs.map((log) => (
                   <tr key={log.id} className="hover:bg-secondary/20">
                     <td className="py-2.5 px-3 whitespace-nowrap text-muted-foreground">
-                      {new Date(log.created_at).toLocaleString("en-IN", {
+                      {new Date(log.created_at).toLocaleString(language === "hi" ? "hi-IN" : "en-IN", {
                         day: "numeric",
                         month: "short",
                         year: "numeric",

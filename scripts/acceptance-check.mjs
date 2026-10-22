@@ -125,6 +125,21 @@ test("static translation references resolve in both languages", async () => {
   assert.deepEqual(missing, [], `missing translation paths:\n${missing.join("\n")}`);
 });
 
+test("dynamic admin status and setup labels exist in both languages", () => {
+  const keys = [
+    "adminUI.adminSections", "adminUI.searchEnquiries", "adminUI.filterLegacyStatus",
+    "adminUI.localizedCatalogueTitle", "adminUI.assistantRateLimitTitle", "adminUI.auditFailed"
+  ];
+  for (const key of keys) {
+    assert.equal(typeof getPath(en, key), "string", `missing English translation: ${key}`);
+    assert.equal(typeof getPath(hi, key), "string", `missing Hindi translation: ${key}`);
+  }
+  for (const status of ["All", "New", "Contacted", "Confirmed", "Delivered", "Cancelled"]) {
+    assert.equal(typeof getPath(en, `adminUI.legacyStatus.${status}`), "string");
+    assert.equal(typeof getPath(hi, `adminUI.legacyStatus.${status}`), "string");
+  }
+});
+
 test("web manifest has installable Gayatri Store metadata and required icons", async () => {
   const { default: manifest } = await importTypeScript("src/app/manifest.ts");
   const value = manifest();
@@ -133,6 +148,15 @@ test("web manifest has installable Gayatri Store metadata and required icons", a
   assert.equal(value.display, "standalone");
   for (const size of ["192x192", "512x512"]) assert.ok(value.icons.some((icon) => icon.sizes === size));
   assert.ok(value.icons.some((icon) => icon.purpose === "maskable"));
+});
+
+test("document defaults to English and light mode while preserving explicit saved preferences", async () => {
+  const layout = await read("src/app/layout.tsx");
+  const languageProvider = await read("src/context/language-context.tsx");
+  assert.match(layout, /<html lang="en"/);
+  assert.match(languageProvider, /document\.documentElement\.lang = language === "hi" \? "hi" : "en"/);
+  assert.match(layout, /dataset\.theme=t==="dark"\?"dark":"light"/);
+  assert.doesNotMatch(layout, /prefers-color-scheme/);
 });
 
 test("service worker only caches static same-origin assets and serves offline shell on navigation failure", async () => {

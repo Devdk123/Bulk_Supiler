@@ -77,7 +77,7 @@ export default async function RootLayout({ children }: Readonly<{ children: Reac
   };
 
   return (
-    <html lang="en-IN" suppressHydrationWarning>
+    <html lang="en" suppressHydrationWarning>
       <head>
         <script
           type="application/ld+json"
@@ -85,7 +85,7 @@ export default async function RootLayout({ children }: Readonly<{ children: Reac
         />
         <script
           dangerouslySetInnerHTML={{
-            __html: `(()=>{try{const t=localStorage.getItem("gayatristore-theme")||localStorage.getItem("bulk-supplier-theme");document.documentElement.dataset.theme=t==="light"||t==="dark"?t:(matchMedia("(prefers-color-scheme: dark)").matches?"dark":"light")}catch{document.documentElement.dataset.theme="light"}})();`
+            __html: `(()=>{try{const t=localStorage.getItem("gayatristore-theme")||localStorage.getItem("bulk-supplier-theme");document.documentElement.dataset.theme=t==="dark"?"dark":"light"}catch{document.documentElement.dataset.theme="light"}})();`
           }}
         />
       </head>

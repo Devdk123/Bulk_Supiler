@@ -6,7 +6,7 @@ This document provides the step-by-step guide to applying migrations, verifying 
 
 ## 1. Migration Execution Order
 
-All migrations in `supabase/migrations/` are **additive and idempotent** (using `if not exists`, `drop policy if exists`, and safe alterations). They can be run safely against an empty Supabase project or an existing one.
+The files are versioned database changes. Inspect the project's migration history and apply pending migrations in order; on an existing project, do not rerun the base SQL or reapply changes already recorded as complete. Use Supabase CLI migration history when available. The SQL Editor does not automatically record files in CLI migration history.
 
 ### Recommended Sequence:
 
@@ -18,7 +18,12 @@ All migrations in `supabase/migrations/` are **additive and idempotent** (using 
 6. [`006_rls_policies.sql`](./migrations/006_rls_policies.sql): Complete Row Level Security policies for Public, Authenticated Customers, Staff, and Administrators, plus table grants.
 7. [`007_storage_policies.sql`](./migrations/007_storage_policies.sql): Storage bucket (`product-images`, 5MB limit) and read/write policies on `storage.objects`.
 8. [`008_performance_indexes.sql`](./migrations/008_performance_indexes.sql): GIN full-text search indexes and composite browsing indexes.
-9. [`seed.sql`](./seed.sql) *(Optional initial data)*: Verified brands, wholesale categories, and initial products.
+9. [`20261015154037_wholesale_platform.sql`](./migrations/20261015154037_wholesale_platform.sql): Wholesale catalogue, variants, enquiries, public settings, import procedures, and related policies.
+10. [`20261023180000_localized_catalogue_content.sql`](./migrations/20261023180000_localized_catalogue_content.sql): Optional Hindi product descriptions and category labels.
+11. [`20261023193000_assistant_rate_limit.sql`](./migrations/20261023193000_assistant_rate_limit.sql): Private shared rate-limit storage and RPC for the server-side AI assistant.
+12. [`seed.sql`](./seed.sql) *(Optional initial data)*: Starter brands and wholesale categories. Review before running; it is not the customer starter catalogue import.
+
+For a linked project, use `npx supabase db push` to apply migrations not yet recorded in the project's migration history. Review the pending migration list before confirming the CLI prompt.
 
 ---
 
@@ -26,11 +31,11 @@ All migrations in `supabase/migrations/` are **additive and idempotent** (using 
 
 If using the Supabase Web Console:
 
-1. Open your project at [https://supabase.com/dashboard/project/qclojxiuynbuwtaaiozm](https://supabase.com/dashboard/project/qclojxiuynbuwtaaiozm) (or your project ref).
+1. Open the intended project from the [Supabase Dashboard](https://supabase.com/dashboard).
 2. Go to **SQL Editor** in the left sidebar.
 3. Click **New Query**.
-4. Paste the contents of each migration file in order (001 through 008) and click **Run**.
-5. Once all 8 are executed, run `seed.sql` to populate initial categories and brands.
+4. For a new database, run the migration files in the sequence above. For an existing database, run only migrations that have not already been applied; do not rerun the bundled base script or a migration that has already changed the schema.
+5. Run `seed.sql` only if you want its optional starter brand/category records. The product catalogue is imported separately through the existing admin import workflow.
 
 ---
 

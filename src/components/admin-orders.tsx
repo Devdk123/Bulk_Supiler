@@ -706,7 +706,7 @@ export function AdminOrders() {
           <Stat label={t("admin.stats.2")} value={newEnquiryCount} />
         </div>
 
-        <nav aria-label="Admin sections" className="mt-8 flex flex-wrap gap-2 border-b pb-3">
+        <nav aria-label={t("adminUI.adminSections")} className="mt-8 flex flex-wrap gap-2 border-b pb-3">
           {([
             ["products", "Products"],
             ["brands", "Brands & categories"],
@@ -866,14 +866,14 @@ export function AdminOrders() {
                         <p className="mt-1 text-xs text-muted-foreground">
                           {[product.brand?.name, product.category?.name, product.sku].filter(Boolean).join(" · ") || "No brand/category/SKU"}
                         </p>
-                        <span className="mt-2 inline-flex rounded-full border px-2 py-1 text-xs font-semibold capitalize">{product.status}</span>
+                        <span className="mt-2 inline-flex rounded-full border px-2 py-1 text-xs font-semibold capitalize">{t(`adminUI.publication.${product.status}`)}</span>
                       </div>
                       <div className="flex flex-wrap gap-2">
                         <Button type="button" size="sm" variant="outline" onClick={() => editProduct(product)}>{t("adminUI.edit")}</Button>
                         <select aria-label={`${product.name} status`} value={product.status} onChange={(event) => changeProductStatus(product, event.target.value as Status)} className="h-9 rounded-md border bg-background px-2 text-sm">
-                          {["draft", "published", "archived"].map((status) => <option key={status} value={status}>{status}</option>)}
+                          {["draft", "published", "archived"].map((status) => <option key={status} value={status}>{t(`adminUI.publication.${status}`)}</option>)}
                         </select>
-                        <Button type="button" size="icon" variant="outline" aria-label={`Delete ${product.name}`} onClick={() => deleteProduct(product)}><Trash2 className="h-4 w-4" /></Button>
+                        <Button type="button" size="icon" variant="outline" aria-label={`${t("adminUI.deleteRecord")} ${product.name}`} onClick={() => deleteProduct(product)}><Trash2 className="h-4 w-4" /></Button>
                       </div>
                     </article>
                   ))}
@@ -887,7 +887,7 @@ export function AdminOrders() {
         {activeTab === "brands" ? (
           <div className="mt-6 grid gap-6 lg:grid-cols-2">
             <TaxonomyForm
-              title={editingBrandId ? "Edit brand" : "Create brand"}
+              title={editingBrandId ? t("adminUI.brandEdit") : t("adminUI.brandCreate")}
               name={taxonomyName}
               status={taxonomyStatus}
               logo={taxonomyLogo}
@@ -901,7 +901,7 @@ export function AdminOrders() {
               onCancel={() => { setEditingBrandId(""); setTaxonomyName(""); setTaxonomyLogo(""); }}
             />
             <TaxonomyForm
-              title={editingCategoryId ? "Edit category" : "Create category"}
+              title={editingCategoryId ? t("adminUI.categoryEdit") : t("adminUI.categoryCreate")}
               name={taxonomyName}
               nameHi={taxonomyNameHi}
               descriptionHi={taxonomyDescriptionHi}
@@ -918,17 +918,17 @@ export function AdminOrders() {
               onSubmit={(event) => submitTaxonomy(event, "categories")}
               onCancel={() => { setEditingCategoryId(""); setTaxonomyName(""); setTaxonomyNameHi(""); setTaxonomyDescriptionHi(""); setCategoryParent(""); }}
             />
-            <TaxonomyList title="Brands" items={brands} onEdit={(item) => editTaxonomy(item, "brands")} onDelete={(item) => deleteTaxonomy(item, "brands")} />
-            <TaxonomyList title="Categories" items={categories} onEdit={(item) => editTaxonomy(item, "categories")} onDelete={(item) => deleteTaxonomy(item, "categories")} />
+            <TaxonomyList title={t("adminUI.brands")} items={brands} onEdit={(item) => editTaxonomy(item, "brands")} onDelete={(item) => deleteTaxonomy(item, "brands")} />
+            <TaxonomyList title={t("adminUI.categories")} items={categories} onEdit={(item) => editTaxonomy(item, "categories")} onDelete={(item) => deleteTaxonomy(item, "categories")} />
           </div>
         ) : null}
 
         {activeTab === "enquiries" ? (
           <div className="mt-6">
             <div className="flex flex-wrap gap-3">
-              <Input value={enquirySearch} onChange={(event) => setEnquirySearch(event.target.value)} placeholder="Search reference, buyer or phone" className="max-w-sm" />
+              <Input aria-label={t("adminUI.searchEnquiries")} value={enquirySearch} onChange={(event) => setEnquirySearch(event.target.value)} placeholder={t("adminUI.searchEnquiries")} className="max-w-sm" />
               <select value={enquiryStatus} onChange={(event) => setEnquiryStatus(event.target.value)} className="h-11 rounded-md border bg-background px-3 text-sm">
-                <option value="All">{t("catalogue.clearAll")}</option>{enquiryStatuses.map((status) => <option key={status} value={status}>{t(`adminUI.enquiryStatus.${status}`)}</option>)}
+                <option value="All">{t("adminUI.allStatuses")}</option>{enquiryStatuses.map((status) => <option key={status} value={status}>{t(`adminUI.enquiryStatus.${status}`)}</option>)}
               </select>
               <Button variant="outline" onClick={filterEnquiries}>{t("catalogue.resetFilters")}</Button>
             </div>
@@ -942,7 +942,7 @@ export function AdminOrders() {
                         <p className="mt-1 text-sm">{enquiry.contact_person} · <a className="underline" href={`tel:${enquiry.phone}`}>{enquiry.phone}</a>{enquiry.email ? ` · ${enquiry.email}` : ""}</p>
                         <p className="mt-1 text-sm text-muted-foreground">{enquiry.city}, {enquiry.state} {enquiry.pin_code}{enquiry.gstin ? ` · GSTIN ${enquiry.gstin}` : ""}</p>
                       </div>
-                      <select aria-label={`Status for ${enquiry.reference}`} value={enquiry.status} onChange={(event) => updateEnquiry(enquiry, { status: event.target.value as AdminEnquiry["status"] })} className="h-10 rounded-md border bg-background px-3 text-sm">
+                      <select aria-label={`${t("adminUI.statusForEnquiry")} ${enquiry.reference}`} value={enquiry.status} onChange={(event) => updateEnquiry(enquiry, { status: event.target.value as AdminEnquiry["status"] })} className="h-10 rounded-md border bg-background px-3 text-sm">
                         {enquiryStatuses.map((status) => <option key={status} value={status}>{t(`adminUI.enquiryStatus.${status}`)}</option>)}
                       </select>
                     </div>
@@ -971,8 +971,8 @@ export function AdminOrders() {
           <div className="mt-6">
             <div className="flex flex-wrap gap-3">
               <Input aria-label={t("adminUI.searchHistory")} value={legacyOrderSearch} onChange={(event) => setLegacyOrderSearch(event.target.value)} placeholder={t("adminUI.searchHistoryPlaceholder")} className="max-w-sm" />
-              <select aria-label="Filter historical orders by status" value={legacyOrderStatus} onChange={(event) => setLegacyOrderStatus(event.target.value)} className="h-11 rounded-md border bg-background px-3 text-sm">
-                {["All", "New", "Contacted", "Confirmed", "Delivered", "Cancelled"].map((status) => <option key={status}>{status}</option>)}
+              <select aria-label={t("adminUI.filterLegacyStatus")} value={legacyOrderStatus} onChange={(event) => setLegacyOrderStatus(event.target.value)} className="h-11 rounded-md border bg-background px-3 text-sm">
+                {["All", "New", "Contacted", "Confirmed", "Delivered", "Cancelled"].map((status) => <option key={status} value={status}>{t(`adminUI.legacyStatus.${status}`)}</option>)}
               </select>
               <Button variant="gold" onClick={() => loadLegacyOrders(0)} disabled={legacyOrdersLoading}>
                 {legacyOrdersLoading ? <Loader2 className="h-4 w-4 animate-spin" /> : <Search className="h-4 w-4" />} {t("adminUI.searchHistory")}
@@ -988,20 +988,20 @@ export function AdminOrders() {
                         <h2 className="font-bold text-primary">{order.customer_name} · {order.product_name}</h2>
                         <p className="mt-1 text-sm text-muted-foreground">{order.phone} · {order.city} · {new Date(order.created_at).toLocaleString()}</p>
                       </div>
-                      <span className="h-fit rounded-full border px-3 py-1 text-xs font-semibold">{order.status}</span>
+                      <span className="h-fit rounded-full border px-3 py-1 text-xs font-semibold">{t(`adminUI.legacyStatus.${order.status}`)}</span>
                     </div>
-                    <p className="mt-3 text-sm">Quantity: {order.quantity} · Payment method: {order.payment_method}</p>
+                    <p className="mt-3 text-sm">{t("adminUI.quantity")}: {order.quantity} · {t("adminUI.paymentMethod")}: {order.payment_method}</p>
                     <p className="mt-1 whitespace-pre-wrap text-sm">{order.address}</p>
                     {order.message ? <p className="mt-2 text-sm">{order.message}</p> : null}
                   </CardContent>
                 </Card>
               ))}
-              {!legacyOrders.length && !legacyOrdersLoading ? <p className="rounded-lg border border-dashed p-8 text-center text-sm text-muted-foreground">No historical orders found.</p> : null}
+              {!legacyOrders.length && !legacyOrdersLoading ? <p className="rounded-lg border border-dashed p-8 text-center text-sm text-muted-foreground">{t("adminUI.noHistoricalOrders")}</p> : null}
             </div>
             <div className="mt-4 flex items-center gap-3">
-              <Button variant="outline" onClick={() => loadLegacyOrders(legacyOrderPage - 1)} disabled={legacyOrderPage === 0 || legacyOrdersLoading}>Previous</Button>
-              <span className="text-sm text-muted-foreground">Page {legacyOrderPage + 1}</span>
-              <Button variant="outline" onClick={() => loadLegacyOrders(legacyOrderPage + 1)} disabled={!legacyOrdersHaveMore || legacyOrdersLoading}>Next</Button>
+              <Button variant="outline" onClick={() => loadLegacyOrders(legacyOrderPage - 1)} disabled={legacyOrderPage === 0 || legacyOrdersLoading}>{t("adminUI.previous")}</Button>
+              <span className="text-sm text-muted-foreground">{t("adminUI.page")} {legacyOrderPage + 1}</span>
+              <Button variant="outline" onClick={() => loadLegacyOrders(legacyOrderPage + 1)} disabled={!legacyOrdersHaveMore || legacyOrdersLoading}>{t("adminUI.next")}</Button>
             </div>
           </div>
         ) : null}
@@ -1009,37 +1009,35 @@ export function AdminOrders() {
         {activeTab === "import" ? (
           <Card className="mt-6">
             <CardContent className="p-5">
-              <h2 className="text-xl font-extrabold text-primary">Import and export catalogue</h2>
-              <p className="mt-2 max-w-3xl text-sm leading-6 text-muted-foreground">
-                Upload the starter workbook or a catalogue template. Starter workbook brands and categories are created or reused at commit. Suggested SKUs are stable: existing SKUs are skipped on reimport, and existing product records are never overwritten.
-              </p>
+              <h2 className="text-xl font-extrabold text-primary">{t("adminUI.importTitle")}</h2>
+              <p className="mt-2 max-w-3xl text-sm leading-6 text-muted-foreground">{t("adminUI.importDescription")}</p>
               <div className="mt-5 flex flex-wrap gap-3">
-                <DownloadLink href="/api/admin/products/template?format=csv" label="CSV template" />
-                <DownloadLink href="/api/admin/products/template?format=xlsx" label="Excel template" />
-                <DownloadLink href="/api/admin/products/export?format=csv" label="Export CSV" />
-                <DownloadLink href="/api/admin/products/export?format=xlsx" label="Export Excel" />
+                <DownloadLink href="/api/admin/products/template?format=csv" label={t("adminUI.csvTemplate")} />
+                <DownloadLink href="/api/admin/products/template?format=xlsx" label={t("adminUI.excelTemplate")} />
+                <DownloadLink href="/api/admin/products/export?format=csv" label={t("adminUI.exportCsv")} />
+                <DownloadLink href="/api/admin/products/export?format=xlsx" label={t("adminUI.exportExcel")} />
                 <label className="inline-flex cursor-pointer items-center gap-2 rounded-md border bg-secondary px-4 py-2 text-sm font-semibold">
                   {importLoading ? <Loader2 className="h-4 w-4 animate-spin" /> : <Upload className="h-4 w-4" />}
-                  Preview CSV / XLSX
+                  {t("adminUI.previewFile")}
                   <input type="file" accept=".csv,.xlsx,text/csv,application/vnd.openxmlformats-officedocument.spreadsheetml.sheet" onChange={previewImport} className="sr-only" disabled={importLoading} />
                 </label>
               </div>
               {importError ? <p role="status" className="mt-4 rounded-md bg-secondary p-3 text-sm">{importError}</p> : null}
               {importPreview ? (
                 <div className="mt-6">
-                  <p className="font-semibold">Preview: {importPreview.totalRows} rows · {importPreview.newRows} new · {importPreview.existingRows} already imported · {importPreview.invalidRows.length} with errors</p>
+                  <p className="font-semibold">{t("adminUI.preview")}: {importPreview.totalRows} {t("adminUI.rows")} · {importPreview.newRows} {t("adminUI.newRows")} · {importPreview.existingRows} {t("adminUI.existingRows")} · {importPreview.invalidRows.length} {t("adminUI.invalidRows")}</p>
                   {importPreview.invalidRows.length ? (
                     <ul className="mt-3 grid gap-2 text-sm text-red-800">
-                      {importPreview.invalidRows.map((row) => <li key={row.row} className="rounded-md bg-red-50 p-3">Row {row.row}: {row.errors.join(" ")}</li>)}
+                      {importPreview.invalidRows.map((row) => <li key={row.row} className="rounded-md bg-red-50 p-3">{t("adminUI.row")} {row.row}: {row.errors.join(" ")}</li>)}
                     </ul>
                   ) : null}
 
                   <div className="mt-4 flex flex-wrap gap-3">
                     <Button variant="gold" onClick={commitImport} disabled={importLoading || !importPreview.validRows.length}>
                       {importLoading ? <Loader2 className="h-4 w-4 animate-spin" /> : <FileSpreadsheet className="h-4 w-4" />}
-                      Import {importPreview.validRows.length} valid rows
+                      {t("adminUI.importValidRows")} ({importPreview.validRows.length})
                     </Button>
-                    <Button variant="outline" onClick={() => setImportPreview(null)} disabled={importLoading}>Cancel</Button>
+                    <Button variant="outline" onClick={() => setImportPreview(null)} disabled={importLoading}>{t("adminUI.cancel")}</Button>
                   </div>
                 </div>
               ) : null}
@@ -1050,23 +1048,23 @@ export function AdminOrders() {
         {activeTab === "settings" ? (
           <Card className="mt-6">
             <CardContent className="p-5">
-              <h2 className="text-xl font-extrabold text-primary">Public business information</h2>
-              <p className="mt-2 text-sm text-muted-foreground">Only enter details verified by the business. These values are public on the site; secrets and API keys are never stored here.</p>
+              <h2 className="text-xl font-extrabold text-primary">{t("adminUI.settingsTitle")}</h2>
+              <p className="mt-2 text-sm text-muted-foreground">{t("adminUI.settingsDescription")}</p>
               {settingsError ? <p role="status" className="mt-4 rounded-md bg-secondary p-3 text-sm">{settingsError}</p> : null}
               <form onSubmit={saveBusinessSettings} className="mt-5 grid gap-4 md:grid-cols-2">
                 {([
-                  ["contact_phone", "Phone number"],
-                  ["whatsapp_number", "WhatsApp number"],
-                  ["contact_email", "Public email"],
-                  ["business_address", "Business address"],
-                  ["business_hours", "Business hours"],
-                  ["delivery_coverage", "Delivery coverage"]
+                  ["contact_phone", "phoneNumber"],
+                  ["whatsapp_number", "whatsappNumber"],
+                  ["contact_email", "publicEmail"],
+                  ["business_address", "businessAddress"],
+                  ["business_hours", "businessHours"],
+                  ["delivery_coverage", "deliveryCoverage"]
                 ] as const).map(([key, label]) => (
-                  <Field key={key} label={label}>
+                  <Field key={key} label={t(`adminUI.${label}`)}>
                     <Input value={businessSettings[key]} onChange={(event) => setBusinessSettings((current) => ({ ...current, [key]: event.target.value }))} />
                   </Field>
                 ))}
-                <Button type="submit" variant="gold" className="w-fit"><Save className="h-4 w-4" /> Save public settings</Button>
+                <Button type="submit" variant="gold" className="w-fit"><Save className="h-4 w-4" /> {t("adminUI.settingsSavePublic")}</Button>
               </form>
             </CardContent>
           </Card>
@@ -1075,95 +1073,102 @@ export function AdminOrders() {
           <Card className="mt-6 rounded-3xl border border-border bg-card shadow-sm">
             <CardContent className="p-6 md:p-8">
               <h2 className="text-xl font-extrabold text-foreground">
-                Storefront Setup & Supabase Diagnostics
+                {t("adminUI.diagnosticsTitle")}
               </h2>
               <p className="mt-2 text-sm text-muted-foreground">
-                Check database connectivity, required environment variables, and migration status. This diagnostic interface is kept strictly internal to the administrator.
+                {t("adminUI.diagnosticsDescription")}
               </p>
 
               <div className="mt-6 grid gap-6 md:grid-cols-2">
                 <div className="rounded-2xl border border-border bg-background p-5">
                   <h3 className="text-sm font-bold uppercase tracking-wider text-primary dark:text-accent">
-                    Required Environment Variables
+                    {t("adminUI.requiredVariables")}
                   </h3>
                   <p className="mt-1 text-xs text-muted-foreground">
-                    Ensure these are defined in your local <code className="rounded bg-secondary px-1.5 py-0.5 font-mono text-[11px]">.env</code> and in Vercel Project Settings:
+                    {t("adminUI.environmentHint")}
                   </p>
                   <ul className="mt-4 space-y-2 text-xs font-mono">
                     <li className="flex items-center justify-between rounded-lg border border-border bg-card p-2.5">
                       <span>NEXT_PUBLIC_SUPABASE_URL</span>
-                      <span className="rounded bg-fresh/15 px-2 py-0.5 text-[10px] font-sans font-bold text-fresh">Required</span>
+                      <span className="rounded bg-fresh/15 px-2 py-0.5 text-[10px] font-sans font-bold text-fresh">{t("adminUI.required")}</span>
                     </li>
                     <li className="flex items-center justify-between rounded-lg border border-border bg-card p-2.5">
                       <span>NEXT_PUBLIC_SUPABASE_ANON_KEY</span>
-                      <span className="rounded bg-fresh/15 px-2 py-0.5 text-[10px] font-sans font-bold text-fresh">Required</span>
+                      <span className="rounded bg-fresh/15 px-2 py-0.5 text-[10px] font-sans font-bold text-fresh">{t("adminUI.required")}</span>
                     </li>
                     <li className="flex items-center justify-between rounded-lg border border-border bg-card p-2.5">
                       <span>SUPABASE_SERVICE_ROLE_KEY</span>
-                      <span className="rounded bg-fresh/15 px-2 py-0.5 text-[10px] font-sans font-bold text-fresh">Server-only</span>
+                      <span className="rounded bg-fresh/15 px-2 py-0.5 text-[10px] font-sans font-bold text-fresh">{t("adminUI.serverOnly")}</span>
                     </li>
                     <li className="flex items-center justify-between rounded-lg border border-border bg-card p-2.5">
                       <span>ADMIN_PASSWORD</span>
-                      <span className="rounded bg-fresh/15 px-2 py-0.5 text-[10px] font-sans font-bold text-fresh">Configured</span>
+                      <span className="rounded bg-fresh/15 px-2 py-0.5 text-[10px] font-sans font-bold text-fresh">{t("adminUI.environmentSet")}</span>
                     </li>
                     <li className="flex items-center justify-between rounded-lg border border-border bg-card p-2.5">
                       <span>ADMIN_SESSION_SECRET</span>
-                      <span className="rounded bg-fresh/15 px-2 py-0.5 text-[10px] font-sans font-bold text-fresh">Configured</span>
+                      <span className="rounded bg-fresh/15 px-2 py-0.5 text-[10px] font-sans font-bold text-fresh">{t("adminUI.environmentSet")}</span>
                     </li>
                     <li className="flex items-center justify-between rounded-lg border border-border bg-card p-2.5">
                       <span>NEXT_PUBLIC_WHATSAPP_NUMBER</span>
-                      <span className="rounded bg-fresh/15 px-2 py-0.5 text-[10px] font-sans font-bold text-fresh">Configured</span>
+                      <span className="rounded bg-fresh/15 px-2 py-0.5 text-[10px] font-sans font-bold text-fresh">{t("adminUI.environmentSet")}</span>
                     </li>
                   </ul>
                 </div>
 
                 <div className="rounded-2xl border border-border bg-background p-5">
                   <h3 className="text-sm font-bold uppercase tracking-wider text-primary dark:text-accent">
-                    Database Schema & Migrations
+                    {t("adminUI.migrations")}
                   </h3>
                   <p className="mt-1 text-xs text-muted-foreground">
-                    To activate full wholesale features, execute these files in your Supabase SQL Editor:
+                    {t("adminUI.activateFeaturesHint")}
                   </p>
 
                   <div className="mt-4 space-y-3 text-xs">
                     <div className="rounded-xl border border-border bg-card p-3.5">
-                      <p className="font-bold text-foreground">1. Base Tables</p>
+                      <p className="font-bold text-foreground">{t("adminUI.baseTables")}</p>
                       <p className="mt-1 text-muted-foreground">
-                        File: <code className="rounded bg-secondary px-1.5 py-0.5 font-mono text-[11px]">supabase/run-this-in-sql-editor.sql</code>
+                        {t("adminUI.fileLabel")} <code className="rounded bg-secondary px-1.5 py-0.5 font-mono text-[11px]">supabase/run-this-in-sql-editor.sql</code>
                       </p>
                       <p className="mt-0.5 text-[11px] text-muted-foreground">
-                        Creates base <code className="font-mono">products</code> and legacy <code className="font-mono">orders</code> tables.
+                        {t("adminUI.baseTablesDescription")}
                       </p>
                     </div>
 
                     <div className="rounded-xl border border-border bg-card p-3.5">
-                      <p className="font-bold text-foreground">2. Wholesale Platform Migration</p>
+                      <p className="font-bold text-foreground">{t("adminUI.wholesaleMigrationTitle")}</p>
                       <p className="mt-1 text-muted-foreground">
-                        File: <code className="rounded bg-secondary px-1.5 py-0.5 font-mono text-[11px]">supabase/migrations/20261015154037_wholesale_platform.sql</code>
+                        {t("adminUI.fileLabel")} <code className="rounded bg-secondary px-1.5 py-0.5 font-mono text-[11px]">supabase/migrations/20261015154037_wholesale_platform.sql</code>
                       </p>
                       <p className="mt-0.5 text-[11px] text-muted-foreground">
-                        Creates <code className="font-mono">brands</code>, <code className="font-mono">categories</code>, <code className="font-mono">enquiries</code>, <code className="font-mono">product_variants</code>, <code className="font-mono">product_price_tiers</code>, and <code className="font-mono">business_settings</code> with RLS policies and procedures.
+                        {t("adminUI.wholesaleMigrationDescription")}
                       </p>
-                    </div>
-
-                    <div className="rounded-xl border border-fresh/30 bg-fresh/10 p-3.5 text-fresh">
-                      <p className="font-bold">Public Storefront Integrity</p>
                     </div>
 
                     <div className="rounded-xl border border-border bg-card p-3.5">
-                      <p className="font-bold text-foreground">3. Active Supabase Project Reference</p>
-                      <p className="mt-1 text-muted-foreground font-mono text-[11px]">
-                        Project ID: <span className="font-bold text-primary dark:text-accent">qclojxiuynbuwtaaiozm</span>
-                      </p>
-                      <p className="mt-0.5 text-[11px] text-muted-foreground">
-                        Auto-healed by client resolver if environment variable contains trailing quotes or whitespace.
-                      </p>
+                      <p className="font-bold text-foreground">{t("adminUI.localizedCatalogueTitle")}</p>
+                      <p className="mt-1 text-muted-foreground">{t("adminUI.fileLabel")} <code className="rounded bg-secondary px-1.5 py-0.5 font-mono text-[11px]">supabase/migrations/20261023180000_localized_catalogue_content.sql</code></p>
+                      <p className="mt-0.5 text-[11px] text-muted-foreground">{t("adminUI.localizedCatalogueDescription")}</p>
+                    </div>
+
+                    <div className="rounded-xl border border-border bg-card p-3.5">
+                      <p className="font-bold text-foreground">{t("adminUI.assistantRateLimitTitle")}</p>
+                      <p className="mt-1 text-muted-foreground">{t("adminUI.fileLabel")} <code className="rounded bg-secondary px-1.5 py-0.5 font-mono text-[11px]">supabase/migrations/20261023193000_assistant_rate_limit.sql</code></p>
+                      <p className="mt-0.5 text-[11px] text-muted-foreground">{t("adminUI.assistantRateLimitDescription")}</p>
                     </div>
 
                     <div className="rounded-xl border border-fresh/30 bg-fresh/10 p-3.5 text-fresh">
-                      <p className="font-bold">Operational Readiness</p>
+                      <p className="font-bold">{t("adminUI.publicIntegrity")}</p>
+                    </div>
+
+                    <div className="rounded-xl border border-border bg-card p-3.5">
+                      <p className="font-bold text-foreground">{t("adminUI.projectConfigTitle")}</p>
+                      <p className="mt-1 text-muted-foreground">{t("adminUI.projectConfigDescription")}</p>
+                    </div>
+
+                    <div className="rounded-xl border border-fresh/30 bg-fresh/10 p-3.5 text-fresh">
+                      <p className="font-bold">{t("adminUI.operationalReadiness")}</p>
                       <p className="mt-0.5 text-[11px] text-foreground/80">
-                        Public visitors see a clean, professional FMCG storefront without internal database errors or setup banners.
+                        {t("adminUI.readinessDescription")}
                       </p>
                     </div>
                   </div>
@@ -1219,7 +1224,7 @@ function TaxonomyForm({
       <h2 className="text-xl font-bold text-primary">{title}</h2>
       {error ? <p role="alert" className="mt-3 rounded-md bg-red-50 p-3 text-sm text-red-800">{error}</p> : null}
       <form onSubmit={onSubmit} className="mt-4 grid gap-4">
-        <Field label="Name"><Input required value={name} onChange={(event) => onName(event.target.value)} /></Field>
+        <Field label={t("adminUI.name")}><Input required value={name} onChange={(event) => onName(event.target.value)} /></Field>
         {onParent && onNameHi && onDescriptionHi ? (
           <>
             <Field label={t("admin.nameHindi")}><Input value={nameHi || ""} onChange={(event) => onNameHi(event.target.value)} /></Field>
@@ -1228,23 +1233,23 @@ function TaxonomyForm({
         ) : null}
         {onLogo ? (
           <>
-            <Field label="Logo image URL"><Input value={logo || ""} onChange={(event) => onLogo(event.target.value)} /></Field>
-            {onLogoUpload ? <Field label="Upload logo"><Input type="file" accept="image/jpeg,image/png,image/webp" onChange={onLogoUpload} /></Field> : null}
+            <Field label={t("adminUI.logoImageUrl")}><Input value={logo || ""} onChange={(event) => onLogo(event.target.value)} /></Field>
+            {onLogoUpload ? <Field label={t("adminUI.uploadLogo")}><Input type="file" accept="image/jpeg,image/png,image/webp" onChange={onLogoUpload} /></Field> : null}
           </>
         ) : null}
         {onParent ? (
-          <Field label="Parent category">
+          <Field label={t("adminUI.parentCategory")}>
             <select value={parentId || ""} onChange={(event) => onParent(event.target.value)} className="h-11 rounded-md border bg-background px-3 text-sm">
-              <option value="">No parent</option>{categories.map((category) => <option key={category.id} value={category.id}>{category.name}</option>)}
+              <option value="">{t("adminUI.noParent")}</option>{categories.map((category) => <option key={category.id} value={category.id}>{category.name}</option>)}
             </select>
           </Field>
         ) : null}
-        <Field label="Status">
+        <Field label={t("adminUI.statusLabel")}>
           <select value={status} onChange={(event) => onStatus(event.target.value as Status)} className="h-11 rounded-md border bg-background px-3 text-sm">
-            {["draft", "published", "archived"].map((value) => <option key={value} value={value}>{value}</option>)}
+            {["draft", "published", "archived"].map((value) => <option key={value} value={value}>{t(`adminUI.publication.${value}`)}</option>)}
           </select>
         </Field>
-        <div className="flex gap-2"><Button type="submit" variant="gold" disabled={busy}><Save className="h-4 w-4" /> Save</Button><Button type="button" variant="outline" onClick={onCancel}>Clear</Button></div>
+        <div className="flex gap-2"><Button type="submit" variant="gold" disabled={busy}><Save className="h-4 w-4" /> {t("adminUI.save")}</Button><Button type="button" variant="outline" onClick={onCancel}>{t("adminUI.clear")}</Button></div>
       </form>
     </CardContent></Card>
   );
@@ -1256,17 +1261,18 @@ function TaxonomyList({ title, items, onEdit, onDelete }: {
   onEdit: (item: Taxonomy) => void;
   onDelete: (item: Taxonomy) => void;
 }) {
+  const { t } = useLanguage();
   return (
     <Card><CardContent className="p-5">
       <h2 className="text-xl font-bold text-primary">{title} ({items.length})</h2>
       <ul className="mt-4 grid gap-2">
         {items.map((item) => (
           <li key={item.id} className="flex items-center justify-between gap-3 rounded-md border p-3">
-            <span className="min-w-0"><strong className="block truncate">{item.name}</strong><small className="text-muted-foreground">{item.status}</small></span>
-            <span className="flex gap-2"><Button variant="outline" size="sm" onClick={() => onEdit(item)}>Edit</Button><Button variant="outline" size="icon" aria-label={`Delete ${item.name}`} onClick={() => onDelete(item)}><Trash2 className="h-4 w-4" /></Button></span>
+            <span className="min-w-0"><strong className="block truncate">{item.name}</strong><small className="text-muted-foreground">{t(`adminUI.publication.${item.status}`)}</small></span>
+            <span className="flex gap-2"><Button variant="outline" size="sm" onClick={() => onEdit(item)}>{t("adminUI.edit")}</Button><Button variant="outline" size="icon" aria-label={`${t("adminUI.deleteRecord")} ${item.name}`} onClick={() => onDelete(item)}><Trash2 className="h-4 w-4" /></Button></span>
           </li>
         ))}
-        {!items.length ? <li className="rounded-md border border-dashed p-5 text-sm text-muted-foreground">No records yet.</li> : null}
+        {!items.length ? <li className="rounded-md border border-dashed p-5 text-sm text-muted-foreground">{t("adminUI.noRecords")}</li> : null}
       </ul>
     </CardContent></Card>
   );
