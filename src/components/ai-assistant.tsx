@@ -20,6 +20,7 @@ export function AiAssistant({ embedded = false, onClose }: { embedded?: boolean;
   const [draft, setDraft] = useState("");
   const [sending, setSending] = useState(false);
   const [error, setError] = useState("");
+  const [retryMessages, setRetryMessages] = useState<ChatMessage[] | null>(null);
   const endOfMessages = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
@@ -32,6 +33,45 @@ export function AiAssistant({ embedded = false, onClose }: { embedded?: boolean;
     setLanguage(nextLanguage.code);
   }
 
+  async function sendMessages(nextMessages: ChatMessage[]) {
+    setError("");
+    setSending(true);
+    const controller = new AbortController();
+    const timeout = window.setTimeout(() => controller.abort(), 20_000);
+
+    try {
+      const response = await fetch("/api/assistant", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ language, messages: nextMessages.slice(-12) }),
+        signal: controller.signal
+      });
+      const result: { reply?: string; error?: string; products?: AssistantProduct[] } = await response.json();
+      if (!response.ok || !result.reply) {
+        setRetryMessages(nextMessages);
+        const localizedError = language === "hi"
+          ? response.status === 503 && /not configured/i.test(result.error || "")
+            ? t("assistant.notConfigured")
+            : response.status === 429
+              ? t("assistant.rateLimited")
+              : t("assistant.unavailable")
+          : result.error || t("assistant.unavailable");
+        throw new Error(localizedError);
+      }
+      setMessages([...nextMessages, { role: "assistant", content: result.reply, products: result.products }]);
+      setRetryMessages(null);
+    } catch (requestError) {
+      const aborted = requestError instanceof DOMException && requestError.name === "AbortError";
+      setRetryMessages(nextMessages);
+      setError(aborted
+        ? t("assistant.timeout")
+        : requestError instanceof Error ? requestError.message : t("assistant.unavailable"));
+    } finally {
+      window.clearTimeout(timeout);
+      setSending(false);
+    }
+  }
+
   async function handleSubmit(event: FormEvent<HTMLFormElement>) {
     event.preventDefault();
     const content = draft.trim();
@@ -40,25 +80,8 @@ export function AiAssistant({ embedded = false, onClose }: { embedded?: boolean;
     const nextMessages = [...messages, { role: "user" as const, content }];
     setMessages(nextMessages);
     setDraft("");
-    setError("");
-    setSending(true);
-
-    try {
-      const response = await fetch("/api/assistant", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ language, messages: nextMessages.slice(-12) })
-      });
-      const result: { reply?: string; error?: string; products?: AssistantProduct[] } = await response.json();
-      if (!response.ok || !result.reply) {
-        throw new Error(result.error || "The assistant is temporarily unavailable. Please try again.");
-      }
-      setMessages([...nextMessages, { role: "assistant", content: result.reply, products: result.products }]);
-    } catch (requestError) {
-      setError(requestError instanceof Error ? requestError.message : "The assistant is temporarily unavailable. Please try again.");
-    } finally {
-      setSending(false);
-    }
+    setRetryMessages(null);
+    await sendMessages(nextMessages);
   }
 
   return (
@@ -143,9 +166,10 @@ export function AiAssistant({ embedded = false, onClose }: { embedded?: boolean;
           </div>
 
           {error ? (
-            <p role="alert" className="border-t border-vermilion/20 bg-vermilion/5 px-4 py-2.5 text-xs leading-relaxed text-vermilion">
-              {error}
-            </p>
+            <div role="alert" className="flex items-center justify-between gap-3 border-t border-vermilion/20 bg-vermilion/5 px-4 py-2.5 text-xs leading-relaxed text-vermilion">
+              <span>{error}</span>
+              {retryMessages ? <button type="button" disabled={sending} onClick={() => void sendMessages(retryMessages)} className="min-h-9 shrink-0 rounded-lg border border-vermilion/30 px-3 font-bold disabled:opacity-50">{t("assistant.retry")}</button> : null}
+            </div>
           ) : null}
 
           <p className="px-4 pt-2 text-[10px] leading-relaxed text-muted-foreground">

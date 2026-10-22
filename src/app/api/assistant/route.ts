@@ -1,8 +1,9 @@
+import { createHash } from "node:crypto";
 import OpenAI from "openai";
 import { NextResponse } from "next/server";
 import { z } from "zod";
 import { assistantLanguages } from "@/lib/assistant-languages";
-import { getSupabasePublic } from "@/lib/supabase";
+import { getSupabaseAdmin, getSupabasePublic } from "@/lib/supabase";
 
 type RateWindow = {
   count: number;
@@ -19,7 +20,7 @@ function clientAddress(request: Request) {
     || "unknown";
 }
 
-function allowRequest(request: Request, now: number) {
+function allowInMemoryRequest(request: Request, now: number) {
   if (rateWindows.size > 2000) {
     for (const [key, value] of rateWindows) {
       if (value.resetsAt <= now) rateWindows.delete(key);
@@ -36,6 +37,26 @@ function allowRequest(request: Request, now: number) {
   window.count += 1;
   rateWindows.set(key, window);
   return true;
+}
+
+async function allowRequest(request: Request) {
+  const bucketHash = createHash("sha256").update(clientAddress(request)).digest("hex");
+  try {
+    const { data, error } = await getSupabaseAdmin()
+      .rpc("consume_assistant_rate_limit", {
+        p_bucket_hash: bucketHash,
+        p_window_seconds: RATE_WINDOW_MS / 1000,
+        p_max_requests: MAX_REQUESTS
+      })
+      .abortSignal(AbortSignal.timeout(1200));
+    if (error) throw error;
+    return data === true;
+  } catch (error) {
+    // Keep the assistant usable during migration rollout or a transient DB
+    // outage, while falling back to best-effort per-instance protection.
+    console.warn("Shared assistant rate limit unavailable; using in-memory fallback:", error);
+    return allowInMemoryRequest(request, Date.now());
+  }
 }
 
 const requestSchema = z.object({
@@ -119,7 +140,7 @@ export async function POST(request: Request) {
     return NextResponse.json({ error: "Assistant message is too large." }, { status: 413 });
   }
 
-  if (!allowRequest(request, Date.now())) {
+  if (!(await allowRequest(request))) {
     return NextResponse.json(
       { error: "Too many assistant messages from this connection. Please try again later." },
       { status: 429 }
