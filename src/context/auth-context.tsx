@@ -157,6 +157,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
         email: data.email.trim(),
         password: data.password,
         options: {
+          emailRedirectTo: typeof window !== "undefined" ? `${window.location.origin}/account` : undefined,
           data: {
             full_name: data.fullName.trim(),
             phone: data.phone.trim(),
@@ -178,7 +179,13 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
 
       return { error: null, requiresVerification };
     } catch (err) {
-      return { error: err instanceof Error ? err.message : "Failed to register account." };
+      if (err instanceof TypeError && /fetch/i.test(err.message)) {
+        return {
+          error:
+            "We couldn't reach the account service. Check your internet connection and try again. If this continues, the site's administrator should verify the deployed Supabase URL and public API key."
+        };
+      }
+      return { error: err instanceof Error ? err.message : "Unable to register the account. Please try again." };
     }
   }, []);
 

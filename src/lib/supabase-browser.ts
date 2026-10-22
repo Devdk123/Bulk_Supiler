@@ -24,10 +24,9 @@ export function getSupabaseBrowser(): SupabaseClient {
     const key = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY?.trim();
 
     if (!url || !key) {
-      console.warn("Supabase browser credentials are missing. Running in offline/preview mode.");
-      return createClient("https://placeholder.supabase.co", "placeholder-key", {
-        auth: { persistSession: false }
-      });
+      throw new Error(
+        "Account registration is unavailable because the Supabase URL or public API key is missing. Configure NEXT_PUBLIC_SUPABASE_URL and NEXT_PUBLIC_SUPABASE_ANON_KEY, then rebuild the site."
+      );
     }
 
     browserClient = createClient(url, key, {
