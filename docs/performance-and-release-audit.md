@@ -27,9 +27,17 @@ Against a local `next start` process with outbound access enabled, warm HTTP che
 | `/order` | 200 | 71 ms | 73,844 B |
 | `/manifest.webmanifest` | 200 | 28 ms | 640 B |
 
-These are warm local server response measurements, not production browser paint or Core Web Vitals. The public catalogue query returned 19 published products; all had a brand, `quote_only = true`, no configured amount, `stock_status = unknown`, and null pack size, carton quantity, MOQ, and order increment. The query also found 7 brands and 6 categories. No live production-domain timing was available.
+These are warm local server response measurements, not production browser paint or Core Web Vitals. The public catalogue query returned 19 published products; all had a brand, `quote_only = true`, no configured amount, `stock_status = unknown`, and null pack size, carton quantity, MOQ, and order increment. The query also found 7 brands and 6 categories.
 
-The configured Supabase project does not yet have `categories.name_hi`; the public catalogue fallback succeeded and returns null Hindi category labels, which means category names remain English in Hindi mode until migration [`20261023180000_localized_catalogue_content.sql`](../supabase/migrations/20261023180000_localized_catalogue_content.sql) is applied. The read-only check confirms the customer-facing catalogue API works against the configured project. Earlier sandbox-only build attempts timed out because that build process had no outbound access; an outbound-enabled local run returned the catalogue successfully in 1.54 seconds.
+### Live deployment check
+
+The Vercel GitHub status for commit `2c1b277` reported **Deployment has completed**. Public GET checks on `https://bulk-supiler.vercel.app` all returned HTTP 200: `/` (2.18 s), `/products` (1.04 s), `/products/haldi-powder` (2.26 s), `/order` (1.20 s), `/login` (1.05 s), `/register` (0.90 s), and `/account` (1.29 s). The manifest and service worker also returned 200. The live catalogue API returned 19 products in 2.73 s on the first check and 0.65 s on a repeat check. The HTML contained the new catalogue loading state, confirming the latest page implementation is deployed. These are HTTP timings, not authenticated account tests or browser paint metrics.
+
+The public key embedded in the production JavaScript matched the workspace `.env` key without exposing the key value. The configured project's Supabase Auth settings endpoint returned 200 and allowed the production origin in its CORS response. This verifies Auth endpoint reachability and origin configuration, but does not substitute for completing a real signup/login with a test account.
+
+The live catalogue response contained 19 products; the first product's detail page returned 200, rendered its name, and included its request-for-quote link. The production manifest, service worker, offline page, product placeholder, 192px and 512px icons, and maskable icon all returned 200. These are public HTTP checks; no authenticated signup, actual install prompt, browser offline session, or responsive viewport screenshot was performed.
+
+The configured Supabase project does not yet have `categories.name_hi`; the public catalogue fallback succeeded and returns null Hindi category labels, which means category names remain English in Hindi mode until migration [`20261023180000_localized_catalogue_content.sql`](../supabase/migrations/20261023180000_localized_catalogue_content.sql) is applied. No database migration was run. The read-only check confirms the customer-facing catalogue API works against the configured project. Earlier sandbox-only build attempts timed out because that build process had no outbound access; an outbound-enabled local run returned the catalogue successfully in 1.54 seconds.
 
 ## Changes in this release
 
