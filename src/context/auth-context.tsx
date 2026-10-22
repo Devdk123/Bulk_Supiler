@@ -46,6 +46,13 @@ type AuthContextType = {
 
 const AuthContext = createContext<AuthContextType | undefined>(undefined);
 
+function formatAuthError(message: string) {
+  if (/failed to fetch|networkerror|network request failed/i.test(message)) {
+    return "Could not reach Supabase Auth. Check that Vercel has the correct Supabase project URL and public key, and that the project is active.";
+  }
+  return message;
+}
+
 export function AuthProvider({ children }: { children: React.ReactNode }) {
   const [user, setUser] = useState<User | null>(null);
   const [session, setSession] = useState<Session | null>(null);
@@ -138,7 +145,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
       });
 
       if (error) {
-        return { error: error.message };
+        return { error: formatAuthError(error.message) };
       }
 
       if (data.user) {
@@ -172,7 +179,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
       });
 
       if (error) {
-        return { error: error.message };
+        return { error: formatAuthError(error.message) };
       }
 
       const requiresVerification = Boolean(
