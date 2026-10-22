@@ -159,7 +159,7 @@ export function SiteHeader({ whatsappNumber }: { whatsappNumber: string }) {
           {/* Actions & Buttons */}
           <div className="hidden items-center gap-2.5 sm:flex">
             <LanguageSelector compact />
-            <span className="hidden md:inline-flex"><InstallPrompt /></span>
+            <span className="hidden sm:inline-flex"><InstallPrompt /></span>
             {/* Theme Switcher */}
             <button
               type="button"
@@ -202,7 +202,7 @@ export function SiteHeader({ whatsappNumber }: { whatsappNumber: string }) {
         {/* Mobile Controls */}
         <div className="flex items-center gap-2 xl:hidden">
           <LanguageSelector compact />
-          <span className="hidden sm:inline-flex md:hidden"><InstallPrompt /></span>
+          <span className="sm:hidden"><InstallPrompt /></span>
           <button
             type="button"
             onClick={toggleTheme}

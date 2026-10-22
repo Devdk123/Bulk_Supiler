@@ -58,7 +58,7 @@ type CustomerEnquiry = {
 export default function AccountPage() {
   const router = useRouter();
   const { user, profile, session, signOut, refreshProfile, loading: authLoading } = useAuth();
-  const { t } = useLanguage();
+  const { t, language } = useLanguage();
 
   const [activeTab, setActiveTab] = useState<"enquiries" | "profile" | "security">("enquiries");
   const [enquiries, setEnquiries] = useState<CustomerEnquiry[]>([]);
@@ -314,7 +314,7 @@ export default function AccountPage() {
         </div>
 
         {/* Navigation Tabs */}
-        <div className="mt-8 flex items-center gap-2 border-b border-border pb-3">
+        <div className="mt-8 flex flex-wrap items-center gap-2 border-b border-border pb-3">
           <button
             type="button"
             onClick={() => setActiveTab("enquiries")}
@@ -325,7 +325,7 @@ export default function AccountPage() {
             }`}
           >
             <PackageCheck className="h-4 w-4" />
-            <span>My Bulk Enquiries ({enquiries.length})</span>
+            <span>{t("accountUI.tabs.enquiries")} ({enquiries.length})</span>
           </button>
 
           <button
@@ -338,7 +338,7 @@ export default function AccountPage() {
             }`}
           >
             <Building2 className="h-4 w-4" />
-            <span>Store &amp; Profile Info</span>
+            <span>{t("accountUI.tabs.profile")}</span>
           </button>
 
           <button
@@ -351,7 +351,7 @@ export default function AccountPage() {
             }`}
           >
             <KeyRound className="h-4 w-4" />
-            <span>Security</span>
+            <span>{t("accountUI.tabs.security")}</span>
           </button>
         </div>
 
@@ -361,10 +361,10 @@ export default function AccountPage() {
             <div className="flex items-center justify-between">
               <div>
                 <h2 className="text-base font-extrabold text-foreground">
-                  Wholesale Enquiry Status &amp; Rate Quotations
+                  {t("accountUI.enquiriesTitle")}
                 </h2>
                 <p className="text-xs text-muted-foreground">
-                  Track price quotations and dispatch updates for your Kirana store orders.
+                  {t("accountUI.enquiriesDescription")}
                 </p>
               </div>
               <Button
@@ -375,14 +375,14 @@ export default function AccountPage() {
                 className="rounded-xl gap-1.5 text-xs"
               >
                 <RefreshCw className={`h-3.5 w-3.5 ${loadingEnquiries ? "animate-spin" : ""}`} />
-                <span>Refresh</span>
+                <span>{t("accountUI.refresh")}</span>
               </Button>
             </div>
 
             {loadingEnquiries && enquiries.length === 0 ? (
               <div className="rounded-2xl border border-border bg-card p-12 text-center text-xs text-muted-foreground">
                 <LoaderCircle className="mx-auto h-6 w-6 animate-spin text-fresh mb-2" />
-                Loading your enquiry history...
+                {t("accountUI.loadingEnquiries")}
               </div>
             ) : null}
 
@@ -396,17 +396,17 @@ export default function AccountPage() {
               <div className="rounded-3xl border border-dashed border-border bg-card p-12 text-center">
                 <Boxes className="mx-auto h-10 w-10 text-muted-foreground/60" />
                 <h3 className="mt-4 text-base font-bold text-foreground">
-                  No Bulk Enquiries Yet
+                  {t("accountUI.emptyTitle")}
                 </h3>
                 <p className="mx-auto mt-1 max-w-sm text-xs text-muted-foreground">
-                  Browse Gayatri Store&apos;s wholesale FMCG catalogue across Spices, Oils, Matchsticks, and Agarbatti to request your first bulk quote.
+                  {t("accountUI.emptyDescription")}
                 </p>
                 <div className="mt-6 flex justify-center gap-3">
                   <Button asChild variant="gold" className="rounded-xl">
-                    <Link href="/products">Explore Catalogue</Link>
+                    <Link href="/products">{t("accountUI.exploreCatalogue")}</Link>
                   </Button>
                   <Button asChild variant="outline" className="rounded-xl">
-                    <Link href="/order">Build Custom Quote</Link>
+                    <Link href="/order">{t("accountUI.buildQuote")}</Link>
                   </Button>
                 </div>
               </div>
@@ -430,7 +430,7 @@ export default function AccountPage() {
                   Cancelled: "bg-destructive/10 text-destructive border-destructive/30"
                 }[enq.status] || "bg-secondary text-foreground";
 
-                const dateFormatted = new Date(enq.created_at).toLocaleDateString("en-IN", {
+                const dateFormatted = new Date(enq.created_at).toLocaleDateString(language === "hi" ? "hi-IN" : "en-IN", {
                   day: "numeric",
                   month: "short",
                   year: "numeric",
@@ -448,7 +448,7 @@ export default function AccountPage() {
                               {enq.reference}
                             </span>
                             <span className={`rounded-lg border px-2.5 py-0.5 text-[11px] font-bold ${statusBadgeStyle}`}>
-                              {enq.status}
+                              {t(`accountUI.statuses.${enq.status}`)}
                             </span>
                           </div>
                           <div className="mt-1 flex items-center gap-3 text-xs text-muted-foreground">
@@ -465,7 +465,7 @@ export default function AccountPage() {
                         {whatsappFollowup ? (
                           <Button asChild variant="outline" size="sm" className="rounded-xl border-[#25D366]/40 text-[#25D366] hover:bg-[#25D366]/10 text-xs font-bold">
                             <a href={whatsappFollowup} target="_blank" rel="noreferrer">
-                              <MessageCircle className="h-3.5 w-3.5 mr-1" /> WhatsApp Follow-up
+                              <MessageCircle className="h-3.5 w-3.5 mr-1" /> {t("accountUI.followUp")}
                             </a>
                           </Button>
                         ) : null}
@@ -474,7 +474,7 @@ export default function AccountPage() {
                       {/* Items list */}
                       <div className="mt-4">
                         <p className="text-xs font-bold text-foreground uppercase tracking-wider mb-2">
-                          Requested Items ({enq.items?.length || 0})
+                          {t("accountUI.requestedItems")} ({enq.items?.length || 0})
                         </p>
                         <div className="divide-y divide-border/60 rounded-xl border border-border/80 bg-background/50">
                           {(enq.items || []).map((item) => (
@@ -490,17 +490,17 @@ export default function AccountPage() {
                                 ) : null}
                                 {item.packaging ? (
                                   <span className="block text-[11px] text-muted-foreground">
-                                    Packing: {item.packaging}
+                                    {t("accountUI.packing")}: {item.packaging}
                                   </span>
                                 ) : null}
                               </div>
                               <div className="flex items-center gap-4 sm:text-right">
                                 <span className="font-bold text-primary dark:text-accent">
-                                  Qty: {item.quantity} {item.unit || "Units"}
+                                  {t("accountUI.quantity")}: {item.quantity} {item.unit || t("accountUI.units")}
                                 </span>
                                 {item.quoted_unit_price ? (
                                   <span className="rounded bg-fresh/10 px-2 py-0.5 text-xs font-bold text-fresh">
-                                    Quoted: ₹{item.quoted_unit_price} / {item.unit || "unit"}
+                                    {t("accountUI.quoted")}: ₹{item.quoted_unit_price} / {item.unit || t("accountUI.units")}
                                   </span>
                                 ) : null}
                               </div>
@@ -511,7 +511,7 @@ export default function AccountPage() {
 
                       {enq.delivery_requirements ? (
                         <div className="mt-3 text-xs text-muted-foreground">
-                          <span className="font-semibold text-foreground">Delivery notes:</span> {enq.delivery_requirements}
+                          <span className="font-semibold text-foreground">{t("accountUI.deliveryNotes")}</span> {enq.delivery_requirements}
                         </div>
                       ) : null}
                     </CardContent>
@@ -527,10 +527,10 @@ export default function AccountPage() {
           <Card className="mt-6 rounded-3xl border border-border bg-card shadow-xs">
             <CardContent className="p-6 sm:p-8">
               <h2 className="text-lg font-extrabold text-foreground">
-                Kirana Store &amp; Contact Details
+                {t("accountUI.profileTitle")}
               </h2>
               <p className="mt-1 text-xs text-muted-foreground">
-                Keep your wholesale dispatch address and WhatsApp billing contact updated.
+                {t("accountUI.profileDescription")}
               </p>
 
               {profileMessage ? (
@@ -547,7 +547,7 @@ export default function AccountPage() {
                 <div className="grid gap-4 sm:grid-cols-2">
                   <div>
                     <label className="block text-xs font-bold text-foreground">
-                      Owner Full Name
+                      {t("accountUI.ownerName")}
                     </label>
                     <Input
                       value={fullName}
@@ -557,7 +557,7 @@ export default function AccountPage() {
                   </div>
                   <div>
                     <label className="block text-xs font-bold text-foreground">
-                      Mobile / WhatsApp Number
+                      {t("accountUI.mobile")}
                     </label>
                     <Input
                       value={phone}
@@ -569,7 +569,7 @@ export default function AccountPage() {
 
                 <div>
                   <label className="block text-xs font-bold text-foreground">
-                    Business / Kirana Shop Name
+                    {t("accountUI.businessName")}
                   </label>
                   <Input
                     value={businessName}
@@ -581,7 +581,7 @@ export default function AccountPage() {
                 <div className="grid gap-3 sm:grid-cols-3">
                   <div>
                     <label className="block text-xs font-bold text-foreground">
-                      City / Trade Area
+                      {t("accountUI.city")}
                     </label>
                     <Input
                       value={city}
@@ -591,7 +591,7 @@ export default function AccountPage() {
                   </div>
                   <div>
                     <label className="block text-xs font-bold text-foreground">
-                      State
+                      {t("accountUI.state")}
                     </label>
                     <Input
                       value={state}
@@ -601,7 +601,7 @@ export default function AccountPage() {
                   </div>
                   <div>
                     <label className="block text-xs font-bold text-foreground">
-                      Pincode
+                      {t("accountUI.pincode")}
                     </label>
                     <Input
                       value={pincode}
@@ -617,7 +617,7 @@ export default function AccountPage() {
                   variant="gold"
                   className="rounded-xl px-6 font-bold shadow-xs mt-3"
                 >
-                  {savingProfile ? "Saving Details..." : "Save Store Changes"}
+                  {savingProfile ? t("accountUI.saving") : t("accountUI.saveProfile")}
                 </Button>
               </form>
             </CardContent>
@@ -629,10 +629,10 @@ export default function AccountPage() {
           <Card className="mt-6 rounded-3xl border border-border bg-card shadow-xs">
             <CardContent className="p-6 sm:p-8">
               <h2 className="text-lg font-extrabold text-foreground">
-                Security &amp; Account Protection
+                {t("accountUI.securityTitle")}
               </h2>
               <p className="mt-1 text-xs text-muted-foreground">
-                Update your account password or review session protection.
+                {t("accountUI.securityDescription")}
               </p>
 
               {passwordMessage ? (
@@ -648,28 +648,28 @@ export default function AccountPage() {
               <form onSubmit={handlePasswordSubmit} className="mt-6 space-y-4 max-w-md">
                 <div>
                   <label className="block text-xs font-bold text-foreground">
-                    New Password
+                    {t("accountUI.newPassword")}
                   </label>
                   <Input
                     type="password"
                     required
                     value={newPassword}
                     onChange={(e) => setNewPassword(e.target.value)}
-                    placeholder="At least 6 characters"
+                    placeholder={t("accountUI.passwordHint")}
                     className="mt-1.5 h-11 rounded-xl text-sm"
                   />
                 </div>
 
                 <div>
                   <label className="block text-xs font-bold text-foreground">
-                    Confirm New Password
+                    {t("accountUI.confirmPassword")}
                   </label>
                   <Input
                     type="password"
                     required
                     value={confirmPassword}
                     onChange={(e) => setConfirmPassword(e.target.value)}
-                    placeholder="Re-enter new password"
+                    placeholder={t("accountUI.passwordAgainHint")}
                     className="mt-1.5 h-11 rounded-xl text-sm"
                   />
                 </div>
@@ -680,7 +680,7 @@ export default function AccountPage() {
                   variant="gold"
                   className="rounded-xl px-6 font-bold shadow-xs mt-2"
                 >
-                  {updatingPassword ? "Updating Password..." : "Update Password"}
+                  {updatingPassword ? t("accountUI.updating") : t("accountUI.updatePassword")}
                 </Button>
               </form>
             </CardContent>

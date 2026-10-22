@@ -63,6 +63,14 @@ export default async function ProductDetailsPage({
 
   if (!product) notFound();
 
+  const availabilityKey = product.stockStatus === "in_stock"
+    ? "product.availabilityStates.in_stock"
+    : product.stockStatus === "out_of_stock"
+      ? "product.availabilityStates.out_of_stock"
+      : product.stockStatus === "limited"
+        ? "product.availabilityStates.limited"
+        : "product.availabilityUnknown";
+
   const images =
     product.images.length > 0
       ? product.images
@@ -170,7 +178,7 @@ export default async function ProductDetailsPage({
                 {product.stockStatus !== "unknown" ? (
                   <SpecRow
                     label={<TranslatedText id="product.availability" />}
-                    value={product.stockStatus.replaceAll("_", " ")}
+                    value={<TranslatedText id={availabilityKey} />}
                   />
                 ) : null}
               </dl>
@@ -189,13 +197,10 @@ export default async function ProductDetailsPage({
                       <div>
                         <p className="font-bold text-foreground">{v.name}</p>
                         <p className="text-xs text-muted-foreground">
-                          {[
-                            v.pack_size ? `Pack: ${v.pack_size}` : "",
-                            v.unit ? `Unit: ${v.unit}` : "",
-                            v.moq_quantity ? `MOQ: ${v.moq_quantity}` : ""
-                          ]
-                            .filter(Boolean)
-                            .join(" • ") || "Ask for pack details"}
+                          {v.pack_size ? <><TranslatedText id="product.packSize" />: {v.pack_size}</> : null}
+                          {v.unit ? <> · <TranslatedText id="product.unit" />: {v.unit}</> : null}
+                          {v.moq_quantity ? <> · MOQ: {v.moq_quantity}</> : null}
+                          {!v.pack_size && !v.unit && !v.moq_quantity ? <TranslatedText id="product.inquireDetails" /> : null}
                         </p>
                       </div>
                       <Link
@@ -263,7 +268,7 @@ export default async function ProductDetailsPage({
   );
 }
 
-function SpecRow({ label, value }: { label: ReactNode; value: string }) {
+function SpecRow({ label, value }: { label: ReactNode; value: ReactNode }) {
   return (
     <div className="flex items-center justify-between py-2.5">
       <dt className="text-muted-foreground">{label}</dt>

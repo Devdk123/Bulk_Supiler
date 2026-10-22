@@ -20,7 +20,6 @@ export function InstallPrompt() {
 
   useEffect(() => {
     const isStandalone = window.matchMedia("(display-mode: standalone)").matches || ("standalone" in navigator && Boolean((navigator as Navigator & { standalone?: boolean }).standalone));
-    const isIosDevice = /iphone|ipad|ipod/i.test(navigator.userAgent);
     if (isStandalone || localStorage.getItem(DISMISSED_KEY) === "yes") return;
 
     const onBeforeInstall = (event: Event) => {
@@ -29,7 +28,9 @@ export function InstallPrompt() {
       setShow(true);
     };
     window.addEventListener("beforeinstallprompt", onBeforeInstall);
-    if (isIosDevice) queueMicrotask(() => setShow(true));
+    // Keep a small, user-initiated install action available even where the
+    // browser has no programmatic prompt (including iOS Safari).
+    queueMicrotask(() => setShow(true));
     return () => window.removeEventListener("beforeinstallprompt", onBeforeInstall);
   }, []);
 
@@ -61,7 +62,7 @@ export function InstallPrompt() {
         <div className="fixed inset-0 z-[80] flex items-end justify-center bg-black/45 p-4 sm:items-center" role="presentation" onMouseDown={(event) => { if (event.target === event.currentTarget) setInstructions(false); }}>
           <section role="dialog" aria-modal="true" aria-labelledby="install-title" className="w-full max-w-sm rounded-2xl border border-border bg-card p-5 shadow-2xl">
             <h2 id="install-title" className="text-lg font-extrabold text-primary">{t("pwa.installTitle")}</h2>
-            <p className="mt-2 text-sm leading-relaxed text-muted-foreground">{t("pwa.iosInstructions")}</p>
+            <p className="mt-2 text-sm leading-relaxed text-muted-foreground">{ios ? t("pwa.iosInstructions") : t("pwa.manualInstructions")}</p>
             <div className="mt-4 flex justify-end gap-2">
               <button type="button" onClick={() => setInstructions(false)} className="min-h-11 rounded-xl px-4 text-sm font-semibold text-muted-foreground">{t("common.close")}</button>
               <button type="button" onClick={dismiss} className="min-h-11 rounded-xl bg-primary px-4 text-sm font-bold text-primary-foreground">{t("pwa.dismiss")}</button>

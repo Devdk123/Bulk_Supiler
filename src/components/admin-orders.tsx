@@ -745,41 +745,41 @@ export function AdminOrders() {
                     </Field>
                   </div>
                   <div className="grid gap-4 sm:grid-cols-2">
-                    <Field label="SKU (optional)"><Input value={productForm.sku} onChange={(event) => updateProduct("sku", event.target.value)} /></Field>
-                    <Field label="Product variant / fragrance"><Input value={productForm.variant} onChange={(event) => updateProduct("variant", event.target.value)} /></Field>
+                    <Field label={t("adminUI.skuOptional")}><Input value={productForm.sku} onChange={(event) => updateProduct("sku", event.target.value)} /></Field>
+                    <Field label={t("adminUI.variantLabel")}><Input value={productForm.variant} onChange={(event) => updateProduct("variant", event.target.value)} /></Field>
                   </div>
-                  <Field label="Description"><Textarea value={productForm.description} onChange={(event) => updateProduct("description", event.target.value)} maxLength={5000} /></Field>
+                  <Field label={t("adminUI.description")}><Textarea value={productForm.description} onChange={(event) => updateProduct("description", event.target.value)} maxLength={5000} /></Field>
                   <Field label={t("admin.shortProductHindi")}><Input value={productForm.short_description_hi} onChange={(event) => updateProduct("short_description_hi", event.target.value)} maxLength={1000} /></Field>
                   <Field label={t("admin.productHindi")}><Textarea value={productForm.description_hi} onChange={(event) => updateProduct("description_hi", event.target.value)} maxLength={5000} /></Field>
                   <div className="grid gap-4 sm:grid-cols-2">
-                    <Field label="Unit"><Input value={productForm.unit} onChange={(event) => updateProduct("unit", event.target.value)} placeholder="Set only when confirmed" /></Field>
-                    <Field label="Pack size"><Input value={productForm.pack_size} onChange={(event) => updateProduct("pack_size", event.target.value)} /></Field>
-                    <Field label="Units per carton"><Input type="number" min="1" value={productForm.units_per_carton} onChange={(event) => updateProduct("units_per_carton", event.target.value)} /></Field>
-                    <Field label="Minimum order quantity"><Input type="number" min="0.001" step="any" value={productForm.moq_quantity} onChange={(event) => updateProduct("moq_quantity", event.target.value)} /></Field>
-                    <Field label="Order increment"><Input type="number" min="0.001" step="any" value={productForm.order_increment} onChange={(event) => updateProduct("order_increment", event.target.value)} /></Field>
-                    <Field label="Price unit"><Input value={productForm.price_unit} onChange={(event) => updateProduct("price_unit", event.target.value)} /></Field>
+                    <Field label={t("adminUI.unit")}><Input value={productForm.unit} onChange={(event) => updateProduct("unit", event.target.value)} placeholder={t("adminUI.unit")} /></Field>
+                    <Field label={t("adminUI.packSize")}><Input value={productForm.pack_size} onChange={(event) => updateProduct("pack_size", event.target.value)} /></Field>
+                    <Field label={t("adminUI.unitsPerCarton")}><Input type="number" min="1" value={productForm.units_per_carton} onChange={(event) => updateProduct("units_per_carton", event.target.value)} /></Field>
+                    <Field label={t("adminUI.minimumOrder")}><Input type="number" min="0.001" step="any" value={productForm.moq_quantity} onChange={(event) => updateProduct("moq_quantity", event.target.value)} /></Field>
+                    <Field label={t("adminUI.orderIncrement")}><Input type="number" min="0.001" step="any" value={productForm.order_increment} onChange={(event) => updateProduct("order_increment", event.target.value)} /></Field>
+                    <Field label={t("adminUI.priceUnit")}><Input value={productForm.price_unit} onChange={(event) => updateProduct("price_unit", event.target.value)} /></Field>
                   </div>
                   <label className="flex items-center gap-3 rounded-md border bg-secondary/50 p-3 text-sm font-semibold">
                     <input type="checkbox" checked={productForm.quote_only} onChange={(event) => updateProduct("quote_only", event.target.checked)} className="h-4 w-4" />
-                    Price on request only
+                    {t("adminUI.onlyQuote")}
                   </label>
                   {!productForm.quote_only ? (
                     <div className="grid gap-4 sm:grid-cols-2">
-                      <Field label="Wholesale price"><Input type="number" min="0.01" step="any" value={productForm.price_amount} onChange={(event) => updateProduct("price_amount", event.target.value)} /></Field>
-                      <Field label="Currency code"><Input maxLength={3} value={productForm.price_currency} onChange={(event) => updateProduct("price_currency", event.target.value.toUpperCase())} /></Field>
+                      <Field label={t("adminUI.wholesalePrice")}><Input type="number" min="0.01" step="any" value={productForm.price_amount} onChange={(event) => updateProduct("price_amount", event.target.value)} /></Field>
+                      <Field label={t("adminUI.currencyCode")}><Input maxLength={3} value={productForm.price_currency} onChange={(event) => updateProduct("price_currency", event.target.value.toUpperCase())} /></Field>
                     </div>
                   ) : null}
-                  <Field label="Stock status">
+                  <Field label={t("adminUI.stockStatus")}>
                     <select value={productForm.stock_status} onChange={(event) => updateProduct("stock_status", event.target.value as StockStatus)} className="h-11 rounded-md border bg-background px-3 text-sm">
-                      {["unknown", "in_stock", "low_stock", "out_of_stock", "discontinued"].map((value) => <option key={value} value={value}>{value.replaceAll("_", " ")}</option>)}
+                      {["unknown", "in_stock", "low_stock", "out_of_stock", "discontinued"].map((value) => <option key={value} value={value}>{t(`adminUI.stock.${value}`)}</option>)}
                     </select>
                   </Field>
 
                   <fieldset className="grid gap-3 rounded-lg border p-4">
-                    <legend className="px-1 font-bold text-primary">Product images</legend>
+                    <legend className="px-1 font-bold text-primary">{t("adminUI.productImages")}</legend>
                     <label className="inline-flex w-fit cursor-pointer items-center gap-2 rounded-md border bg-secondary px-3 py-2 text-sm font-semibold">
                       {imageUploading ? <Loader2 className="h-4 w-4 animate-spin" /> : <ImagePlus className="h-4 w-4" />}
-                      Upload JPEG, PNG or WebP (max 5 MB each)
+                      {t("adminUI.uploadImages")}
                       <input type="file" accept="image/jpeg,image/png,image/webp" multiple onChange={uploadImages} className="sr-only" disabled={imageUploading} />
                     </label>
                     {productForm.images.length ? (
@@ -787,54 +787,54 @@ export function AdminOrders() {
                         {productForm.images.map((image, index) => (
                           <div key={`${image.image_url}-${index}`} className="relative">
                             <Image src={image.image_url} alt={image.alt_text || productForm.name || "Product image"} width={240} height={160} unoptimized className="h-28 w-full rounded-md border object-cover" />
-                            <button type="button" className="absolute right-1 top-1 rounded-full bg-background p-1" aria-label="Remove image" onClick={() => {
+                            <button type="button" className="absolute right-1 top-1 rounded-full bg-background p-1" aria-label={t("adminUI.removeImage")} onClick={() => {
                               setPendingImageRemovals((current) => [...current, image.image_url]);
                               updateProduct("images", productForm.images.filter((_, imageIndex) => imageIndex !== index));
                             }}><X className="h-4 w-4" /></button>
                           </div>
                         ))}
                       </div>
-                    ) : <p className="text-sm text-muted-foreground">No image uploaded.</p>}
+                    ) : <p className="text-sm text-muted-foreground">{t("adminUI.noImage")}</p>}
                   </fieldset>
 
                   <fieldset className="grid gap-3 rounded-lg border p-4">
-                    <legend className="px-1 font-bold text-primary">Variants and pack options</legend>
+                    <legend className="px-1 font-bold text-primary">{t("adminUI.variants")}</legend>
                     {productForm.variants.map((variant, index) => (
                       <div key={variant.id || index} className="grid gap-3 rounded-md bg-secondary/40 p-3">
                         <div className="flex items-center justify-between">
-                          <p className="font-semibold">Option {index + 1}</p>
-                          <Button type="button" variant="outline" size="icon" aria-label="Remove option" onClick={() => updateProduct("variants", productForm.variants.filter((_, itemIndex) => itemIndex !== index))}><Trash2 className="h-4 w-4" /></Button>
+                          <p className="font-semibold">{t("adminUI.option")} {index + 1}</p>
+                          <Button type="button" variant="outline" size="icon" aria-label={t("adminUI.removeOption")} onClick={() => updateProduct("variants", productForm.variants.filter((_, itemIndex) => itemIndex !== index))}><Trash2 className="h-4 w-4" /></Button>
                         </div>
                         <div className="grid gap-3 sm:grid-cols-2">
-                          <Input aria-label="Variant name" placeholder="Variant / fragrance" value={variant.name} onChange={(event) => updateProduct("variants", productForm.variants.map((item, itemIndex) => itemIndex === index ? { ...item, name: event.target.value } : item))} />
-                          <Input aria-label="Option SKU" placeholder="SKU (optional)" value={variant.sku} onChange={(event) => updateProduct("variants", productForm.variants.map((item, itemIndex) => itemIndex === index ? { ...item, sku: event.target.value } : item))} />
-                          <Input aria-label="Pack size" placeholder="Pack size" value={variant.pack_size} onChange={(event) => updateProduct("variants", productForm.variants.map((item, itemIndex) => itemIndex === index ? { ...item, pack_size: event.target.value } : item))} />
-                          <Input aria-label="Unit" placeholder="Unit" value={variant.unit} onChange={(event) => updateProduct("variants", productForm.variants.map((item, itemIndex) => itemIndex === index ? { ...item, unit: event.target.value } : item))} />
-                          <Input aria-label="Option MOQ" type="number" min="0.001" step="any" placeholder="MOQ" value={variant.moq_quantity} onChange={(event) => updateProduct("variants", productForm.variants.map((item, itemIndex) => itemIndex === index ? { ...item, moq_quantity: event.target.value } : item))} />
-                          <Input aria-label="Option order increment" type="number" min="0.001" step="any" placeholder="Order increment" value={variant.order_increment} onChange={(event) => updateProduct("variants", productForm.variants.map((item, itemIndex) => itemIndex === index ? { ...item, order_increment: event.target.value } : item))} />
+                          <Input aria-label={t("adminUI.variantName")} placeholder={t("adminUI.variantLabel")} value={variant.name} onChange={(event) => updateProduct("variants", productForm.variants.map((item, itemIndex) => itemIndex === index ? { ...item, name: event.target.value } : item))} />
+                          <Input aria-label={t("adminUI.optionSku")} placeholder={t("adminUI.skuOptional")} value={variant.sku} onChange={(event) => updateProduct("variants", productForm.variants.map((item, itemIndex) => itemIndex === index ? { ...item, sku: event.target.value } : item))} />
+                          <Input aria-label={t("adminUI.packSize")} placeholder={t("adminUI.packSize")} value={variant.pack_size} onChange={(event) => updateProduct("variants", productForm.variants.map((item, itemIndex) => itemIndex === index ? { ...item, pack_size: event.target.value } : item))} />
+                          <Input aria-label={t("adminUI.unit")} placeholder={t("adminUI.unit")} value={variant.unit} onChange={(event) => updateProduct("variants", productForm.variants.map((item, itemIndex) => itemIndex === index ? { ...item, unit: event.target.value } : item))} />
+                          <Input aria-label={t("adminUI.optionMoq")} type="number" min="0.001" step="any" placeholder="MOQ" value={variant.moq_quantity} onChange={(event) => updateProduct("variants", productForm.variants.map((item, itemIndex) => itemIndex === index ? { ...item, moq_quantity: event.target.value } : item))} />
+                          <Input aria-label={t("adminUI.orderIncrement")} type="number" min="0.001" step="any" placeholder={t("adminUI.orderIncrement")} value={variant.order_increment} onChange={(event) => updateProduct("variants", productForm.variants.map((item, itemIndex) => itemIndex === index ? { ...item, order_increment: event.target.value } : item))} />
                         </div>
-                        <label className="flex items-center gap-2 text-sm"><input type="checkbox" checked={variant.active} onChange={(event) => updateProduct("variants", productForm.variants.map((item, itemIndex) => itemIndex === index ? { ...item, active: event.target.checked } : item))} /> Published option</label>
+                        <label className="flex items-center gap-2 text-sm"><input type="checkbox" checked={variant.active} onChange={(event) => updateProduct("variants", productForm.variants.map((item, itemIndex) => itemIndex === index ? { ...item, active: event.target.checked } : item))} /> {t("adminUI.publishedOption")}</label>
                       </div>
                     ))}
-                    <Button type="button" variant="outline" onClick={() => updateProduct("variants", [...productForm.variants, { ...emptyVariant }])}><Plus className="h-4 w-4" /> Add option</Button>
+                    <Button type="button" variant="outline" onClick={() => updateProduct("variants", [...productForm.variants, { ...emptyVariant }])}><Plus className="h-4 w-4" /> {t("adminUI.addOption")}</Button>
                   </fieldset>
 
                   <fieldset className="grid gap-3 rounded-lg border p-4">
-                    <legend className="px-1 font-bold text-primary">Quantity price tiers</legend>
+                    <legend className="px-1 font-bold text-primary">{t("adminUI.priceTiers")}</legend>
                     {productForm.price_tiers.map((tier, index) => (
                       <div key={index} className="grid gap-2 sm:grid-cols-[1fr_1fr_1fr_auto]">
-                        <Input aria-label="Tier minimum quantity" type="number" min="0.001" step="any" placeholder="From quantity" value={tier.minimum_quantity} onChange={(event) => updateProduct("price_tiers", productForm.price_tiers.map((item, itemIndex) => itemIndex === index ? { ...item, minimum_quantity: event.target.value } : item))} />
-                        <Input aria-label="Tier unit price" type="number" min="0.01" step="any" placeholder="Unit price" value={tier.unit_price} onChange={(event) => updateProduct("price_tiers", productForm.price_tiers.map((item, itemIndex) => itemIndex === index ? { ...item, unit_price: event.target.value } : item))} />
-                        <Input aria-label="Tier price unit" placeholder="Price unit" value={tier.price_unit} onChange={(event) => updateProduct("price_tiers", productForm.price_tiers.map((item, itemIndex) => itemIndex === index ? { ...item, price_unit: event.target.value } : item))} />
-                        <Button type="button" variant="outline" size="icon" aria-label="Remove price tier" onClick={() => updateProduct("price_tiers", productForm.price_tiers.filter((_, itemIndex) => itemIndex !== index))}><Trash2 className="h-4 w-4" /></Button>
+                        <Input aria-label={t("adminUI.fromQuantity")} type="number" min="0.001" step="any" placeholder={t("adminUI.fromQuantity")} value={tier.minimum_quantity} onChange={(event) => updateProduct("price_tiers", productForm.price_tiers.map((item, itemIndex) => itemIndex === index ? { ...item, minimum_quantity: event.target.value } : item))} />
+                        <Input aria-label={t("adminUI.unitPrice")} type="number" min="0.01" step="any" placeholder={t("adminUI.unitPrice")} value={tier.unit_price} onChange={(event) => updateProduct("price_tiers", productForm.price_tiers.map((item, itemIndex) => itemIndex === index ? { ...item, unit_price: event.target.value } : item))} />
+                        <Input aria-label={t("adminUI.priceUnit")} placeholder={t("adminUI.priceUnit")} value={tier.price_unit} onChange={(event) => updateProduct("price_tiers", productForm.price_tiers.map((item, itemIndex) => itemIndex === index ? { ...item, price_unit: event.target.value } : item))} />
+                        <Button type="button" variant="outline" size="icon" aria-label={t("adminUI.removeTier")} onClick={() => updateProduct("price_tiers", productForm.price_tiers.filter((_, itemIndex) => itemIndex !== index))}><Trash2 className="h-4 w-4" /></Button>
                       </div>
                     ))}
-                    <Button type="button" variant="outline" onClick={() => updateProduct("price_tiers", [...productForm.price_tiers, { variant_id: "", minimum_quantity: "", unit_price: "", currency: "INR", price_unit: "" }])}><Plus className="h-4 w-4" /> Add price tier</Button>
+                    <Button type="button" variant="outline" onClick={() => updateProduct("price_tiers", [...productForm.price_tiers, { variant_id: "", minimum_quantity: "", unit_price: "", currency: "INR", price_unit: "" }])}><Plus className="h-4 w-4" /> {t("adminUI.addTier")}</Button>
                   </fieldset>
 
-                  <Field label="Publication status">
+                  <Field label={t("adminUI.publicationStatus")}>
                     <select value={productForm.status} onChange={(event) => updateProduct("status", event.target.value as Status)} className="h-11 rounded-md border bg-background px-3 text-sm">
-                      {["draft", "published", "archived"].map((value) => <option key={value} value={value}>{value}</option>)}
+                      {["draft", "published", "archived"].map((value) => <option key={value} value={value}>{t(`adminUI.publication.${value}`)}</option>)}
                     </select>
                   </Field>
                   <div className="flex flex-wrap gap-3">
@@ -851,7 +851,7 @@ export function AdminOrders() {
             <Card>
               <CardContent className="p-5">
                 <div className="flex flex-wrap items-center justify-between gap-3">
-                  <h2 className="text-xl font-extrabold text-primary">Catalogue ({products.length})</h2>
+                  <h2 className="text-xl font-extrabold text-primary">{t("adminUI.catalogue")} ({products.length})</h2>
                   <label className="relative">
                     <span className="sr-only">{t("admin.searchCatalogue")}</span>
                     <Search className="absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-muted-foreground" />
@@ -869,7 +869,7 @@ export function AdminOrders() {
                         <span className="mt-2 inline-flex rounded-full border px-2 py-1 text-xs font-semibold capitalize">{product.status}</span>
                       </div>
                       <div className="flex flex-wrap gap-2">
-                        <Button type="button" size="sm" variant="outline" onClick={() => editProduct(product)}>Edit</Button>
+                        <Button type="button" size="sm" variant="outline" onClick={() => editProduct(product)}>{t("adminUI.edit")}</Button>
                         <select aria-label={`${product.name} status`} value={product.status} onChange={(event) => changeProductStatus(product, event.target.value as Status)} className="h-9 rounded-md border bg-background px-2 text-sm">
                           {["draft", "published", "archived"].map((status) => <option key={status} value={status}>{status}</option>)}
                         </select>
@@ -928,9 +928,9 @@ export function AdminOrders() {
             <div className="flex flex-wrap gap-3">
               <Input value={enquirySearch} onChange={(event) => setEnquirySearch(event.target.value)} placeholder="Search reference, buyer or phone" className="max-w-sm" />
               <select value={enquiryStatus} onChange={(event) => setEnquiryStatus(event.target.value)} className="h-11 rounded-md border bg-background px-3 text-sm">
-                <option>All</option>{enquiryStatuses.map((status) => <option key={status}>{status}</option>)}
+                <option value="All">{t("catalogue.clearAll")}</option>{enquiryStatuses.map((status) => <option key={status} value={status}>{t(`adminUI.enquiryStatus.${status}`)}</option>)}
               </select>
-              <Button variant="outline" onClick={filterEnquiries}>Apply filters</Button>
+              <Button variant="outline" onClick={filterEnquiries}>{t("catalogue.resetFilters")}</Button>
             </div>
             <div className="mt-5 grid gap-4">
               {enquiries.map((enquiry) => (
@@ -943,7 +943,7 @@ export function AdminOrders() {
                         <p className="mt-1 text-sm text-muted-foreground">{enquiry.city}, {enquiry.state} {enquiry.pin_code}{enquiry.gstin ? ` · GSTIN ${enquiry.gstin}` : ""}</p>
                       </div>
                       <select aria-label={`Status for ${enquiry.reference}`} value={enquiry.status} onChange={(event) => updateEnquiry(enquiry, { status: event.target.value as AdminEnquiry["status"] })} className="h-10 rounded-md border bg-background px-3 text-sm">
-                        {enquiryStatuses.map((status) => <option key={status}>{status}</option>)}
+                        {enquiryStatuses.map((status) => <option key={status} value={status}>{t(`adminUI.enquiryStatus.${status}`)}</option>)}
                       </select>
                     </div>
                     <ul className="mt-4 grid gap-2">
@@ -953,16 +953,16 @@ export function AdminOrders() {
                         </li>
                       ))}
                     </ul>
-                    {enquiry.delivery_requirements ? <p className="mt-3 text-sm"><strong>Delivery:</strong> {enquiry.delivery_requirements}</p> : null}
-                    {enquiry.message ? <p className="mt-2 text-sm"><strong>Buyer note:</strong> {enquiry.message}</p> : null}
+                    {enquiry.delivery_requirements ? <p className="mt-3 text-sm"><strong>{t("adminUI.delivery")}:</strong> {enquiry.delivery_requirements}</p> : null}
+                    {enquiry.message ? <p className="mt-2 text-sm"><strong>{t("adminUI.buyerNote")}:</strong> {enquiry.message}</p> : null}
                     <div className="mt-4 flex flex-col gap-2 sm:flex-row">
-                      <Textarea aria-label={`Internal notes for ${enquiry.reference}`} value={notes[enquiry.id] ?? enquiry.internal_notes ?? ""} onChange={(event) => setNotes((current) => ({ ...current, [enquiry.id]: event.target.value }))} placeholder="Internal notes (visible only to admins)" maxLength={5000} />
-                      <Button variant="outline" onClick={() => updateEnquiry(enquiry, { internal_notes: notes[enquiry.id] ?? enquiry.internal_notes ?? "" })}><Save className="h-4 w-4" /> Save notes</Button>
+                      <Textarea aria-label={`${t("adminUI.internalNotes")}: ${enquiry.reference}`} value={notes[enquiry.id] ?? enquiry.internal_notes ?? ""} onChange={(event) => setNotes((current) => ({ ...current, [enquiry.id]: event.target.value }))} placeholder={t("adminUI.internalNotes")} maxLength={5000} />
+                      <Button variant="outline" onClick={() => updateEnquiry(enquiry, { internal_notes: notes[enquiry.id] ?? enquiry.internal_notes ?? "" })}><Save className="h-4 w-4" /> {t("adminUI.saveNotes")}</Button>
                     </div>
                   </CardContent>
                 </Card>
               ))}
-              {!enquiries.length ? <p className="rounded-lg border border-dashed p-8 text-center text-sm text-muted-foreground">No matching enquiries.</p> : null}
+              {!enquiries.length ? <p className="rounded-lg border border-dashed p-8 text-center text-sm text-muted-foreground">{t("adminUI.noEnquiries")}</p> : null}
             </div>
           </div>
         ) : null}
@@ -970,15 +970,15 @@ export function AdminOrders() {
         {activeTab === "legacy-orders" ? (
           <div className="mt-6">
             <div className="flex flex-wrap gap-3">
-              <Input aria-label="Search historical orders" value={legacyOrderSearch} onChange={(event) => setLegacyOrderSearch(event.target.value)} placeholder="Search customer, phone, product or city" className="max-w-sm" />
+              <Input aria-label={t("adminUI.searchHistory")} value={legacyOrderSearch} onChange={(event) => setLegacyOrderSearch(event.target.value)} placeholder={t("adminUI.searchHistoryPlaceholder")} className="max-w-sm" />
               <select aria-label="Filter historical orders by status" value={legacyOrderStatus} onChange={(event) => setLegacyOrderStatus(event.target.value)} className="h-11 rounded-md border bg-background px-3 text-sm">
                 {["All", "New", "Contacted", "Confirmed", "Delivered", "Cancelled"].map((status) => <option key={status}>{status}</option>)}
               </select>
               <Button variant="gold" onClick={() => loadLegacyOrders(0)} disabled={legacyOrdersLoading}>
-                {legacyOrdersLoading ? <Loader2 className="h-4 w-4 animate-spin" /> : <Search className="h-4 w-4" />} Search history
+                {legacyOrdersLoading ? <Loader2 className="h-4 w-4 animate-spin" /> : <Search className="h-4 w-4" />} {t("adminUI.searchHistory")}
               </Button>
             </div>
-            <p className="mt-3 text-sm text-muted-foreground">Historical orders remain read-only. New requests should be submitted as quotations.</p>
+            <p className="mt-3 text-sm text-muted-foreground">{t("adminUI.historicalReadOnly")}</p>
             <div className="mt-4 grid gap-3">
               {legacyOrders.map((order) => (
                 <Card key={order.id}>
