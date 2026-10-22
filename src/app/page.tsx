@@ -307,6 +307,7 @@ export default async function HomePage() {
                 <Link
                   key={cat.name}
                   href={`/products?category=${encodeURIComponent(cat.slug)}`}
+                  prefetch={false}
                   className={`group relative flex flex-col justify-between overflow-hidden rounded-3xl border border-border bg-background p-5 transition-all duration-300 hover:-translate-y-1 hover:border-[#347754]/50 hover:shadow-lg ${
                     isLarge ? "sm:col-span-2 lg:col-span-1 xl:col-span-1" : ""
                   }`}
@@ -361,6 +362,7 @@ export default async function HomePage() {
               <Link
                 key={brand.name}
                 href={`/products?brand=${encodeURIComponent(brand.name)}`}
+                prefetch={false}
                 className="group flex flex-col justify-between rounded-3xl border border-border bg-card p-6 shadow-xs transition-all duration-300 hover:-translate-y-1 hover:border-primary/30 hover:shadow-md"
               >
                 <div>
