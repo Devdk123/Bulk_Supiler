@@ -272,6 +272,13 @@ test("account enquiry history has a bounded wait and localized retry states", as
   assert.ok(getPath(hi, "accountUI.loadError"));
 });
 
+test("shared auth provider dynamically loads Supabase to keep the SDK out of its initial chunk", async () => {
+  const auth = await read("src/context/auth-context.tsx");
+  assert.doesNotMatch(auth, /import\s*\{\s*getSupabaseBrowser\s*\}\s*from\s*["']@\/lib\/supabase-browser["']/);
+  assert.match(auth, /await import\(["']@\/lib\/supabase-browser["']\)/);
+  assert.match(auth, /withTimeout\(supabase\.auth\.getSession\(\),\s*5000/);
+});
+
 test("assistant offers only localized interface languages and retains Hindi for Hinglish conversations", async () => {
   const { assistantLanguages } = await importTypeScript("src/lib/assistant-languages.ts");
   assert.deepEqual(assistantLanguages.map(({ code }) => code), ["en", "hi"]);

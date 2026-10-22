@@ -2,7 +2,6 @@
 
 import React, { createContext, useContext, useEffect, useState, useCallback, useMemo } from "react";
 import type { User, Session } from "@supabase/supabase-js";
-import { getSupabaseBrowser } from "@/lib/supabase-browser";
 
 export type UserRole = "admin" | "staff" | "customer";
 
@@ -56,6 +55,11 @@ type AuthContextType = {
 
 const AuthContext = createContext<AuthContextType | undefined>(undefined);
 
+async function loadSupabaseBrowser() {
+  const { getSupabaseBrowser } = await import("@/lib/supabase-browser");
+  return getSupabaseBrowser();
+}
+
 function formatAuthError(message: string) {
   if (/failed to fetch|networkerror|network request failed/i.test(message)) {
     return "Could not reach Supabase Auth. Check that Vercel has the correct Supabase project URL and public key, and that the project is active.";
@@ -71,7 +75,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
 
   const fetchProfile = useCallback(async (userId: string): Promise<UserProfile | null> => {
     try {
-      const supabase = getSupabaseBrowser();
+      const supabase = await loadSupabaseBrowser();
       const { data, error } = await withTimeout(
         supabase
           .from("profiles")
@@ -118,59 +122,62 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     let authStateHandled = false;
     let unsubscribe: (() => void) | undefined;
 
-    try {
-      const supabase = getSupabaseBrowser();
-
-      // Keep the auth callback synchronous. Awaiting a profile request here can
-      // hold Supabase's auth lock and leave getSession() pending indefinitely.
-      const { data: { subscription } } = supabase.auth.onAuthStateChange((_event, currentSession) => {
+    void (async () => {
+      try {
+        const supabase = await loadSupabaseBrowser();
         if (!active) return;
-        authStateHandled = true;
-        setSession(currentSession);
-        setUser(currentSession?.user ?? null);
-        setLoading(false);
 
-        if (!currentSession?.user) {
-          setProfile(null);
-        } else {
-          const userId = currentSession.user.id;
-          queueMicrotask(() => {
-            if (active) void fetchProfile(userId);
-          });
-        }
-      });
-      unsubscribe = () => subscription.unsubscribe();
-
-      // Resolve the account shell promptly, even if auth storage or a profile
-      // request is slow. Profile data is loaded separately and is not a gate.
-      void withTimeout(supabase.auth.getSession(), 5000, "Session request timed out.")
-        .then(({ data: { session } }) => {
-          if (!active || authStateHandled) return;
-          setSession(session);
-          setUser(session?.user ?? null);
+        // Keep the auth callback synchronous. Awaiting a profile request here
+        // can hold Supabase's auth lock and leave getSession() pending indefinitely.
+        const { data: { subscription } } = supabase.auth.onAuthStateChange((_event, currentSession) => {
+          if (!active) return;
+          authStateHandled = true;
+          setSession(currentSession);
+          setUser(currentSession?.user ?? null);
           setLoading(false);
-          if (session?.user) void fetchProfile(session.user.id);
-        })
-        .catch((error) => {
-          console.warn("Unable to restore auth session:", error);
-          if (!active || authStateHandled) return;
+
+          if (!currentSession?.user) {
+            setProfile(null);
+          } else {
+            const userId = currentSession.user.id;
+            queueMicrotask(() => {
+              if (active) void fetchProfile(userId);
+            });
+          }
+        });
+        unsubscribe = () => subscription.unsubscribe();
+
+        // Resolve the account shell promptly, even if auth storage or a profile
+        // request is slow. Profile data is loaded separately and is not a gate.
+        void withTimeout(supabase.auth.getSession(), 5000, "Session request timed out.")
+          .then(({ data: { session } }) => {
+            if (!active || authStateHandled) return;
+            setSession(session);
+            setUser(session?.user ?? null);
+            setLoading(false);
+            if (session?.user) void fetchProfile(session.user.id);
+          })
+          .catch((error) => {
+            console.warn("Unable to restore auth session:", error);
+            if (!active || authStateHandled) return;
+            setSession(null);
+            setUser(null);
+            setProfile(null);
+            setLoading(false);
+          });
+      } catch (error) {
+        // Missing or malformed public auth configuration must never leave the
+        // account route behind an endless loading state.
+        console.error("Unable to initialize Supabase Auth:", error);
+        queueMicrotask(() => {
+          if (!active) return;
           setSession(null);
           setUser(null);
           setProfile(null);
           setLoading(false);
         });
-    } catch (error) {
-      // Missing or malformed public auth configuration must never leave the
-      // account route behind an endless loading state.
-      console.error("Unable to initialize Supabase Auth:", error);
-      queueMicrotask(() => {
-        if (!active) return;
-        setSession(null);
-        setUser(null);
-        setProfile(null);
-        setLoading(false);
-      });
-    }
+      }
+    })();
 
     return () => {
       active = false;
@@ -180,7 +187,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
 
   const signIn = useCallback(async (email: string, password: string) => {
     try {
-      const supabase = getSupabaseBrowser();
+      const supabase = await loadSupabaseBrowser();
       const { data, error } = await supabase.auth.signInWithPassword({
         email: email.trim(),
         password
@@ -201,7 +208,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
 
   const signUp = useCallback(async (data: SignUpData) => {
     try {
-      const supabase = getSupabaseBrowser();
+      const supabase = await loadSupabaseBrowser();
       const { data: authData, error } = await supabase.auth.signUp({
         email: data.email.trim(),
         password: data.password,
@@ -242,7 +249,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
 
   const signOut = useCallback(async () => {
     try {
-      const supabase = getSupabaseBrowser();
+      const supabase = await loadSupabaseBrowser();
       await supabase.auth.signOut();
     } catch (err) {
       console.warn("SignOut error:", err);
