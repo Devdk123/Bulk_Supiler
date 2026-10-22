@@ -16,12 +16,11 @@ import {
   Sparkles,
   Store
 } from "lucide-react";
-import { ProductCard } from "@/components/product-card";
+import { FeaturedProducts } from "@/components/featured-products";
 import { SectionHeading } from "@/components/section-heading";
 import { WholesaleCalculator } from "@/components/wholesale-calculator";
 import { Button } from "@/components/ui/button";
 import { TranslatedText } from "@/components/translated-text";
-import { getStoreProducts } from "@/lib/products";
 import { getDefaultBusinessSettings } from "@/lib/business-settings";
 import { buildWhatsAppLink } from "@/lib/utils";
 
@@ -393,7 +392,7 @@ export default function HomePage() {
       </section>
 
       <Suspense fallback={<FeaturedProductsSkeleton />}>
-        <FeaturedProductsSection whatsappLink={whatsappLink} />
+        <FeaturedProducts whatsappLink={whatsappLink} />
       </Suspense>
 
       {/* 5. INTERACTIVE WHOLESALE SAVINGS CALCULATOR */}
@@ -513,7 +512,6 @@ export default function HomePage() {
     </div>
   );
 }
-
 function FeaturedProductsSkeleton() {
   return (
     <section aria-label="Loading featured products" className="border-b border-border bg-card py-16 md:py-24">
@@ -523,43 +521,6 @@ function FeaturedProductsSkeleton() {
         <div className="mt-12 grid gap-6 sm:grid-cols-2 lg:grid-cols-3">
           {[0, 1, 2].map((item) => <div key={item} className="h-80 animate-pulse rounded-2xl bg-secondary/70" />)}
         </div>
-      </div>
-    </section>
-  );
-}
-
-async function FeaturedProductsSection({ whatsappLink }: { whatsappLink: string | null }) {
-  const products = await getStoreProducts({ limit: 6 });
-
-  return (
-    <section className="border-b border-border bg-card py-16 md:py-24 transition-colors">
-      <div className="container-page">
-        <div className="flex flex-col gap-4 md:flex-row md:items-end md:justify-between">
-          <SectionHeading
-            eyebrow={<TranslatedText id="home.inventoryEyebrow" />}
-            title={<TranslatedText id="home.inventoryTitle" />}
-            description={<TranslatedText id="home.inventoryDescription" />}
-          />
-          <Button asChild variant="gold">
-            <Link href="/products" className="gap-2"><TranslatedText id="home.fullCatalogue" /><ArrowRight className="h-4 w-4" /></Link>
-          </Button>
-        </div>
-
-        {products.length > 0 ? (
-          <div className="mt-12 grid auto-rows-fr gap-6 sm:grid-cols-2 lg:grid-cols-3">
-            {products.map((product) => <ProductCard key={product.id} product={product} />)}
-          </div>
-        ) : (
-          <div className="mt-10 rounded-3xl border border-dashed border-border bg-background p-8 text-center sm:p-12">
-            <div className="mx-auto flex h-14 w-14 items-center justify-center rounded-2xl bg-fresh/10 text-fresh"><Boxes className="h-7 w-7" /></div>
-            <h3 className="mt-4 text-lg font-extrabold text-foreground"><TranslatedText id="home.noProducts" /></h3>
-            <p className="mx-auto mt-2 max-w-md text-sm text-muted-foreground"><TranslatedText id="home.noProductsDescription" /></p>
-            <div className="mt-6 flex flex-wrap justify-center gap-3">
-              <Button asChild variant="gold"><Link href="/order"><TranslatedText id="home.requestQuote" /></Link></Button>
-              {whatsappLink ? <Button asChild variant="outline"><a href={whatsappLink} target="_blank" rel="noreferrer"><MessageCircle className="h-4 w-4 text-fresh" /> WhatsApp</a></Button> : null}
-            </div>
-          </div>
-        )}
       </div>
     </section>
   );

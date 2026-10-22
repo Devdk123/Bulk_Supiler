@@ -1,7 +1,6 @@
 import type { Metadata } from "next";
 import { Suspense } from "react";
 import { ProductCatalogue } from "@/components/product-catalogue";
-import { getStoreProductsPage, type ProductCataloguePage } from "@/lib/products";
 
 export const revalidate = 60;
 
@@ -16,22 +15,11 @@ export default function ProductsPage() {
     <section className="py-12 md:py-16">
       <div className="container-page">
         <Suspense fallback={<CatalogueSkeleton />}>
-          <ProductCatalogueContent />
+          <ProductCatalogue initialPage={null} />
         </Suspense>
       </div>
     </section>
   );
-}
-
-async function ProductCatalogueContent() {
-  let initialPage: ProductCataloguePage | null = null;
-  let initialError = "";
-  try {
-    initialPage = await getStoreProductsPage({ limit: 24, offset: 0 });
-  } catch {
-    initialError = "The catalogue is temporarily unavailable. Please retry.";
-  }
-  return <ProductCatalogue initialPage={initialPage} initialError={initialError} />;
 }
 
 function CatalogueSkeleton() {

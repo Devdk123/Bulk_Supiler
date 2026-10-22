@@ -207,3 +207,21 @@ test("assistant chat adapts to mobile keyboard viewports and app language change
   assert.match(assistant, /languageOverride \?\? \(appLanguage === "hi" \? "hi" : "en"\)/);
   assert.match(assistant, /prefers-reduced-motion/);
 });
+
+test("product route renders without waiting for a server-side catalogue fetch", async () => {
+  const page = await readFile("src/app/products/page.tsx", "utf8");
+  const catalogue = await readFile("src/components/product-catalogue.tsx", "utf8");
+  assert.match(page, /<ProductCatalogue initialPage=\{null\}/);
+  assert.doesNotMatch(page, /getStoreProductsPage/);
+  assert.match(catalogue, /useState\(!initialPage && !initialError\)/);
+  assert.match(catalogue, /aria-busy="true"/);
+});
+
+test("homepage featured products use the existing public catalogue API", async () => {
+  const page = await readFile("src/app/page.tsx", "utf8");
+  const featured = await readFile("src/components/featured-products.tsx", "utf8");
+  assert.doesNotMatch(page, /getStoreProducts/);
+  assert.match(page, /<FeaturedProducts whatsappLink=\{whatsappLink\}/);
+  assert.match(featured, /fetch\("\/api\/catalogue\?limit=6&offset=0"/);
+  assert.match(featured, /home\.featuredLoadError/);
+});

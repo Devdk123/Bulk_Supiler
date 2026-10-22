@@ -46,7 +46,7 @@ export function ProductCatalogue({
   const [brands, setBrands] = useState(initialPage?.brands.map((item) => item.name) || []);
   const [categories, setCategories] = useState(initialPage?.categories || []);
   const [offset, setOffset] = useState(0);
-  const [loading, setLoading] = useState(false);
+  const [loading, setLoading] = useState(!initialPage && !initialError);
   const [error, setError] = useState(initialError);
   const [retryCount, setRetryCount] = useState(0);
   const firstRequest = useRef(true);
@@ -457,10 +457,14 @@ export function ProductCatalogue({
           <Button type="button" variant="outline" onClick={() => setRetryCount((count) => count + 1)}>{t("common.retry")}</Button>
         </div>
       ) : null}
-      {loading ? <p role="status" className="mt-4 text-xs text-muted-foreground">{t("catalogue.updateLoading")}</p> : null}
+      {loading ? <p role="status" aria-live="polite" className="mt-4 text-xs text-muted-foreground">{t("catalogue.updateLoading")}</p> : null}
 
       {/* Product Grid or Empty State */}
-      {filteredProducts.length > 0 ? (
+      {loading && filteredProducts.length === 0 ? (
+        <div aria-label={t("catalogue.updateLoading")} aria-busy="true" className="mt-6 grid gap-6 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
+          {[0, 1, 2, 3].map((item) => <div key={item} className="h-72 animate-pulse rounded-2xl border border-border bg-secondary/60" />)}
+        </div>
+      ) : filteredProducts.length > 0 ? (
         <div aria-busy={loading} className={`mt-6 grid auto-rows-fr gap-6 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 ${loading ? "opacity-60" : ""}`}>
           {filteredProducts.map((product) => (
             <ProductCard key={product.id} product={product} />

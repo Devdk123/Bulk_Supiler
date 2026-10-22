@@ -12,6 +12,25 @@ The supplied DevTools capture showed the Next.js RSC document request at 7.67 s 
 
 These are server HTTP timings, not browser paint, Core Web Vitals, or Lighthouse scores. The product endpoint in the configured Supabase project returned zero product rows. The live site and that project could not be verified as the same deployment/database, so no production data was changed.
 
+## Recheck — 23 October 2026
+
+The product route and homepage featured grid now render their shell without waiting for a server-side catalogue query. They load product cards through the existing public `/api/catalogue` endpoint and show a loading skeleton while it responds.
+
+Against a local `next start` process with outbound access enabled, warm HTTP checks returned:
+
+| Route | Status | Time to first byte | Response |
+| --- | ---: | ---: | ---: |
+| `/` | 200 | 5 ms | 180,587 B |
+| `/products` | 200 | 4 ms | 64,746 B |
+| `/api/catalogue?limit=24&offset=0` | 200 | 1.54 s | 10,645 B; 19 products |
+| `/products/haldi-powder` | 200 | 1.48 s | 74,460 B |
+| `/order` | 200 | 71 ms | 73,844 B |
+| `/manifest.webmanifest` | 200 | 28 ms | 640 B |
+
+These are warm local server response measurements, not production browser paint or Core Web Vitals. The public catalogue query returned 19 published products; all had a brand, `quote_only = true`, no configured amount, `stock_status = unknown`, and null pack size, carton quantity, MOQ, and order increment. The query also found 7 brands and 6 categories. No live production-domain timing was available.
+
+The configured Supabase project does not yet have `categories.name_hi`; the public catalogue fallback succeeded and returns null Hindi category labels, which means category names remain English in Hindi mode until migration [`20261023180000_localized_catalogue_content.sql`](../supabase/migrations/20261023180000_localized_catalogue_content.sql) is applied. The read-only check confirms the customer-facing catalogue API works against the configured project. Earlier sandbox-only build attempts timed out because that build process had no outbound access; an outbound-enabled local run returned the catalogue successfully in 1.54 seconds.
+
 ## Changes in this release
 
 - Keep the root layout and public business settings out of the server database request path.

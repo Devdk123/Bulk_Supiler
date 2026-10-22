@@ -150,6 +150,7 @@ const hi = {
     inventoryDescription: "प्रकाशित उत्पाद देखें और गायत्री स्टोर की टीम से मौजूदा थोक भाव पूछें।",
     fullCatalogue: "पूरी सूची देखें",
     noProducts: "अभी कोई प्रकाशित उत्पाद नहीं है",
+    featuredLoadError: "प्रमुख उत्पाद लोड नहीं हो सके",
     noProductsDescription: "मौजूदा थोक उपलब्धता पूछने के लिए गायत्री स्टोर टीम से संपर्क करें।",
     requestQuote: "थोक भाव पूछें",
     advantageEyebrow: "व्यावसायिक सुविधा",

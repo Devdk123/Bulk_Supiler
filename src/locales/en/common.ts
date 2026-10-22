@@ -150,6 +150,7 @@ const en = {
     inventoryDescription: "Browse public product listings and request current wholesale pricing from the Gayatri Store team.",
     fullCatalogue: "View Full Catalogue",
     noProducts: "No published products yet",
+    featuredLoadError: "Featured products could not be loaded",
     noProductsDescription: "You can still contact the Gayatri Store team to ask about current wholesale availability.",
     requestQuote: "Request a Wholesale Quote",
     advantageEyebrow: "Commercial Value",
