@@ -11,6 +11,7 @@ import {
 import { SectionHeading } from "@/components/section-heading";
 import { WholesaleFAQ } from "@/components/wholesale-faq";
 import { Button } from "@/components/ui/button";
+import { TranslatedText } from "@/components/translated-text";
 
 export const metadata: Metadata = {
   title: "About Our Wholesale Operations | Gayatri Store",
@@ -58,15 +59,15 @@ export default function AboutPage() {
         {/* Intro Section */}
         <div className="max-w-3xl">
           <SectionHeading
-            eyebrow="Company Overview"
-            title="A Wholesale Supply Partner for Everyday Trade Goods"
-            description="We bridge the gap between regional processing facilities and local retail shelves, providing reliable availability, clear carton quantities, and responsive communication."
+            eyebrow={<TranslatedText id="about.eyebrow" />}
+            title={<TranslatedText id="about.title" />}
+            description={<TranslatedText id="about.description" />}
           />
         </div>
 
         {/* Feature Grid */}
         <div className="mt-14 grid gap-6 sm:grid-cols-2 lg:grid-cols-3">
-          {pillars.map((item) => (
+          {pillars.map((item, index) => (
             <div
               key={item.title}
               className="group flex flex-col justify-between rounded-3xl border border-border bg-card p-7 shadow-xs transition-all duration-300 hover:-translate-y-1 hover:border-fresh/40 hover:shadow-md"
@@ -76,10 +77,10 @@ export default function AboutPage() {
                   <item.icon className="h-6 w-6" />
                 </span>
                 <h2 className="mt-5 text-lg font-bold text-foreground">
-                  {item.title}
+                  <TranslatedText id={`about.pillars.${index}.0`} />
                 </h2>
                 <p className="mt-2.5 text-xs sm:text-sm leading-relaxed text-muted-foreground">
-                  {item.text}
+                  <TranslatedText id={`about.pillars.${index}.1`} />
                 </p>
               </div>
             </div>
@@ -95,18 +96,18 @@ export default function AboutPage() {
         <div className="mt-16 rounded-3xl border border-border bg-secondary/40 p-8 sm:p-12 text-center md:text-left flex flex-col md:flex-row md:items-center md:justify-between gap-6">
           <div>
             <h3 className="text-xl sm:text-2xl font-extrabold text-foreground">
-              Interested in Stocking Our Product Lines?
+              <TranslatedText id="about.ctaTitle" />
             </h3>
             <p className="mt-2 text-sm text-muted-foreground max-w-xl">
-              Explore our current catalogue or submit your store details to discuss pricing and minimum order terms.
+              <TranslatedText id="about.ctaDescription" />
             </p>
           </div>
           <div className="flex flex-wrap justify-center gap-3 shrink-0">
             <Button asChild variant="gold" size="lg">
-              <Link href="/products">Explore Catalogue</Link>
+              <Link href="/products"><TranslatedText id="about.catalogue" /></Link>
             </Button>
             <Button asChild variant="outline" size="lg">
-              <Link href="/order">Request Wholesale Quote</Link>
+              <Link href="/order"><TranslatedText id="about.quote" /></Link>
             </Button>
           </div>
         </div>

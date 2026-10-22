@@ -40,11 +40,14 @@ export type Product = {
   imageUrl: string | null;
   sku: string | null;
   description: string | null;
+  shortDescriptionHi: string | null;
+  descriptionHi: string | null;
   variant: string | null;
   unit: string | null;
   packSize: string | null;
   brandName: string | null;
   categoryName: string | null;
+  categoryNameHi: string | null;
   stockStatus: string;
   quoteOnly: boolean;
   variants: ProductVariant[];
@@ -72,6 +75,8 @@ type ProductRow = {
   status: ProductRecord["status"];
   sku: string | null;
   description: string | null;
+  short_description_hi: string | null;
+  description_hi: string | null;
   variant: string | null;
   unit: string | null;
   pack_size: string | null;
@@ -84,7 +89,7 @@ type ProductRow = {
   quote_only: boolean;
   stock_status: string;
   brand: { name: string } | { name: string }[] | null;
-  category: { name: string } | { name: string }[] | null;
+  category: { name: string; name_hi?: string | null } | { name: string; name_hi?: string | null }[] | null;
   variants?: ProductVariant[];
   images?: ProductImage[];
   price_tiers?: ProductPriceTier[];
@@ -139,11 +144,14 @@ function mapProductRow(row: ProductRow): Product {
     imageUrl: row.image_url,
     sku: row.sku,
     description: row.description,
+    shortDescriptionHi: row.short_description_hi || null,
+    descriptionHi: row.description_hi || null,
     variant: row.variant,
     unit: row.unit,
     packSize: row.pack_size,
     brandName: brand?.name || null,
     categoryName: category?.name || row.quality,
+    categoryNameHi: category?.name_hi || null,
     stockStatus: row.stock_status,
     quoteOnly: row.quote_only || row.price_amount === null,
     variants: (row.variants || []).filter((variant) => variant.active),
@@ -152,12 +160,7 @@ function mapProductRow(row: ProductRow): Product {
   };
 }
 
-const storeProductSelect = `
-  id, name, slug, price, moq, quality, packing, image_url, active, created_at,
-  status, sku, description, variant, unit, pack_size, units_per_carton,
-  moq_quantity, order_increment, price_amount, price_currency, price_unit,
-  quote_only, stock_status, brand:brands(name), category:categories(name)
-`;
+const storeProductSelect = `*, brand:brands(name), category:categories(*)`;
 
 const storeProductDetailSelect = `${storeProductSelect},
   variants:product_variants(id, name, unit, pack_size, units_per_carton, moq_quantity, order_increment, active),
@@ -182,7 +185,7 @@ export type ProductCataloguePage = {
   limit: number;
   offset: number;
   brands: { id: string; name: string; slug: string }[];
-  categories: { id: string; name: string; slug: string }[];
+  categories: { id: string; name: string; name_hi?: string | null; slug: string }[];
 };
 
 async function fetchStoreProductsPage(options: ProductCatalogueOptions = {}): Promise<ProductCataloguePage> {

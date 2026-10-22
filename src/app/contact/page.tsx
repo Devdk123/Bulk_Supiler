@@ -5,6 +5,7 @@ import { SectionHeading } from "@/components/section-heading";
 import { Button } from "@/components/ui/button";
 import { buildWhatsAppLink } from "@/lib/utils";
 import { getPublicBusinessSettings } from "@/lib/business-settings";
+import { TranslatedText } from "@/components/translated-text";
 
 export const metadata: Metadata = {
   title: "Contact Wholesale Sales Desk | Gayatri Store",
@@ -26,9 +27,9 @@ export default async function ContactPage() {
         {/* Left Column: Contact Points */}
         <div className="space-y-6">
           <SectionHeading
-            eyebrow="Direct Wholesale Support"
-            title="Connect With Our Godown Sales Team"
-            description="Discuss rates, packing configurations, transport carriers, or request an official quotation for your store."
+            eyebrow={<TranslatedText id="contactPage.eyebrow" />}
+            title={<TranslatedText id="contactPage.title" />}
+            description={<TranslatedText id="contactPage.description" />}
           />
 
           <div className="grid gap-4">
@@ -39,7 +40,7 @@ export default async function ContactPage() {
                 </span>
                 <div>
                   <p className="text-xs font-bold uppercase tracking-wider text-muted-foreground">
-                    Phone & WhatsApp Desk
+                    <TranslatedText id="contactPage.phoneDesk" />
                   </p>
                   <a
                     href={`tel:+${whatsappNumber}`}
@@ -48,7 +49,7 @@ export default async function ContactPage() {
                     +{whatsappNumber}
                   </a>
                   <p className="mt-0.5 text-xs text-muted-foreground">
-                    Available during active godown operating hours for trade queries.
+                    <TranslatedText id="contactPage.phoneNote" />
                   </p>
                 </div>
               </div>
@@ -61,7 +62,7 @@ export default async function ContactPage() {
                 </span>
                 <div>
                   <p className="text-xs font-bold uppercase tracking-wider text-muted-foreground">
-                    Commercial Email
+                    <TranslatedText id="contactPage.email" />
                   </p>
                   <a
                     href={`mailto:${settings.contact_email}`}
@@ -80,7 +81,7 @@ export default async function ContactPage() {
                 </span>
                 <div>
                   <p className="text-xs font-bold uppercase tracking-wider text-muted-foreground">
-                    Godown & Depot Location
+                    <TranslatedText id="contactPage.location" />
                   </p>
                   <p className="mt-1 text-sm font-semibold text-foreground">
                     {settings.business_address}
@@ -96,7 +97,7 @@ export default async function ContactPage() {
                 </span>
                 <div>
                   <p className="text-xs font-bold uppercase tracking-wider text-muted-foreground">
-                    Business Hours
+                    <TranslatedText id="contactPage.hours" />
                   </p>
                   <p className="mt-1 text-sm font-semibold text-foreground">
                     {settings.business_hours}
@@ -111,7 +112,7 @@ export default async function ContactPage() {
               <Button asChild variant="gold" size="lg" className="w-full sm:w-auto shadow-md">
                 <a href={whatsappLink} target="_blank" rel="noreferrer" className="gap-2">
                   <MessageCircle className="h-5 w-5" />
-                  <span>Start Live WhatsApp Conversation</span>
+                  <span><TranslatedText id="contactPage.startWhatsApp" /></span>
                 </a>
               </Button>
             </div>

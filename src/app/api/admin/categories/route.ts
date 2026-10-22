@@ -6,6 +6,8 @@ import { getSupabaseAdmin } from "@/lib/supabase";
 
 const categorySchema = z.object({
   name: z.string().trim().min(2).max(100),
+  name_hi: z.string().trim().max(100).optional(),
+  description_hi: z.string().trim().max(1000).optional(),
   parent_id: z.string().uuid().nullable().optional(),
   status: z.enum(["draft", "published", "archived"]).default("draft")
 });
@@ -29,12 +31,20 @@ export async function POST(request: Request) {
   const parsed = categorySchema.safeParse(body);
   if (!parsed.success) return NextResponse.json({ error: "Check the category details.", fieldErrors: parsed.error.flatten().fieldErrors }, { status: 400 });
   try {
+    const { name_hi, description_hi, ...category } = parsed.data;
     const { data, error } = await getSupabaseAdmin().from("categories").insert({
-      ...parsed.data,
-      parent_id: parsed.data.parent_id || null,
-      slug: productSlug(parsed.data.name)
+      ...category,
+      ...(name_hi ? { name_hi } : {}),
+      ...(description_hi ? { description_hi } : {}),
+      parent_id: category.parent_id || null,
+      slug: productSlug(category.name)
     }).select().single();
-    if (error) return NextResponse.json({ error: "Unable to create category. Check that its name is unique." }, { status: 400 });
+    if (error) {
+      const missingLocalizedMigration = /name_hi|description_hi|column/i.test(error.message) && Boolean(name_hi || description_hi);
+      return NextResponse.json({ error: missingLocalizedMigration
+        ? "Apply the localized catalogue migration before saving Hindi category text."
+        : "Unable to create category. Check that its name is unique." }, { status: missingLocalizedMigration ? 503 : 400 });
+    }
     return NextResponse.json({ category: data }, { status: 201 });
   } catch (error) {
     console.error("Category creation failed:", error);

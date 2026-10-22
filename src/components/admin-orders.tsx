@@ -11,6 +11,7 @@ import { Textarea } from "@/components/ui/textarea";
 import { AdminAuditTab } from "@/components/admin-audit-tab";
 import { getSupabaseBrowser } from "@/lib/supabase-browser";
 import { enquiryStatuses } from "@/lib/validation";
+import { useLanguage } from "@/context/language-context";
 
 type Status = "draft" | "published" | "archived";
 type StockStatus = "unknown" | "in_stock" | "low_stock" | "out_of_stock" | "discontinued";
@@ -41,6 +42,8 @@ type ProductForm = {
   name: string;
   sku: string;
   description: string;
+  short_description_hi: string;
+  description_hi: string;
   brand_id: string;
   category_id: string;
   variant: string;
@@ -68,7 +71,7 @@ type AdminProduct = ProductForm & {
   category: { id: string; name: string } | null;
   image_url: string | null;
 };
-type Taxonomy = { id: string; name: string; status: Status; slug: string; logo_url?: string | null; parent_id?: string | null };
+type Taxonomy = { id: string; name: string; name_hi?: string | null; description_hi?: string | null; status: Status; slug: string; logo_url?: string | null; parent_id?: string | null };
 type EnquiryItem = { product_name: string; variant_name: string | null; packaging: string | null; unit: string | null; quantity: number };
 type AdminEnquiry = {
   id: string;
@@ -123,6 +126,8 @@ const emptyProduct: ProductForm = {
   name: "",
   sku: "",
   description: "",
+  short_description_hi: "",
+  description_hi: "",
   brand_id: "",
   category_id: "",
   variant: "",
@@ -174,6 +179,8 @@ function productToForm(product: AdminProduct): ProductForm {
     name: product.name,
     sku: product.sku || "",
     description: product.description || "",
+    short_description_hi: product.short_description_hi || "",
+    description_hi: product.description_hi || "",
     brand_id: product.brand_id || "",
     category_id: product.category_id || "",
     variant: product.variant || "",
@@ -208,6 +215,7 @@ function productToForm(product: AdminProduct): ProductForm {
 }
 
 export function AdminOrders() {
+  const { t } = useLanguage();
   const [authenticated, setAuthenticated] = useState(false);
   const [checkingSession, setCheckingSession] = useState(true);
   const [password, setPassword] = useState("");
@@ -247,6 +255,8 @@ export function AdminOrders() {
   const [enquiryStatus, setEnquiryStatus] = useState("All");
   const [notes, setNotes] = useState<Record<string, string>>({});
   const [taxonomyName, setTaxonomyName] = useState("");
+  const [taxonomyNameHi, setTaxonomyNameHi] = useState("");
+  const [taxonomyDescriptionHi, setTaxonomyDescriptionHi] = useState("");
   const [taxonomyStatus, setTaxonomyStatus] = useState<Status>("draft");
   const [taxonomyLogo, setTaxonomyLogo] = useState("");
   const [editingBrandId, setEditingBrandId] = useState("");
@@ -502,7 +512,7 @@ export function AdminOrders() {
     const editingId = kind === "brands" ? editingBrandId : editingCategoryId;
     const payload = kind === "brands"
       ? { name: taxonomyName, status: taxonomyStatus, logo_url: taxonomyLogo || null }
-      : { name: taxonomyName, status: taxonomyStatus, parent_id: categoryParent || null };
+      : { name: taxonomyName, name_hi: taxonomyNameHi, description_hi: taxonomyDescriptionHi, status: taxonomyStatus, parent_id: categoryParent || null };
     try {
       await readResponse(await fetch(editingId ? `/api/admin/${kind}/${editingId}` : `/api/admin/${kind}`, {
         method: editingId ? "PATCH" : "POST",
@@ -510,6 +520,8 @@ export function AdminOrders() {
         body: JSON.stringify(payload)
       }));
       setTaxonomyName("");
+      setTaxonomyNameHi("");
+      setTaxonomyDescriptionHi("");
       setTaxonomyLogo("");
       setCategoryParent("");
       setTaxonomyStatus("draft");
@@ -525,6 +537,8 @@ export function AdminOrders() {
 
   function editTaxonomy(item: Taxonomy, kind: "brands" | "categories") {
     setTaxonomyName(item.name);
+    setTaxonomyNameHi(kind === "categories" ? item.name_hi || "" : "");
+    setTaxonomyDescriptionHi(kind === "categories" ? item.description_hi || "" : "");
     setTaxonomyStatus(item.status);
     setTaxonomyLogo(item.logo_url || "");
     setCategoryParent(item.parent_id || "");
@@ -643,7 +657,7 @@ export function AdminOrders() {
   }
 
   if (checkingSession) {
-    return <section className="container-page py-16 text-center"><Loader2 className="mx-auto h-6 w-6 animate-spin" /><p className="mt-3 text-sm text-muted-foreground">Checking admin session...</p></section>;
+    return <section className="container-page py-16 text-center"><Loader2 className="mx-auto h-6 w-6 animate-spin" /><p className="mt-3 text-sm text-muted-foreground">{t("common.loading")}</p></section>;
   }
 
   if (!authenticated) {
@@ -653,16 +667,16 @@ export function AdminOrders() {
           <Card className="premium-shadow">
             <CardContent className="p-8">
               <div className="flex h-12 w-12 items-center justify-center rounded-md bg-primary text-accent"><Lock className="h-6 w-6" /></div>
-              <h1 className="mt-5 text-3xl font-extrabold text-primary">Gayatri Store Admin</h1>
-              <p className="mt-3 text-muted-foreground">Sign in to manage products, categories, and wholesale enquiries for Maya Bazar.</p>
+              <h1 className="mt-5 text-3xl font-extrabold text-primary">{t("admin.signInTitle")}</h1>
+              <p className="mt-3 text-muted-foreground">{t("admin.signInDescription")}</p>
               <form onSubmit={login} className="mt-6 grid gap-4">
                 {loginError ? <p role="alert" className="rounded-md bg-red-50 p-3 text-sm font-semibold text-red-700">{loginError}</p> : null}
                 <div className="grid gap-2">
-                  <Label htmlFor="admin-password">Admin password</Label>
+                  <Label htmlFor="admin-password">{t("admin.password")}</Label>
                   <Input id="admin-password" type="password" value={password} onChange={(event) => setPassword(event.target.value)} autoComplete="current-password" required />
                 </div>
                 <Button type="submit" variant="gold" disabled={loginLoading || !password}>
-                  {loginLoading ? <Loader2 className="h-4 w-4 animate-spin" /> : <Lock className="h-4 w-4" />} Sign in
+                  {loginLoading ? <Loader2 className="h-4 w-4 animate-spin" /> : <Lock className="h-4 w-4" />} {t("admin.signIn")}
                 </Button>
               </form>
             </CardContent>
@@ -681,15 +695,15 @@ export function AdminOrders() {
       <div className="container-page">
         <div className="flex flex-wrap items-end justify-between gap-5">
           <div>
-            <p className="text-sm font-bold uppercase tracking-[0.18em] text-accent">Administration</p>
-            <h1 className="mt-2 text-3xl font-extrabold text-primary">Gayatri Store Administration</h1>
+            <p className="text-sm font-bold uppercase tracking-[0.18em] text-accent">{t("admin.eyebrow")}</p>
+            <h1 className="mt-2 text-3xl font-extrabold text-primary">{t("admin.title")}</h1>
           </div>
-          <Button variant="outline" onClick={logout}><LogOut className="h-4 w-4" /> Sign out</Button>
+          <Button variant="outline" onClick={logout}><LogOut className="h-4 w-4" /> {t("admin.signOut")}</Button>
         </div>
         <div className="mt-6 grid gap-3 sm:grid-cols-3">
-          <Stat label="Published products" value={publishedCount} />
-          <Stat label="Draft products" value={draftCount} />
-          <Stat label="New enquiries" value={newEnquiryCount} />
+          <Stat label={t("admin.stats.0")} value={publishedCount} />
+          <Stat label={t("admin.stats.1")} value={draftCount} />
+          <Stat label={t("admin.stats.2")} value={newEnquiryCount} />
         </div>
 
         <nav aria-label="Admin sections" className="mt-8 flex flex-wrap gap-2 border-b pb-3">
@@ -702,8 +716,8 @@ export function AdminOrders() {
             ["settings", "Business settings"],
             ["diagnostics", "System Diagnostics"],
             ["audit", "Audit Logs"]
-          ] as const).map(([tab, title]) => (
-            <Button key={tab} variant={activeTab === tab ? "gold" : "outline"} className="rounded-xl font-bold" onClick={() => setActiveTab(tab)}>{title}</Button>
+          ] as const).map(([tab], index) => (
+            <Button key={tab} variant={activeTab === tab ? "gold" : "outline"} className="rounded-xl font-bold" onClick={() => setActiveTab(tab)}>{t(`admin.tabs.${index}`)}</Button>
           ))}
         </nav>
 
@@ -712,20 +726,20 @@ export function AdminOrders() {
           <div className="mt-6 grid gap-6 xl:grid-cols-[0.9fr_1.1fr]">
             <Card>
               <CardContent className="p-5">
-                <h2 className="text-xl font-extrabold text-primary">{editingProductId ? "Edit product" : "Create product"}</h2>
-                <p className="mt-2 text-sm text-muted-foreground">New products are drafts unless you publish them. Leave unknown specifications blank.</p>
+                <h2 className="text-xl font-extrabold text-primary">{editingProductId ? t("admin.editProduct") : t("admin.createProduct")}</h2>
+                <p className="mt-2 text-sm text-muted-foreground">{t("admin.productDraftNotice")}</p>
                 <form onSubmit={saveProduct} className="mt-5 grid gap-4">
-                  <Field label="Product name"><Input required value={productForm.name} onChange={(event) => updateProduct("name", event.target.value)} /></Field>
+                  <Field label={t("admin.productName")}><Input required value={productForm.name} onChange={(event) => updateProduct("name", event.target.value)} /></Field>
                   <div className="grid gap-4 sm:grid-cols-2">
-                    <Field label="Brand">
+                    <Field label={t("admin.brand")}>
                       <select value={productForm.brand_id} onChange={(event) => updateProduct("brand_id", event.target.value)} className="h-11 rounded-md border bg-background px-3 text-sm">
-                        <option value="">No brand selected</option>
+                        <option value="">{t("admin.noBrand")}</option>
                         {brands.map((brand) => <option key={brand.id} value={brand.id}>{brand.name} ({brand.status})</option>)}
                       </select>
                     </Field>
-                    <Field label="Category">
+                    <Field label={t("admin.category")}>
                       <select value={productForm.category_id} onChange={(event) => updateProduct("category_id", event.target.value)} className="h-11 rounded-md border bg-background px-3 text-sm">
-                        <option value="">No category selected</option>
+                        <option value="">{t("admin.noCategory")}</option>
                         {categories.map((category) => <option key={category.id} value={category.id}>{category.name} ({category.status})</option>)}
                       </select>
                     </Field>
@@ -735,6 +749,8 @@ export function AdminOrders() {
                     <Field label="Product variant / fragrance"><Input value={productForm.variant} onChange={(event) => updateProduct("variant", event.target.value)} /></Field>
                   </div>
                   <Field label="Description"><Textarea value={productForm.description} onChange={(event) => updateProduct("description", event.target.value)} maxLength={5000} /></Field>
+                  <Field label={t("admin.shortProductHindi")}><Input value={productForm.short_description_hi} onChange={(event) => updateProduct("short_description_hi", event.target.value)} maxLength={1000} /></Field>
+                  <Field label={t("admin.productHindi")}><Textarea value={productForm.description_hi} onChange={(event) => updateProduct("description_hi", event.target.value)} maxLength={5000} /></Field>
                   <div className="grid gap-4 sm:grid-cols-2">
                     <Field label="Unit"><Input value={productForm.unit} onChange={(event) => updateProduct("unit", event.target.value)} placeholder="Set only when confirmed" /></Field>
                     <Field label="Pack size"><Input value={productForm.pack_size} onChange={(event) => updateProduct("pack_size", event.target.value)} /></Field>
@@ -824,9 +840,9 @@ export function AdminOrders() {
                   <div className="flex flex-wrap gap-3">
                     <Button type="submit" variant="gold" disabled={productSaving || imageUploading}>
                       {productSaving ? <Loader2 className="h-4 w-4 animate-spin" /> : <Save className="h-4 w-4" />}
-                      {editingProductId ? "Save product" : "Create product"}
+                    {editingProductId ? t("admin.editProduct") : t("admin.createProduct")}
                     </Button>
-                    {editingProductId ? <Button type="button" variant="outline" onClick={resetProduct}>Cancel</Button> : null}
+                    {editingProductId ? <Button type="button" variant="outline" onClick={resetProduct}>{t("admin.cancel")}</Button> : null}
                   </div>
                 </form>
               </CardContent>
@@ -837,9 +853,9 @@ export function AdminOrders() {
                 <div className="flex flex-wrap items-center justify-between gap-3">
                   <h2 className="text-xl font-extrabold text-primary">Catalogue ({products.length})</h2>
                   <label className="relative">
-                    <span className="sr-only">Search products by name, brand, category or SKU</span>
+                    <span className="sr-only">{t("admin.searchCatalogue")}</span>
                     <Search className="absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-muted-foreground" />
-                    <Input value={search} onChange={(event) => setSearch(event.target.value)} className="pl-9" placeholder="Search catalogue" />
+                    <Input value={search} onChange={(event) => setSearch(event.target.value)} className="pl-9" placeholder={t("admin.searchCatalogue")} />
                   </label>
                 </div>
                 <div className="mt-5 grid gap-3">
@@ -861,7 +877,7 @@ export function AdminOrders() {
                       </div>
                     </article>
                   ))}
-                  {!filteredProducts.length ? <p className="rounded-lg border border-dashed p-8 text-center text-sm text-muted-foreground">No products found. Create a verified product or adjust the search.</p> : null}
+                  {!filteredProducts.length ? <p className="rounded-lg border border-dashed p-8 text-center text-sm text-muted-foreground">{t("admin.noProducts")}</p> : null}
                 </div>
               </CardContent>
             </Card>
@@ -887,16 +903,20 @@ export function AdminOrders() {
             <TaxonomyForm
               title={editingCategoryId ? "Edit category" : "Create category"}
               name={taxonomyName}
+              nameHi={taxonomyNameHi}
+              descriptionHi={taxonomyDescriptionHi}
               status={taxonomyStatus}
               parentId={categoryParent}
               categories={categories}
               error={taxonomyError}
               busy={taxonomyBusy}
               onName={setTaxonomyName}
+              onNameHi={setTaxonomyNameHi}
+              onDescriptionHi={setTaxonomyDescriptionHi}
               onStatus={setTaxonomyStatus}
               onParent={setCategoryParent}
               onSubmit={(event) => submitTaxonomy(event, "categories")}
-              onCancel={() => { setEditingCategoryId(""); setTaxonomyName(""); setCategoryParent(""); }}
+              onCancel={() => { setEditingCategoryId(""); setTaxonomyName(""); setTaxonomyNameHi(""); setTaxonomyDescriptionHi(""); setCategoryParent(""); }}
             />
             <TaxonomyList title="Brands" items={brands} onEdit={(item) => editTaxonomy(item, "brands")} onDelete={(item) => deleteTaxonomy(item, "brands")} />
             <TaxonomyList title="Categories" items={categories} onEdit={(item) => editTaxonomy(item, "categories")} onDelete={(item) => deleteTaxonomy(item, "categories")} />
@@ -1171,10 +1191,12 @@ function DownloadLink({ href, label }: { href: string; label: string }) {
 }
 
 function TaxonomyForm({
-  title, name, status, logo, parentId, categories = [], error, busy, onName, onStatus, onLogo, onLogoUpload, onParent, onSubmit, onCancel
+  title, name, nameHi, descriptionHi, status, logo, parentId, categories = [], error, busy, onName, onNameHi, onDescriptionHi, onStatus, onLogo, onLogoUpload, onParent, onSubmit, onCancel
 }: {
   title: string;
   name: string;
+  nameHi?: string;
+  descriptionHi?: string;
   status: Status;
   logo?: string;
   parentId?: string;
@@ -1182,6 +1204,8 @@ function TaxonomyForm({
   error: string;
   busy: boolean;
   onName: (value: string) => void;
+  onNameHi?: (value: string) => void;
+  onDescriptionHi?: (value: string) => void;
   onStatus: (value: Status) => void;
   onLogo?: (value: string) => void;
   onLogoUpload?: (event: React.ChangeEvent<HTMLInputElement>) => void;
@@ -1189,12 +1213,19 @@ function TaxonomyForm({
   onSubmit: (event: React.FormEvent<HTMLFormElement>) => void;
   onCancel: () => void;
 }) {
+  const { t } = useLanguage();
   return (
     <Card><CardContent className="p-5">
       <h2 className="text-xl font-bold text-primary">{title}</h2>
       {error ? <p role="alert" className="mt-3 rounded-md bg-red-50 p-3 text-sm text-red-800">{error}</p> : null}
       <form onSubmit={onSubmit} className="mt-4 grid gap-4">
         <Field label="Name"><Input required value={name} onChange={(event) => onName(event.target.value)} /></Field>
+        {onParent && onNameHi && onDescriptionHi ? (
+          <>
+            <Field label={t("admin.nameHindi")}><Input value={nameHi || ""} onChange={(event) => onNameHi(event.target.value)} /></Field>
+            <Field label={t("admin.descriptionHindi")}><Textarea value={descriptionHi || ""} onChange={(event) => onDescriptionHi(event.target.value)} maxLength={1000} /></Field>
+          </>
+        ) : null}
         {onLogo ? (
           <>
             <Field label="Logo image URL"><Input value={logo || ""} onChange={(event) => onLogo(event.target.value)} /></Field>

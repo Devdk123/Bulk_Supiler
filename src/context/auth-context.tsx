@@ -114,51 +114,67 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
   }, [user, fetchProfile]);
 
   useEffect(() => {
-    const supabase = getSupabaseBrowser();
     let active = true;
     let authStateHandled = false;
+    let unsubscribe: (() => void) | undefined;
 
-    // Keep the auth callback synchronous. Awaiting a profile request here can
-    // hold Supabase's auth lock and leave getSession() pending indefinitely.
-    const { data: { subscription } } = supabase.auth.onAuthStateChange((_event, currentSession) => {
-      if (!active) return;
-      authStateHandled = true;
-      setSession(currentSession);
-      setUser(currentSession?.user ?? null);
-      setLoading(false);
+    try {
+      const supabase = getSupabaseBrowser();
 
-      if (!currentSession?.user) {
-        setProfile(null);
-      } else {
-        const userId = currentSession.user.id;
-        queueMicrotask(() => {
-          if (active) void fetchProfile(userId);
-        });
-      }
-    });
-
-    // Resolve the account shell promptly, even if auth storage or a profile
-    // request is slow. Profile data is loaded separately and is not a gate.
-    void withTimeout(supabase.auth.getSession(), 5000, "Session request timed out.")
-      .then(({ data: { session } }) => {
-        if (!active || authStateHandled) return;
-        setSession(session);
-        setUser(session?.user ?? null);
+      // Keep the auth callback synchronous. Awaiting a profile request here can
+      // hold Supabase's auth lock and leave getSession() pending indefinitely.
+      const { data: { subscription } } = supabase.auth.onAuthStateChange((_event, currentSession) => {
+        if (!active) return;
+        authStateHandled = true;
+        setSession(currentSession);
+        setUser(currentSession?.user ?? null);
         setLoading(false);
-        if (session?.user) void fetchProfile(session.user.id);
-      })
-      .catch((error) => {
-        console.warn("Unable to restore auth session:", error);
-        if (!active || authStateHandled) return;
+
+        if (!currentSession?.user) {
+          setProfile(null);
+        } else {
+          const userId = currentSession.user.id;
+          queueMicrotask(() => {
+            if (active) void fetchProfile(userId);
+          });
+        }
+      });
+      unsubscribe = () => subscription.unsubscribe();
+
+      // Resolve the account shell promptly, even if auth storage or a profile
+      // request is slow. Profile data is loaded separately and is not a gate.
+      void withTimeout(supabase.auth.getSession(), 5000, "Session request timed out.")
+        .then(({ data: { session } }) => {
+          if (!active || authStateHandled) return;
+          setSession(session);
+          setUser(session?.user ?? null);
+          setLoading(false);
+          if (session?.user) void fetchProfile(session.user.id);
+        })
+        .catch((error) => {
+          console.warn("Unable to restore auth session:", error);
+          if (!active || authStateHandled) return;
+          setSession(null);
+          setUser(null);
+          setProfile(null);
+          setLoading(false);
+        });
+    } catch (error) {
+      // Missing or malformed public auth configuration must never leave the
+      // account route behind an endless loading state.
+      console.error("Unable to initialize Supabase Auth:", error);
+      queueMicrotask(() => {
+        if (!active) return;
         setSession(null);
         setUser(null);
         setProfile(null);
         setLoading(false);
       });
+    }
 
     return () => {
       active = false;
-      subscription.unsubscribe();
+      unsubscribe?.();
     };
   }, [fetchProfile]);
 

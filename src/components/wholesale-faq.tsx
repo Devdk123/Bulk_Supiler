@@ -4,64 +4,28 @@ import { useState } from "react";
 import { ChevronDown, HelpCircle, PhoneCall, ShieldCheck } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import Link from "next/link";
+import { useLanguage } from "@/context/language-context";
 
 interface FAQItem {
   id: string;
-  question: string;
-  answer: string;
   category: "Orders" | "Logistics" | "Billing" | "Products";
 }
 
 const FAQS: FAQItem[] = [
-  {
-    id: "faq-1",
-    question: "What is the Minimum Order Quantity (MOQ) across categories?",
-    answer:
-      "Most packaged spices and agarbatti have an MOQ of 1 master carton (typically 12 to 24 units). For bulk edible oils, the MOQ is 5 tins or 1 master case. You can combine different products and categories into a single consolidated wholesale order.",
-    category: "Orders"
-  },
-  {
-    id: "faq-2",
-    question: "How does delivery work in Maya Bazar and surrounding markets?",
-    answer:
-      "We coordinate dispatches directly from our central godown to your shop or through dependable regional transporters across Maya Bazar and our 50+ km trade zone. Freight charges and dispatch schedules are confirmed transparently in your quotation.",
-    category: "Logistics"
-  },
-  {
-    id: "faq-3",
-    question: "Can I combine multiple brands and categories in one quotation?",
-    answer:
-      "Yes! Gayatri Store lets you combine Jhaveri's Mast! spices, Kisan matches, Bharat Jyoti oils, and GrahShanti incense in a single quotation, saving you multi-vendor coordination hassles.",
-    category: "Products"
-  },
-  {
-    id: "faq-4",
-    question: "Do you provide GST tax invoices for business input tax credit?",
-    answer:
-      "Every wholesale shipment is accompanied by a 100% compliant GST invoice with appropriate HSN codes, allowing registered retail and wholesale businesses to claim complete ITC.",
-    category: "Billing"
-  },
-  {
-    id: "faq-5",
-    question: "What payment terms and modes are supported for bulk orders?",
-    answer:
-      "We support direct Bank Transfer (RTGS / NEFT / IMPS), verified UPI, and Transporter Bank CAD (Cash Against Delivery via Transport Bilty) for verified regular trade partners.",
-    category: "Billing"
-  },
-  {
-    id: "faq-6",
-    question: "How do I receive live sample lots or test batch quality?",
-    answer:
-      "First-time commercial buyers can request sample cartons or test batches by contacting our godown desk on WhatsApp (+91 884 926 3377) before committing to full truckload or container orders.",
-    category: "Orders"
-  }
+  { id: "faq-1", category: "Orders" },
+  { id: "faq-2", category: "Logistics" },
+  { id: "faq-3", category: "Products" },
+  { id: "faq-4", category: "Billing" },
+  { id: "faq-5", category: "Billing" },
+  { id: "faq-6", category: "Orders" }
 ];
 
 export function WholesaleFAQ() {
+  const { t } = useLanguage();
   const [openId, setOpenId] = useState<string>("faq-1");
   const [filter, setFilter] = useState<string>("All");
 
-  const categories = ["All", "Orders", "Logistics", "Billing", "Products"];
+  const categories = ["All", "Orders", "Logistics", "Billing", "Products"] as const;
 
   const filteredFaqs = filter === "All" ? FAQS : FAQS.filter((f) => f.category === filter);
 
@@ -75,27 +39,27 @@ export function WholesaleFAQ() {
         <div>
           <div className="inline-flex items-center gap-2 rounded-lg bg-fresh/15 px-3 py-1 text-xs font-bold text-fresh">
             <HelpCircle className="h-4 w-4" />
-            <span>Buyer Knowledge Base</span>
+            <span>{t("faq.eyebrow")}</span>
           </div>
           <h2 className="mt-2 text-2xl font-extrabold tracking-tight text-foreground sm:text-3xl">
-            Frequently Asked Wholesale Questions
+            {t("faq.title")}
           </h2>
           <p className="mt-1 text-sm text-muted-foreground">
-            Clear, transparent answers regarding minimum orders, transporter delivery, GST invoicing, and trade policies.
+            {t("faq.description")}
           </p>
         </div>
 
         <Button asChild variant="outline" size="sm" className="w-fit gap-2">
           <Link href="/contact">
             <PhoneCall className="h-4 w-4 text-fresh" />
-            <span>Contact Godown Desk</span>
+            <span>{t("faq.contact")}</span>
           </Link>
         </Button>
       </div>
 
       {/* Category Pills */}
       <div className="mt-6 flex flex-wrap gap-2">
-        {categories.map((cat) => (
+        {categories.map((cat, index) => (
           <button
             key={cat}
             type="button"
@@ -106,7 +70,7 @@ export function WholesaleFAQ() {
                 : "border border-border bg-background text-foreground hover:bg-secondary"
             }`}
           >
-            {cat}
+            {t(`faq.filters.${index}`)}
           </button>
         ))}
       </div>
@@ -114,6 +78,7 @@ export function WholesaleFAQ() {
       {/* Accordion List */}
       <div className="mt-6 divide-y divide-border">
         {filteredFaqs.map((faq) => {
+          const faqIndex = Number(faq.id.split("-")[1]) - 1;
           const isOpen = openId === faq.id;
           return (
             <div key={faq.id} className="py-4">
@@ -126,7 +91,7 @@ export function WholesaleFAQ() {
                   <span className="inline-flex h-6 w-6 items-center justify-center rounded-full bg-secondary text-[11px] font-bold text-muted-foreground">
                     Q
                   </span>
-                  {faq.question}
+                  {t(`faq.questions.${faqIndex}.0`)}
                 </span>
                 <ChevronDown
                   className={`h-4 w-4 shrink-0 text-muted-foreground transition-transform duration-200 ${
@@ -137,7 +102,7 @@ export function WholesaleFAQ() {
 
               {isOpen ? (
                 <div className="mt-3 pl-9 pr-4 text-xs sm:text-sm leading-relaxed text-muted-foreground">
-                  <p>{faq.answer}</p>
+                  <p>{t(`faq.questions.${faqIndex}.1`)}</p>
                 </div>
               ) : null}
             </div>
@@ -147,15 +112,13 @@ export function WholesaleFAQ() {
 
       <div className="mt-8 flex items-center justify-between rounded-2xl bg-secondary/40 p-4 text-xs text-muted-foreground">
         <span className="flex items-center gap-2">
-          <ShieldCheck className="h-4 w-4 text-fresh" /> Verified wholesale policies adhering to Indian FMCG trade norms.
+          <ShieldCheck className="h-4 w-4 text-fresh" /> {t("faq.verifiedPolicy")}
         </span>
         <a
-          href="https://wa.me/918849263377"
-          target="_blank"
-          rel="noreferrer"
+          href="/contact"
           className="font-bold text-fresh hover:underline"
         >
-          Ask on WhatsApp →
+          {t("faq.contact")} →
         </a>
       </div>
     </div>

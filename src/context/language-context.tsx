@@ -1,6 +1,7 @@
 "use client";
 
 import { createContext, useCallback, useContext, useEffect, useMemo, useSyncExternalStore, type ReactNode } from "react";
+import { usePathname } from "next/navigation";
 import en from "@/locales/en/common";
 import hi from "@/locales/hi/common";
 
@@ -44,18 +45,31 @@ function readPath(resource: EnglishTree, path: string): string | undefined {
 }
 
 export function LanguageProvider({ children }: { children: ReactNode }) {
+  const pathname = usePathname();
   const language = useSyncExternalStore(subscribeLanguage, getLanguageSnapshot, getServerLanguageSnapshot);
-
-  useEffect(() => {
-    document.documentElement.lang = language === "hi" ? "hi" : "en";
-    document.documentElement.dataset.language = language;
-  }, [language]);
-
   const setLanguage = useCallback((next: Language) => {
     window.localStorage.setItem(LANGUAGE_KEY, next);
     languageListeners.forEach((listener) => listener());
   }, []);
   const t = useCallback((path: string) => readPath(resources[language], path) || readPath(resources.en, path) || path, [language]);
+
+  useEffect(() => {
+    document.documentElement.lang = language === "hi" ? "hi" : "en";
+    document.documentElement.dataset.language = language;
+    const pageKey = pathname === "/" ? "home"
+      : pathname.startsWith("/products") ? "products"
+      : pathname.startsWith("/order") ? "order"
+      : pathname.startsWith("/about") ? "about"
+      : pathname.startsWith("/contact") ? "contact"
+      : pathname.startsWith("/login") ? "login"
+      : pathname.startsWith("/register") ? "register"
+      : pathname.startsWith("/account") ? "account"
+      : pathname.startsWith("/forgot-password") ? "forgot"
+      : pathname.startsWith("/reset-password") ? "reset"
+      : null;
+    if (pageKey) document.title = t(`pageTitles.${pageKey}`);
+  }, [language, pathname, t]);
+
   const value = useMemo(() => ({ language, setLanguage, t }), [language, setLanguage, t]);
 
   return <LanguageContext.Provider value={value}>{children}</LanguageContext.Provider>;

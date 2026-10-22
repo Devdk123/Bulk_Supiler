@@ -44,6 +44,8 @@ export const productSchema = z.object({
   name: z.string().trim().min(2, "Product name is required").max(100),
   sku: optionalText(80),
   description: optionalText(5000),
+  short_description_hi: optionalText(1000),
+  description_hi: optionalText(5000),
   brand_id: z.string().uuid().nullable().optional(),
   category_id: z.string().uuid().nullable().optional(),
   variant: optionalText(100),

@@ -7,6 +7,7 @@ import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
 import type { Product } from "@/lib/products";
 import { useLanguage } from "@/context/language-context";
+import { LocalizedCatalogueLabel } from "@/components/localized-product-description";
 
 export function ProductCard({ product }: { product: Product }) {
   const { t } = useLanguage();
@@ -46,7 +47,7 @@ export function ProductCard({ product }: { product: Product }) {
         <div className="flex-1">
           {product.categoryName ? (
             <p className="text-xs font-semibold text-fresh">
-              {product.categoryName}
+              <LocalizedCatalogueLabel english={product.categoryName} hindi={product.categoryNameHi} />
             </p>
           ) : null}
 

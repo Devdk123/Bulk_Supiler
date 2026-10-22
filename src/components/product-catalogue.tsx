@@ -29,7 +29,7 @@ export function ProductCatalogue({
 }) {
   const searchParams = useSearchParams();
   const router = useRouter();
-  const { t } = useLanguage();
+  const { t, language } = useLanguage();
 
   const urlCategory = searchParams.get("category") || "";
   const urlBrand = searchParams.get("brand") || "";
@@ -44,7 +44,7 @@ export function ProductCatalogue({
   const [products, setProducts] = useState(initialPage?.products || []);
   const [totalCount, setTotalCount] = useState(initialPage?.totalCount || 0);
   const [brands, setBrands] = useState(initialPage?.brands.map((item) => item.name) || []);
-  const [categories, setCategories] = useState(initialPage?.categories.map((item) => item.name) || []);
+  const [categories, setCategories] = useState(initialPage?.categories || []);
   const [offset, setOffset] = useState(0);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState(initialError);
@@ -81,7 +81,7 @@ export function ProductCatalogue({
         setProducts(result.products);
         setTotalCount(result.totalCount);
         setBrands(result.brands.map((item) => item.name));
-        setCategories(result.categories.map((item) => item.name));
+        setCategories(result.categories);
       } catch (requestError) {
         if (controller.signal.aborted) return;
         setError(requestError instanceof Error ? requestError.message : "The catalogue is temporarily unavailable.");
@@ -185,20 +185,20 @@ export function ProductCatalogue({
         </button>
         {categories.map((cat) => (
           <button
-            key={cat}
+            key={cat.id}
             type="button"
             onClick={() => {
-              const next = effectiveCategory.toLowerCase() === cat.toLowerCase() ? "" : cat;
+              const next = effectiveCategory.toLowerCase() === cat.name.toLowerCase() ? "" : cat.name;
               setCategory(next);
               if (urlCategory) router.push("/products");
             }}
             className={`shrink-0 rounded-full px-4 py-2 text-xs font-bold transition-all ${
-              effectiveCategory.toLowerCase() === cat.toLowerCase()
+              effectiveCategory.toLowerCase() === cat.name.toLowerCase()
                 ? "bg-fresh text-white shadow-xs"
                 : "border border-border bg-card text-foreground hover:bg-secondary"
             }`}
           >
-            {cat}
+            {language === "hi" ? cat.name_hi || cat.name : cat.name}
           </button>
         ))}
       </div>
@@ -263,8 +263,8 @@ export function ProductCatalogue({
           >
             <option value="">{t("catalogue.allCategories")}</option>
             {categories.map((c) => (
-              <option key={c} value={c}>
-                {c}
+              <option key={c.id} value={c.name}>
+                {language === "hi" && c.name_hi ? c.name_hi : c.name}
               </option>
             ))}
           </select>

@@ -90,6 +90,27 @@ async function saveProduct(request: Request, productId?: string) {
       );
     }
 
+    const localizedFieldsSubmitted = typeof body === "object" && body !== null && (
+      Object.prototype.hasOwnProperty.call(body, "short_description_hi")
+      || Object.prototype.hasOwnProperty.call(body, "description_hi")
+    );
+    if (localizedFieldsSubmitted) {
+      const { error: localizedError } = await supabase.from("products").update({
+        short_description_hi: product.short_description_hi?.trim() || null,
+        description_hi: product.description_hi?.trim() || null
+      }).eq("id", data);
+      if (localizedError) {
+        const hasHindiContent = Boolean(product.short_description_hi?.trim() || product.description_hi?.trim());
+        const missingMigration = /short_description_hi|description_hi|column/i.test(localizedError.message);
+        if (hasHindiContent || !missingMigration) {
+          console.error("Hindi product descriptions could not be saved:", localizedError.message);
+          return NextResponse.json({ error: missingMigration
+            ? "Apply the localized catalogue migration before saving Hindi descriptions."
+            : "Product saved, but its Hindi descriptions could not be saved." }, { status: 503 });
+        }
+      }
+    }
+
     const { data: savedProduct, error: fetchError } = await supabase
       .from("products")
       .select(productDetails)

@@ -3,6 +3,7 @@ import Image from "next/image";
 import { Boxes, Mail, MapPin, MessageCircle, Phone, ShieldCheck, Timer, Truck } from "lucide-react";
 import type { BusinessSettings } from "@/lib/business-settings";
 import { buildWhatsAppLink } from "@/lib/utils";
+import { TranslatedText } from "@/components/translated-text";
 
 const productCategories = [
   { name: "Masala & Spices", href: "/products?category=Masala+%26+Spices" },
@@ -38,8 +39,8 @@ export function SiteFooter({ settings }: { settings: BusinessSettings }) {
               <Boxes className="h-5 w-5" />
             </span>
             <div>
-              <p className="text-sm font-bold text-white">Direct Godown Supply</p>
-              <p className="text-xs text-[#FFF9F0]/70">Wholesale pricing for retail store owners</p>
+              <p className="text-sm font-bold text-white"><TranslatedText id="footer.supply" /></p>
+              <p className="text-xs text-[#FFF9F0]/70"><TranslatedText id="footer.supplyDescription" /></p>
             </div>
           </div>
 
@@ -48,8 +49,8 @@ export function SiteFooter({ settings }: { settings: BusinessSettings }) {
               <Truck className="h-5 w-5" />
             </span>
             <div>
-              <p className="text-sm font-bold text-white">Multi-Category Sourcing</p>
-              <p className="text-xs text-[#FFF9F0]/70">Combine spices, oils &amp; pooja in one dispatch</p>
+              <p className="text-sm font-bold text-white"><TranslatedText id="footer.sourcing" /></p>
+              <p className="text-xs text-[#FFF9F0]/70"><TranslatedText id="footer.sourcingDescription" /></p>
             </div>
           </div>
 
@@ -58,8 +59,8 @@ export function SiteFooter({ settings }: { settings: BusinessSettings }) {
               <Timer className="h-5 w-5" />
             </span>
             <div>
-              <p className="text-sm font-bold text-white">Transparent Quotations</p>
-              <p className="text-xs text-[#FFF9F0]/70">Clear carton rates before order confirmation</p>
+              <p className="text-sm font-bold text-white"><TranslatedText id="footer.quotes" /></p>
+              <p className="text-xs text-[#FFF9F0]/70"><TranslatedText id="footer.quotesDescription" /></p>
             </div>
           </div>
 
@@ -68,8 +69,8 @@ export function SiteFooter({ settings }: { settings: BusinessSettings }) {
               <ShieldCheck className="h-5 w-5" />
             </span>
             <div>
-              <p className="text-sm font-bold text-white">Local Market Focus</p>
-              <p className="text-xs text-[#FFF9F0]/70">Serving Maya Bazar &amp; surrounding 50+ km</p>
+              <p className="text-sm font-bold text-white"><TranslatedText id="footer.local" /></p>
+              <p className="text-xs text-[#FFF9F0]/70"><TranslatedText id="footer.localDescription" /></p>
             </div>
           </div>
         </div>
@@ -86,14 +87,14 @@ export function SiteFooter({ settings }: { settings: BusinessSettings }) {
             </span>
           </div>
           <p className="max-w-sm text-sm leading-relaxed text-[#FFF9F0]/80">
-            Your local wholesale partner supplying quality spices, edible oils, matchsticks, agarbatti, dhoop and everyday FMCG essentials to shopkeepers across Maya Bazar and nearby markets.
+            <TranslatedText id="footer.description" />
           </p>
           <div className="pt-2">
             <p className="text-xs font-semibold uppercase tracking-wider text-[#F4C542]">
-              Har Dukaan Tak, Bharosemand Supply.
+              <TranslatedText id="footer.tagline" />
             </p>
             <p className="mt-1 text-xs text-[#FFF9F0]/75">
-              Dedicated B2B wholesale trade supply. Serving verified retail partners.
+              <TranslatedText id="footer.b2b" />
             </p>
           </div>
         </div>
@@ -101,16 +102,16 @@ export function SiteFooter({ settings }: { settings: BusinessSettings }) {
         {/* Categories Column */}
         <div>
           <h3 className="text-sm font-bold uppercase tracking-wider text-[#F4C542]">
-            Product Categories
+            <TranslatedText id="footer.categories" />
           </h3>
           <ul className="mt-4 space-y-2.5 text-sm">
-            {productCategories.map((category) => (
+            {productCategories.map((category, index) => (
               <li key={category.name}>
                 <Link
                   href={category.href}
                   className="text-[#FFF9F0]/80 transition-colors hover:text-[#F4C542]"
                 >
-                  {category.name}
+                  <TranslatedText id={`footer.categoryNames.${index}`} />
                 </Link>
               </li>
             ))}
@@ -120,16 +121,16 @@ export function SiteFooter({ settings }: { settings: BusinessSettings }) {
         {/* Navigation Links */}
         <div>
           <h3 className="text-sm font-bold uppercase tracking-wider text-[#F4C542]">
-            Navigation
+            <TranslatedText id="footer.navigation" />
           </h3>
           <ul className="mt-4 space-y-2.5 text-sm">
-            {quickLinks.map((link) => (
+            {quickLinks.map((link, index) => (
               <li key={link.name}>
                 <Link
                   href={link.href}
                   className="text-[#FFF9F0]/80 transition-colors hover:text-[#F4C542]"
                 >
-                  {link.name}
+                  <TranslatedText id={`footer.quickLinks.${index}`} />
                 </Link>
               </li>
             ))}
@@ -139,7 +140,7 @@ export function SiteFooter({ settings }: { settings: BusinessSettings }) {
         {/* Contact Column */}
         <div className="space-y-4">
           <h3 className="text-sm font-bold uppercase tracking-wider text-[#F4C542]">
-            Direct Business Support
+            <TranslatedText id="footer.support" />
           </h3>
           <div className="space-y-3 text-sm text-[#FFF9F0]/85">
             {whatsappNumber ? (
@@ -160,7 +161,7 @@ export function SiteFooter({ settings }: { settings: BusinessSettings }) {
                 className="inline-flex items-center gap-2 rounded-xl bg-[#2F7554] px-4 py-2.5 text-sm font-bold text-white transition-all hover:bg-[#398963]"
               >
                 <MessageCircle className="h-4 w-4" />
-                <span>Chat on WhatsApp</span>
+                <span><TranslatedText id="footer.whatsapp" /></span>
               </a>
             ) : null}
 
@@ -183,7 +184,7 @@ export function SiteFooter({ settings }: { settings: BusinessSettings }) {
 
             {settings.business_hours ? (
               <p className="text-xs text-[#FFF9F0]/70 pt-1">
-                Hours: {settings.business_hours}
+                <TranslatedText id="footer.hours" />: {settings.business_hours}
               </p>
             ) : null}
           </div>
@@ -193,13 +194,13 @@ export function SiteFooter({ settings }: { settings: BusinessSettings }) {
       {/* Bottom Legal / Policy Bar */}
       <div className="border-t border-white/10 bg-[#0d2a1f] py-6">
         <div className="container-page flex flex-col gap-3 text-xs text-[#FFF9F0]/70 sm:flex-row sm:items-center sm:justify-between">
-          <p>© {new Date().getFullYear()} Gayatri Store. All commercial rights reserved.</p>
+          <p>© {new Date().getFullYear()} Gayatri Store. <TranslatedText id="footer.copyright" /></p>
           <div className="flex flex-wrap gap-4">
-            <span>Maya Bazar &amp; Nearby Markets</span>
+            <span><TranslatedText id="footer.nearby" /></span>
             <span>•</span>
-            <span>B2B Quotation Terms</span>
+            <span><TranslatedText id="footer.quoteTerms" /></span>
             <span>•</span>
-            <span>Wholesale MOQ Applicable</span>
+            <span><TranslatedText id="footer.moq" /></span>
           </div>
         </div>
       </div>

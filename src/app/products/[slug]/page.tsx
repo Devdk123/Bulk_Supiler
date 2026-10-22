@@ -13,6 +13,7 @@ import { getDefaultBusinessSettings } from "@/lib/business-settings";
 import { buildWhatsAppLink } from "@/lib/utils";
 import { TranslatedText } from "@/components/translated-text";
 import type { ReactNode } from "react";
+import { LocalizedCatalogueLabel, LocalizedProductDescription } from "@/components/localized-product-description";
 
 export const revalidate = 60;
 
@@ -136,7 +137,7 @@ export default async function ProductDetailsPage({
           <div className="flex flex-col">
             {product.categoryName ? (
               <span className="text-xs font-extrabold uppercase tracking-widest text-fresh">
-                {product.categoryName}
+                <LocalizedCatalogueLabel english={product.categoryName} hindi={product.categoryNameHi} />
               </span>
             ) : null}
 
@@ -154,11 +155,7 @@ export default async function ProductDetailsPage({
               </span>
             </div>
 
-            {product.description ? (
-              <p className="mt-5 whitespace-pre-line text-sm leading-relaxed text-muted-foreground sm:text-base">
-                {product.description}
-              </p>
-            ) : null}
+            <LocalizedProductDescription english={product.description} hindi={product.descriptionHi} />
 
             {/* Technical Trade Specs */}
             <div className="mt-6 rounded-2xl border border-border bg-card p-5 shadow-xs">
