@@ -542,7 +542,7 @@ export function OrderForm({
                 />
               </Field>
 
-              <Field label="State" error={errors.state} required>
+              <Field label={t("orderForm.state")} error={errors.state} required>
                 <Input
                   value={form.state}
                   onChange={(e) => updateForm("state", e.target.value)}
