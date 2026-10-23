@@ -1,7 +1,7 @@
 "use client";
 
 import { useEffect, useState } from "react";
-import { Download, Share } from "lucide-react";
+import { Download } from "lucide-react";
 import { useLanguage } from "@/context/language-context";
 import { getInstallInstructionsKey } from "@/lib/pwa-install";
 
@@ -15,8 +15,7 @@ const DISMISSED_KEY = "gayatristore-install-dismissed";
 export function InstallPrompt({ showLabel = false }: { showLabel?: boolean }) {
   const { t } = useLanguage();
   const [installEvent, setInstallEvent] = useState<InstallPromptEvent | null>(null);
-  const [instructionsKey] = useState(() => getInstallInstructionsKey(typeof navigator === "undefined" ? "" : navigator.userAgent));
-  const ios = instructionsKey === "iosInstructions";
+  const [instructionsKey, setInstructionsKey] = useState<ReturnType<typeof getInstallInstructionsKey>>("manualInstructions");
   const [show, setShow] = useState(false);
   const [instructions, setInstructions] = useState(false);
 
@@ -38,6 +37,7 @@ export function InstallPrompt({ showLabel = false }: { showLabel?: boolean }) {
 
   async function install() {
     if (!installEvent) {
+      setInstructionsKey(getInstallInstructionsKey(navigator.userAgent));
       setInstructions(true);
       return;
     }
@@ -57,7 +57,7 @@ export function InstallPrompt({ showLabel = false }: { showLabel?: boolean }) {
   return (
     <>
       <button type="button" onClick={() => void install()} className="inline-flex min-h-10 items-center gap-1.5 rounded-xl border border-fresh/30 bg-card px-2.5 text-xs font-bold text-fresh hover:bg-fresh/5" aria-label={t("pwa.install")}>
-        {ios ? <Share className="h-4 w-4" /> : <Download className="h-4 w-4" />}
+        <Download className="h-4 w-4" />
         <span className={showLabel ? "" : "hidden 2xl:inline"}>{t("pwa.install")}</span>
       </button>
       {instructions ? (

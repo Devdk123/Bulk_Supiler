@@ -359,6 +359,8 @@ test("PWA installation help selects browser-specific instructions in both locale
   assert.equal(getInstallInstructionsKey("UnknownBrowser/1.0"), "manualInstructions");
   const installPrompt = await readFile("src/components/install-prompt.tsx", "utf8");
   assert.match(installPrompt, /t\(`pwa\.\$\{instructionsKey\}`\)/);
+  assert.match(installPrompt, /setInstructionsKey\(getInstallInstructionsKey\(navigator\.userAgent\)\)/);
+  assert.doesNotMatch(installPrompt, /useState\(\(\) => getInstallInstructionsKey/);
   for (const key of ["iosInstructions", "samsungInstructions", "androidInstructions", "firefoxInstructions", "desktopInstructions", "manualInstructions"]) {
     assert.ok(getPath(en, `pwa.${key}`), `English install help missing ${key}`);
     assert.ok(getPath(hi, `pwa.${key}`), `Hindi install help missing ${key}`);
