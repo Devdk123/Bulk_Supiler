@@ -320,6 +320,7 @@ test("home hero and mobile actions constrain their minimum widths on narrow scre
   assert.match(dock, /className=\{`flex min-w-0 flex-\[1\.15\]/);
   assert.match(dock, /t\("nav\.quoteShort"\)/);
   assert.match(assistant, /max-w-\[calc\(100vw-2rem\)\]/);
+  assert.match(css, /overflow-x:\s*clip/);
   assert.equal((css.match(/max-width: min\(100%, calc\(100vw - 32px\)\);/g) || []).length, 2);
 });
 
