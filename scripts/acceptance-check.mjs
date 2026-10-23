@@ -226,6 +226,15 @@ test("homepage featured products use the existing public catalogue API", async (
   assert.match(featured, /home\.featuredLoadError/);
 });
 
+test("catalogue deadlines abort Supabase reads instead of leaving timed-out requests running", async () => {
+  const products = await read("src/lib/products.ts");
+  const catalogue = await read("src/lib/catalogue.ts");
+  assert.match(products, /\.range\(offset, offset \+ limit - 1\)[\s\S]*?\.abortSignal\(AbortSignal\.timeout\(3500\)\)/);
+  assert.equal((products.match(/\.abortSignal\(AbortSignal\.timeout\(3000\)\)/g) || []).length, 2);
+  assert.doesNotMatch(products, /Products query timed out|Product by slug query timed out/);
+  assert.equal((catalogue.match(/\.abortSignal\(AbortSignal\.timeout\(2500\)\)/g) || []).length, 3);
+});
+
 test("mobile header quick categories are read from the catalogue and use exact category values", async () => {
   const header = await readFile("src/components/site-header.tsx", "utf8");
   assert.match(header, /fetch\("\/api\/catalogue\?limit=1&offset=0"\)/);

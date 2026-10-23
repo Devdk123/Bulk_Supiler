@@ -240,13 +240,10 @@ async function fetchStoreProductsPage(options: ProductCatalogueOptions = {}): Pr
   else if (options.sort === "name_desc") query = query.order("name", { ascending: false });
   else query = query.order("created_at", { ascending: false });
 
-  let timer: NodeJS.Timeout | undefined;
-  const timeoutPromise = new Promise<never>((_, reject) => {
-    timer = setTimeout(() => reject(new Error("Product catalogue request timed out.")), 3500);
-  });
-
   try {
-    const productRequest = Promise.race([query.range(offset, offset + limit - 1), timeoutPromise]);
+    const productRequest = query
+      .range(offset, offset + limit - 1)
+      .abortSignal(AbortSignal.timeout(3500));
     const [result, concurrentFacets] = needsFacetIds
       ? [await productRequest, facets] as const
       : await Promise.all([productRequest, Promise.race([safeFacetRequest, facetTimeout])]);
@@ -261,7 +258,6 @@ async function fetchStoreProductsPage(options: ProductCatalogueOptions = {}): Pr
       categories: facets.categories
     };
   } finally {
-    if (timer) clearTimeout(timer);
     if (facetTimer) clearTimeout(facetTimer);
   }
 }
@@ -293,20 +289,7 @@ async function fetchStoreProducts(limit?: number): Promise<Product[]> {
       query = query.limit(limit);
     }
 
-    let timer: NodeJS.Timeout | undefined;
-    const timeoutPromise = new Promise<{ data: null; error: { message: string } }>((resolve) => {
-      timer = setTimeout(() => {
-        resolve({ data: null, error: { message: "Products query timed out (3000ms limit)." } });
-      }, 3000);
-    });
-
-    const result = await Promise.race([
-      query.then((res) => {
-        if (timer) clearTimeout(timer);
-        return res;
-      }),
-      timeoutPromise
-    ]);
+    const result = await query.abortSignal(AbortSignal.timeout(3000));
 
     if (result.error) {
       console.warn("Unable to load published products from Supabase:", result.error.message);
@@ -350,22 +333,10 @@ async function fetchStoreProductBySlug(slug: string): Promise<Product | null> {
       .eq("slug", slug)
       .eq("status", "published")
       .eq("active", true)
+      .abortSignal(AbortSignal.timeout(3000))
       .maybeSingle();
 
-    let timer: NodeJS.Timeout | undefined;
-    const timeoutPromise = new Promise<{ data: null; error: { message: string } }>((resolve) => {
-      timer = setTimeout(() => {
-        resolve({ data: null, error: { message: "Product by slug query timed out (3000ms limit)." } });
-      }, 3000);
-    });
-
-    const result = await Promise.race([
-      query.then((res) => {
-        if (timer) clearTimeout(timer);
-        return res;
-      }),
-      timeoutPromise
-    ]);
+    const result = await query;
 
     if (result.error) {
       console.warn("Unable to load product details from Supabase:", result.error.message);

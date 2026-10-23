@@ -8,8 +8,10 @@ async function fetchCatalogueFacets() {
   if (!isSupabasePublicConfigured()) throw new Error("Catalogue database is not configured.");
   const supabase = getSupabasePublic();
   const [brands, localizedCategories] = await Promise.all([
-    supabase.from("brands").select("id, name, slug, description, logo_url").eq("status", "published").order("name"),
+    supabase.from("brands").select("id, name, slug, description, logo_url").eq("status", "published").order("name")
+      .abortSignal(AbortSignal.timeout(2500)),
     supabase.from("categories").select("id, name, name_hi, slug, description, description_hi, image_url").eq("status", "published").order("name")
+      .abortSignal(AbortSignal.timeout(2500))
   ]);
 
   let categories: CatalogueCategory[] = (localizedCategories.data || []) as CatalogueCategory[];
@@ -18,7 +20,8 @@ async function fetchCatalogueFacets() {
     const fallback = await supabase.from("categories")
       .select("id, name, slug, description, image_url")
       .eq("status", "published")
-      .order("name");
+      .order("name")
+      .abortSignal(AbortSignal.timeout(2500));
     categoryError = fallback.error;
     categories = (fallback.data || []).map((category) => ({ ...category, name_hi: null, description_hi: null }));
   }
