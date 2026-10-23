@@ -180,7 +180,7 @@ export default function AccountPage() {
         .eq("id", user.id);
 
       if (error) {
-        setProfileMessage({ text: error.message, type: "error" });
+        setProfileMessage({ text: t("accountUI.saveProfileError"), type: "error" });
       } else {
         await refreshProfile();
         setProfileMessage({ text: t("accountUI.saveProfileSuccess"), type: "success" });

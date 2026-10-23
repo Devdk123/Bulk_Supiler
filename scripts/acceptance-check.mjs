@@ -156,6 +156,7 @@ test("account profile, password feedback, and admin actions are localized in Eng
   assert.match(account, /t\("accountUI\.passwordMismatch"\)/);
   assert.match(account, /t\("accountUI\.adminPanel"\)/);
   assert.match(account, /t\("account\.logout"\)/);
+  assert.doesNotMatch(account, /setProfileMessage\(\{\s*text:\s*error\.message/);
   assert.doesNotMatch(account, /Admin Panel|>\s*Sign Out/);
 });
 
