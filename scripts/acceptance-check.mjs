@@ -132,7 +132,18 @@ test("public wholesale copy avoids unsupported inventory, margin, and fulfilment
     assert.equal(typeof getPath(resource, "auth.loadingLogin"), "string");
   }
   const loginPage = await read("src/app/login/page.tsx");
+  const layout = await read("src/app/layout.tsx");
+  const homePage = await read("src/app/page.tsx");
+  const businessSettings = await read("src/lib/business-settings.ts");
+  const readme = await read("README.md");
   assert.match(loginPage, /t\("auth\.loadingLogin"\)/);
+  for (const [file, source] of [["layout metadata", layout], ["homepage", homePage], ["business defaults", businessSettings], ["README", readme]]) {
+    assert.doesNotMatch(source, /50\s*\+\s*km|verified inventory|verified suppliers|retail margins|fresh godown lots/i, `${file} contains unsupported wholesale claims`);
+  }
+  assert.doesNotMatch(readme, /22 Indian languages|all 22 languages|real-time in-stock/i);
+  assert.match(readme, /English, Devanagari Hindi, and Hinglish/);
+  assert.match(layout, /areaServed:\s*"Maya Bazar and nearby markets"/);
+  assert.doesNotMatch(layout, /priceRange:/, "structured data must not imply unverified prices");
 });
 
 test("wholesale sheets show only known catalogue data and request quotes for quote-only products", async () => {
@@ -208,8 +219,19 @@ test("web manifest has installable Gayatri Store metadata and required icons", a
   assert.equal(value.name, "Gayatri Store");
   assert.equal(value.short_name, "Gayatri Store");
   assert.equal(value.display, "standalone");
-  for (const size of ["192x192", "512x512"]) assert.ok(value.icons.some((icon) => icon.sizes === size));
-  assert.ok(value.icons.some((icon) => icon.purpose === "maskable"));
+  for (const size of ["192x192", "512x512"]) {
+    const icon = value.icons.find((entry) => entry.sizes === size && entry.type === "image/png");
+    assert.ok(icon, `manifest is missing its ${size} PNG icon`);
+    const png = await readFile(path.join(root, "public", icon.src.replace(/^\//, "")));
+    assert.equal(png.toString("hex", 0, 8), "89504e470d0a1a0a", `${size} icon is not a PNG`);
+    assert.equal(`${png.readUInt32BE(16)}x${png.readUInt32BE(20)}`, size, `${size} icon has incorrect dimensions`);
+  }
+  const maskable = value.icons.find((icon) => icon.purpose === "maskable");
+  assert.ok(maskable, "manifest is missing a maskable icon");
+  const maskablePng = await readFile(path.join(root, "public", maskable.src.replace(/^\//, "")));
+  assert.equal(maskablePng.toString("hex", 0, 8), "89504e470d0a1a0a");
+  assert.equal(maskablePng.readUInt32BE(16), 512);
+  assert.equal(maskablePng.readUInt32BE(20), 512);
 });
 
 test("document defaults to English and light mode while preserving explicit saved preferences", async () => {

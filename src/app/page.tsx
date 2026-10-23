@@ -28,107 +28,54 @@ export const revalidate = 60;
 export const metadata: Metadata = {
   title: "Gayatri Store | B2B Wholesale FMCG & Daily Goods",
   description:
-    "Direct godown wholesale supply for spices, edible oils, matchsticks, agarbatti, dhoop and everyday essentials for Maya Bazar and surrounding regional markets."
+    "Browse Gayatri Store's published wholesale product listings and ask the team for current prices and availability."
 };
 
 const categories = [
   {
     name: "Masala & Spices",
-    description: "Pure turmeric, chilli, coriander, blended garam masala & whole spices",
     image: "/images/Chilli-powder.jpeg",
-    slug: "Masala & Spices",
-    tag: "High Demand",
-    featured: true
+    slug: "Masala & Spices"
   },
   {
     name: "Edible Oils",
-    description: "Pure mustard, refined, groundnut & bulk cooking oils in tins & jars",
     image: "/images/hero-wholesale-products.jpg",
-    slug: "Edible Oils",
-    tag: "Bulk Tins & Jars",
-    featured: false
+    slug: "Edible Oils"
   },
   {
     name: "Matchsticks",
-    description: "Safety matchboxes, moisture-resistant splints & master bundle cartons",
     image: "/images/Match-Stick.png",
-    slug: "Matchsticks",
-    tag: "Master Cartons",
-    featured: false
+    slug: "Matchsticks"
   },
   {
     name: "Agarbatti",
-    description: "Floral, chandan, mogra, gulab & long-burning incense bamboo sticks",
     image: "/images/agarbatti.jpeg",
-    slug: "Agarbatti",
-    tag: "Fast Moving",
-    featured: true
+    slug: "Agarbatti"
   },
   {
     name: "Dhoop",
-    description: "Wet & dry dhoop batti, cones, hawan cups & aromatic pooja samagri",
     image: "/images/hero-wholesale-products.jpg",
-    slug: "Dhoop",
-    tag: "Devotional",
-    featured: false
+    slug: "Dhoop"
   },
   {
     name: "Kapoor & Pooja Products",
-    description: "Pure camphor tablets, pooja cotton wicks, roli, chandan & hawan items",
     image: "/images/Pansari.jpg",
-    slug: "Kapoor & Pooja Products",
-    tag: "Mandir & Home",
-    featured: false
+    slug: "Kapoor & Pooja Products"
   },
   {
     name: "Other FMCG Essentials",
-    description: "Tea patti, salt, daily provisions & high-movement counter items",
     image: "/images/tea-patti.jpeg",
-    slug: "Other FMCG Essentials",
-    tag: "Daily Goods",
-    featured: false
+    slug: "Other FMCG Essentials"
   }
 ];
 
-const processSteps = [
-  {
-    number: "01",
-    title: "Browse the Catalogue",
-    description: "Explore our verified inventory across spices, oils, matches, agarbatti, and daily goods with clear carton packaging."
-  },
-  {
-    number: "02",
-    title: "Select Products & Quantities",
-    description: "Add items to your bulk order with carton or unit counts tailored to your retail shop's weekly requirement."
-  },
-  {
-    number: "03",
-    title: "Confirm Pricing & Fulfilment",
-    description: "Receive an itemized wholesale quotation from our godown team, verify live lot availability, and coordinate dispatch."
-  }
-];
+const processSteps = ["01", "02", "03"];
 
 const advantages = [
-  {
-    icon: Boxes,
-    title: "Multi-Category Sourcing",
-    description: "Consolidate spices, cooking oils, matchboxes, and pooja supplies into a single delivery, reducing multiple vendor hassles."
-  },
-  {
-    icon: MapPin,
-    title: "Maya Bazar & Local Reach",
-    description: "Dedicated to independent grocers and general store owners across Maya Bazar and nearby regional markets (~50+ km radius)."
-  },
-  {
-    icon: Percent,
-    title: "Direct Godown Margins",
-    description: "Transparent B2B rates with healthy profit margins structured specifically for retail shop economics and wholesale traders."
-  },
-  {
-    icon: MessageCircle,
-    title: "Direct WhatsApp & Phone Support",
-    description: "Prompt, human-first business communication to verify stock availability, dispatch timelines, and GST tax invoice queries."
-  }
+  Boxes,
+  MapPin,
+  Percent,
+  MessageCircle
 ];
 
 export default function HomePage() {
@@ -321,14 +268,14 @@ export default function HomePage() {
           />
 
           <div className="mt-14 grid gap-6 sm:grid-cols-2 lg:grid-cols-4">
-            {advantages.map((item, index) => (
+            {advantages.map((Icon, index) => (
               <div
-                key={item.title}
+                key={index}
                 className="flex flex-col justify-between rounded-3xl border border-border bg-card p-6 shadow-xs transition-all duration-300 hover:-translate-y-1 hover:border-fresh/40 hover:shadow-md"
               >
                 <div>
                   <div className="flex h-12 w-12 items-center justify-center rounded-2xl bg-fresh/10 text-fresh">
-                    <item.icon className="h-6 w-6" />
+                    <Icon className="h-6 w-6" />
                   </div>
                   <h3 className="mt-5 text-base font-extrabold text-foreground">
                     <TranslatedText id={`home.advantages.${index}.0`} />
@@ -354,14 +301,14 @@ export default function HomePage() {
           />
 
           <div className="mt-14 grid gap-6 md:grid-cols-3">
-            {processSteps.map((step, index) => (
+            {processSteps.map((number, index) => (
               <div
-                key={step.number}
+                key={number}
                 className="relative flex flex-col justify-between rounded-3xl border border-border bg-background p-8 transition-all duration-300 hover:border-fresh/40"
               >
                 <div>
                   <span className="font-mono text-3xl font-black text-accent">
-                    {step.number}
+                    {number}
                   </span>
                   <h3 className="mt-4 text-lg font-bold text-foreground">
                     <TranslatedText id={`home.steps.${index}.0`} />

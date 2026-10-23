@@ -28,7 +28,7 @@ export function getDefaultBusinessSettings(): BusinessSettings {
     contact_email: "support@gayatristore.in",
     business_address: "Maya Bazar, Main Wholesale Market",
     business_hours: "Mon – Sat: 9:00 AM – 8:00 PM",
-    delivery_coverage: "Maya Bazar and surrounding 50+ km regional trade zone",
+    delivery_coverage: "Maya Bazar and nearby markets",
     databaseAvailable: false
   };
 }

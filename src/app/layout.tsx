@@ -27,7 +27,7 @@ export const metadata: Metadata = {
     template: "%s | Gayatri Store"
   },
   description:
-    "Direct godown wholesale supplier for spices, edible oils, agarbatti, dhoop, matchsticks and daily goods for retail shops across Maya Bazar and nearby regional markets.",
+    "Browse Gayatri Store's published wholesale product listings and ask the team for current prices and availability.",
   keywords: [
     "Gayatri Store",
     "wholesale supplier Maya Bazar",
@@ -40,8 +40,8 @@ export const metadata: Metadata = {
   ],
   authors: [{ name: "Gayatri Store" }],
   openGraph: {
-    title: "Gayatri Store — Your Local Wholesale Partner",
-    description: "Big variety. Better supply. Built for your business. Serving Maya Bazar and nearby markets.",
+    title: "Gayatri Store | Wholesale Product Catalogue",
+    description: "Browse published product listings and request current wholesale prices from Gayatri Store.",
     type: "website",
     locale: "en_IN",
     siteName: "Gayatri Store"
@@ -49,7 +49,7 @@ export const metadata: Metadata = {
   twitter: {
     card: "summary_large_image",
     title: "Gayatri Store | B2B Wholesale & FMCG Distribution",
-    description: "Direct godown wholesale supplier for spices, edible oils, and FMCG daily goods."
+    description: "Browse published wholesale products and request current prices from Gayatri Store."
   }
 };
 
@@ -70,7 +70,7 @@ export default async function RootLayout({ children }: Readonly<{ children: Reac
     "@type": "WholesaleStore",
     name: "Gayatri Store",
     description:
-      "Direct godown wholesale supplier for spices, edible oils, agarbatti, dhoop, matchsticks and FMCG daily goods across Maya Bazar and nearby markets.",
+      "Gayatri Store publishes wholesale product listings and accepts enquiries for current prices and availability.",
     url: siteUrl,
     telephone: businessSettings.contact_phone || businessSettings.whatsapp_number || "+918849263377",
     address: {
@@ -78,9 +78,8 @@ export default async function RootLayout({ children }: Readonly<{ children: Reac
       addressLocality: "Maya Bazar",
       addressCountry: "IN"
     },
-    priceRange: "₹₹",
     currenciesAccepted: "INR",
-    areaServed: "Maya Bazar and surrounding 50+ km trade zone"
+    areaServed: "Maya Bazar and nearby markets"
   };
 
   return (

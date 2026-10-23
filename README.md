@@ -1,6 +1,6 @@
 # Gayatri Store — B2B Wholesale & FMCG Distribution
 
-Premium wholesale supplier and FMCG distribution website for bulk products such as spices, edible oils, agarbatti, dhoop, matchsticks, and daily goods serving Maya Bazar and surrounding regional markets (~50+ km).
+Wholesale product catalogue and enquiry website for Gayatri Store, serving buyers in Maya Bazar and nearby markets.
 
 Tagline: *"Har Dukaan Tak, Bharosemand Supply."*
 
@@ -11,8 +11,8 @@ Tagline: *"Har Dukaan Tak, Bharosemand Supply."*
 - Tailwind CSS 4 with inline theme tokens
 - shadcn/ui design primitives
 - Supabase PostgreSQL with Row Level Security (RLS)
-- Next.js Server Actions & API Routes
-- Multilingual Wholesale AI Assistant (22 Indian languages)
+- Next.js Route Handlers and API Routes
+- English/Hindi storefront with an AI assistant for English, Devanagari Hindi, and Hinglish
 - Progressive Web App (PWA) Manifest & Schema.org JSON-LD Structured Data
 
 ## Visual Identity & Design System
@@ -32,12 +32,12 @@ The platform uses an elevated Indian FMCG wholesale aesthetic:
 
 ## Wholesale Features & Kirana Retail Experience
 
-- **Persistent Mobile Wholesale Dock:** Sticky bottom navigation on mobile devices with 1-tap WhatsApp consultation, instant catalogue search, and quick quotation launcher.
-- **MOQ Tier Filtering:** Instant toggle between small retail trial packs (≤ 20 pcs) and bulk commercial master cartons (20+ pcs / sacks).
-- **Stock Availability Filter:** Filter items by immediate godown availability with real-time in-stock badge indicators.
+- **Mobile Enquiry Dock:** Fixed bottom actions on mobile for WhatsApp contact and starting a quote request.
+- **MOQ Filtering:** Filter products using their configured minimum order quantity; unspecified values remain unknown.
+- **Stock Status Filter:** Filter for products marked in stock; unconfirmed availability is not presented as live inventory.
 - **Printable Rate Card Modal:** Instant printable / PDF-exportable *Bhav Suchi* rate card with print CSS optimization.
 - **Direct WhatsApp Quote Link:** Pre-populated WhatsApp inquiry generator encoding store requirements and selected SKUs.
-- **Maya Bazar Central Logistics:** Operating across Maya Bazar and adjacent market corridors within ~50+ km trade radius.
+- **Maya Bazar Market Focus:** Product and price enquiries are handled by the Gayatri Store team.
 
 
 ## Install
@@ -68,7 +68,7 @@ WHATSAPP_NOTIFY_TO=918849263377
 
 Set `ADMIN_SESSION_SECRET` to a cryptographically random value of at least 32 characters, and use a strong `ADMIN_PASSWORD`. Keep `SUPABASE_SERVICE_ROLE_KEY`, `ADMIN_PASSWORD`, `ADMIN_SESSION_SECRET`, and `WHATSAPP_ACCESS_TOKEN` private. They are used only by server-side routes.
 
-The multilingual wholesale assistant needs `OPENAI_API_KEY` set in the local environment and in Vercel. `OPENAI_MODEL` is optional and defaults to `gpt-4o-mini`. The assistant supports all 22 languages in India's Eighth Schedule; live product stock and prices are not sent to the AI.
+The wholesale assistant needs `OPENAI_API_KEY` set in the local environment and in Vercel. `OPENAI_MODEL` is optional and defaults to `gpt-4o-mini`. The storefront interface supports English and Hindi; the assistant is prompted to answer in English, Devanagari Hindi, and Hinglish. Live product stock and prices are not sent to the AI.
 
 ## Supabase Setup
 
