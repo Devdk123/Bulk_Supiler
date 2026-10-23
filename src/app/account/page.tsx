@@ -183,11 +183,11 @@ export default function AccountPage() {
         setProfileMessage({ text: error.message, type: "error" });
       } else {
         await refreshProfile();
-        setProfileMessage({ text: "Profile details updated successfully.", type: "success" });
+        setProfileMessage({ text: t("accountUI.saveProfileSuccess"), type: "success" });
       }
-    } catch (err) {
+    } catch {
       setProfileMessage({
-        text: err instanceof Error ? err.message : "Error saving profile.",
+        text: t("accountUI.saveProfileError"),
         type: "error"
       });
     } finally {
@@ -201,12 +201,12 @@ export default function AccountPage() {
     setPasswordMessage(null);
 
     if (newPassword.length < 6) {
-      setPasswordMessage({ text: "Password must be at least 6 characters.", type: "error" });
+      setPasswordMessage({ text: t("accountUI.passwordTooShort"), type: "error" });
       return;
     }
 
     if (newPassword !== confirmPassword) {
-      setPasswordMessage({ text: "Passwords do not match.", type: "error" });
+      setPasswordMessage({ text: t("accountUI.passwordMismatch"), type: "error" });
       return;
     }
 
@@ -215,14 +215,14 @@ export default function AccountPage() {
       const supabase = getSupabaseBrowser();
       const { error } = await supabase.auth.updateUser({ password: newPassword });
       if (error) {
-        setPasswordMessage({ text: error.message, type: "error" });
+        setPasswordMessage({ text: t("accountUI.passwordUpdateError"), type: "error" });
       } else {
-        setPasswordMessage({ text: "Your password has been changed successfully.", type: "success" });
+        setPasswordMessage({ text: t("accountUI.passwordUpdateSuccess"), type: "success" });
         setNewPassword("");
         setConfirmPassword("");
       }
-    } catch (err) {
-      setPasswordMessage({ text: err instanceof Error ? err.message : "Password change failed.", type: "error" });
+    } catch {
+      setPasswordMessage({ text: t("accountUI.passwordUpdateError"), type: "error" });
     } finally {
       setUpdatingPassword(false);
     }
@@ -300,7 +300,7 @@ export default function AccountPage() {
             {profile?.role === "admin" ? (
               <Button asChild variant="outline" size="sm" className="rounded-xl font-bold border-primary text-primary">
                 <Link href="/about/admin">
-                  <Shield className="h-4 w-4 mr-1.5" /> Admin Panel
+                  <Shield className="h-4 w-4 mr-1.5" /> {t("accountUI.adminPanel")}
                 </Link>
               </Button>
             ) : null}
@@ -311,7 +311,7 @@ export default function AccountPage() {
               onClick={handleSignOut}
               className="rounded-xl text-destructive hover:bg-destructive/10 hover:text-destructive"
             >
-              <LogOut className="h-4 w-4 mr-1.5" /> Sign Out
+              <LogOut className="h-4 w-4 mr-1.5" /> {t("account.logout")}
             </Button>
           </div>
         </div>

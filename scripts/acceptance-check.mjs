@@ -133,11 +133,30 @@ test("dynamic admin status and setup labels exist in both languages", () => {
   for (const key of keys) {
     assert.equal(typeof getPath(en, key), "string", `missing English translation: ${key}`);
     assert.equal(typeof getPath(hi, key), "string", `missing Hindi translation: ${key}`);
+    assert.match(getPath(hi, key), /\p{Script=Devanagari}/u, `Hindi text is not in Devanagari: ${key}`);
   }
   for (const status of ["All", "New", "Contacted", "Confirmed", "Delivered", "Cancelled"]) {
     assert.equal(typeof getPath(en, `adminUI.legacyStatus.${status}`), "string");
     assert.equal(typeof getPath(hi, `adminUI.legacyStatus.${status}`), "string");
   }
+});
+
+test("account profile, password feedback, and admin actions are localized in English and Hindi", async () => {
+  const account = await read("src/app/account/page.tsx");
+  const keys = [
+    "accountUI.adminPanel", "accountUI.saveProfileSuccess", "accountUI.saveProfileError",
+    "accountUI.passwordTooShort", "accountUI.passwordMismatch", "accountUI.passwordUpdateSuccess",
+    "accountUI.passwordUpdateError", "account.logout"
+  ];
+  for (const key of keys) {
+    assert.equal(typeof getPath(en, key), "string", `missing English translation: ${key}`);
+    assert.equal(typeof getPath(hi, key), "string", `missing Hindi translation: ${key}`);
+  }
+  assert.match(account, /t\("accountUI\.saveProfileSuccess"\)/);
+  assert.match(account, /t\("accountUI\.passwordMismatch"\)/);
+  assert.match(account, /t\("accountUI\.adminPanel"\)/);
+  assert.match(account, /t\("account\.logout"\)/);
+  assert.doesNotMatch(account, /Admin Panel|>\s*Sign Out/);
 });
 
 test("web manifest has installable Gayatri Store metadata and required icons", async () => {
