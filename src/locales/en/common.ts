@@ -473,6 +473,14 @@ const en = {
     units: "units",
     whatsappInquiry: "Inquire on WhatsApp"
   },
+  wholesalePlanner: {
+    eyebrow: "Wholesale enquiry planner",
+    title: "Plan your bulk enquiry",
+    description: "Choose an approximate purchase budget to include with your product enquiry. Product prices, availability, transport, taxes and any applicable terms are confirmed by our team in a quotation.",
+    budgetLabel: "Approximate budget (buyer provided)",
+    disclaimer: "This is only the budget you choose to share. It is not a product price, discount, savings estimate or offer.",
+    action: "Build a product enquiry"
+  },
   order: {
     requestPrice: "Request a Wholesale Quote",
     submit: "Send Enquiry",
@@ -481,6 +489,7 @@ const en = {
   },
   orderForm: {
     productsQuantities: "1. Products & Quantities",
+    budgetNote: "Approximate purchase budget shared by buyer",
     selectProducts: "Select required items and specify pack quantities.",
     item: "item",
     items: "items",

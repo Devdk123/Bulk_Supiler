@@ -71,6 +71,7 @@ export function OrderForm({
   whatsappNumber: string;
 }) {
   const searchParams = useSearchParams();
+  const initialBudget = searchParams.get("budget");
   const initialProduct = searchParams.get("product") || "";
   const initialVariant = searchParams.get("variant") || "";
   const initialQty = searchParams.get("quantity") || "";
@@ -115,6 +116,15 @@ export function OrderForm({
   useEffect(() => {
     if (cartReady) quoteCart.replaceItems(items);
   }, [cartReady, items, quoteCart]);
+
+  useEffect(() => {
+    const amount = Number(initialBudget);
+    if (!Number.isFinite(amount) || amount <= 0) return;
+    setForm((previous) => previous.message ? previous : {
+      ...previous,
+      message: `${t("orderForm.budgetNote")}: ₹${amount.toLocaleString("en-IN")}`
+    });
+  }, [initialBudget, t]);
 
   useEffect(() => {
     if (profile) {
