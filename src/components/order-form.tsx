@@ -76,8 +76,14 @@ export function OrderForm({
   const initialVariant = searchParams.get("variant") || "";
   const initialQty = searchParams.get("quantity") || "";
   const quoteCart = useQuoteCart();
+  const { t } = useLanguage();
 
-  const [form, setForm] = useState(initialForm);
+  const [form, setForm] = useState<QuoteForm>(() => {
+    const amount = Number(initialBudget);
+    return Number.isFinite(amount) && amount > 0
+      ? { ...initialForm, message: `${t("orderForm.budgetNote")}: ₹${amount.toLocaleString("en-IN")}` }
+      : initialForm;
+  });
   const [cartReady, setCartReady] = useState(false);
   const [items, setItems] = useState<QuoteLine[]>(() =>
     products.some((p) => p.id === initialProduct)
@@ -86,7 +92,6 @@ export function OrderForm({
   );
 
   const { user, session, profile } = useAuth();
-  const { t } = useLanguage();
   const [errors, setErrors] = useState<Record<string, string>>({});
   const [loading, setLoading] = useState(false);
   const [formError, setFormError] = useState("");
@@ -116,15 +121,6 @@ export function OrderForm({
   useEffect(() => {
     if (cartReady) quoteCart.replaceItems(items);
   }, [cartReady, items, quoteCart]);
-
-  useEffect(() => {
-    const amount = Number(initialBudget);
-    if (!Number.isFinite(amount) || amount <= 0) return;
-    setForm((previous) => previous.message ? previous : {
-      ...previous,
-      message: `${t("orderForm.budgetNote")}: ₹${amount.toLocaleString("en-IN")}`
-    });
-  }, [initialBudget, t]);
 
   useEffect(() => {
     if (profile) {

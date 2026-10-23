@@ -473,6 +473,22 @@ const en = {
     units: "units",
     whatsappInquiry: "Inquire on WhatsApp"
   },
+  errorPage: {
+    notice: "System notice",
+    title: "Something went wrong",
+    description: "We encountered an unexpected issue while loading this page. You can try again or contact our wholesale desk.",
+    retry: "Try again",
+    home: "Go to homepage",
+    support: "Need help? Contact Gayatri Store wholesale support on WhatsApp at"
+  },
+  notFound: {
+    code: "404 — Page not found",
+    title: "We couldn’t find that page",
+    description: "The page may have moved or the address may be incorrect. You can return home or browse the catalogue.",
+    home: "Return home",
+    catalogue: "Browse catalogue",
+    categories: "Explore catalogue categories"
+  },
   wholesalePlanner: {
     eyebrow: "Wholesale enquiry planner",
     title: "Plan your bulk enquiry",

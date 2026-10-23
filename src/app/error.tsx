@@ -4,6 +4,7 @@ import { useEffect } from "react";
 import Link from "next/link";
 import { AlertTriangle, RefreshCw, Home, MessageCircle } from "lucide-react";
 import { Button } from "@/components/ui/button";
+import { useLanguage } from "@/context/language-context";
 
 export default function ErrorBoundary({
   error,
@@ -12,6 +13,7 @@ export default function ErrorBoundary({
   error: Error & { digest?: string };
   reset: () => void;
 }) {
+  const { t } = useLanguage();
   useEffect(() => {
     console.error("Storefront Application Error:", error);
   }, [error]);
@@ -24,33 +26,33 @@ export default function ErrorBoundary({
         </div>
 
         <p className="mt-6 text-xs font-extrabold uppercase tracking-widest text-destructive">
-          System Notice
+          {t("errorPage.notice")}
         </p>
 
         <h1 className="mt-2 text-2xl font-extrabold tracking-tight text-foreground sm:text-3xl">
-          Something Went Wrong
+          {t("errorPage.title")}
         </h1>
 
         <p className="mt-4 text-sm leading-relaxed text-muted-foreground">
-          We encountered an unexpected issue while loading this page. You can try refreshing the page or contact our wholesale desk directly.
+          {t("errorPage.description")}
         </p>
 
         <div className="mt-8 flex flex-wrap items-center justify-center gap-3">
           <Button onClick={() => reset()} variant="default" size="lg" className="gap-2">
             <RefreshCw className="h-4 w-4" />
-            <span>Try Again</span>
+            <span>{t("errorPage.retry")}</span>
           </Button>
 
           <Button asChild variant="outline" size="lg">
             <Link href="/" className="gap-2">
               <Home className="h-4 w-4" />
-              <span>Go to Homepage</span>
+              <span>{t("errorPage.home")}</span>
             </Link>
           </Button>
         </div>
 
         <div className="mt-8 rounded-xl border border-border bg-card p-4 text-xs text-muted-foreground">
-          Need immediate assistance? Contact Gayatri Store wholesale support on WhatsApp at{" "}
+          {t("errorPage.support")} {" "}
           <a
             href="https://wa.me/918849263377"
             target="_blank"
