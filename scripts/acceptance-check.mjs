@@ -125,6 +125,26 @@ test("static translation references resolve in both languages", async () => {
   assert.deepEqual(missing, [], `missing translation paths:\n${missing.join("\n")}`);
 });
 
+test("known catalogue category names use approved Hindi labels when database translations are absent", async () => {
+  const { categoryTranslationKey } = await importTypeScript("src/lib/category-labels.ts");
+  const entries = [
+    ["Masala & Spices", "home.categories.0.0"],
+    ["Edible Oils", "home.categories.1.0"],
+    ["Matchsticks", "home.categories.2.0"],
+    ["Agarbatti", "home.categories.3.0"],
+    ["Dhoop", "home.categories.4.0"],
+    ["Kapoor & Pooja Products", "home.categories.5.0"],
+    ["Other FMCG Essentials", "home.categories.6.0"]
+  ];
+  for (const [name, expectedKey] of entries) {
+    assert.equal(categoryTranslationKey(name), expectedKey);
+    assert.match(getPath(hi, expectedKey), /\p{Script=Devanagari}/u, `Hindi category must use Devanagari: ${name}`);
+  }
+  assert.equal(categoryTranslationKey("Unlisted supplier category"), null);
+  const label = await read("src/components/localized-product-description.tsx");
+  assert.match(label, /hindi\?\.trim\(\) \|\| fallback/);
+});
+
 test("dynamic admin status and setup labels exist in both languages", () => {
   const keys = [
     "adminUI.adminSections", "adminUI.searchEnquiries", "adminUI.filterLegacyStatus",

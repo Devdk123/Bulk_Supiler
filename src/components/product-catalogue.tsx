@@ -19,6 +19,7 @@ import type { ProductCataloguePage } from "@/lib/products";
 import Link from "next/link";
 import { SectionHeading } from "@/components/section-heading";
 import { useLanguage } from "@/context/language-context";
+import { LocalizedCatalogueLabel } from "@/components/localized-product-description";
 
 export function ProductCatalogue({
   initialPage,
@@ -29,7 +30,7 @@ export function ProductCatalogue({
 }) {
   const searchParams = useSearchParams();
   const router = useRouter();
-  const { t, language } = useLanguage();
+  const { t } = useLanguage();
 
   const urlCategory = searchParams.get("category") || "";
   const urlBrand = searchParams.get("brand") || "";
@@ -198,7 +199,7 @@ export function ProductCatalogue({
                 : "border border-border bg-card text-foreground hover:bg-secondary"
             }`}
           >
-            {language === "hi" ? cat.name_hi || cat.name : cat.name}
+            <LocalizedCatalogueLabel english={cat.name} hindi={cat.name_hi || null} />
           </button>
         ))}
       </div>
@@ -264,7 +265,7 @@ export function ProductCatalogue({
             <option value="">{t("catalogue.allCategories")}</option>
             {categories.map((c) => (
               <option key={c.id} value={c.name}>
-                {language === "hi" && c.name_hi ? c.name_hi : c.name}
+                <LocalizedCatalogueLabel english={c.name} hindi={c.name_hi || null} />
               </option>
             ))}
           </select>

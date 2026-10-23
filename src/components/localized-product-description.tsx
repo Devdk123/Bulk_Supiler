@@ -1,6 +1,7 @@
 "use client";
 
 import { useLanguage } from "@/context/language-context";
+import { categoryTranslationKey } from "@/lib/category-labels";
 
 export function LocalizedProductDescription({ english, hindi }: { english: string | null; hindi: string | null }) {
   const { language } = useLanguage();
@@ -10,6 +11,8 @@ export function LocalizedProductDescription({ english, hindi }: { english: strin
 }
 
 export function LocalizedCatalogueLabel({ english, hindi }: { english: string | null; hindi: string | null }) {
-  const { language } = useLanguage();
-  return <>{language === "hi" ? hindi || english : english || hindi}</>;
+  const { language, t } = useLanguage();
+  const translationKey = categoryTranslationKey(english);
+  const fallback = translationKey ? t(translationKey) : english;
+  return <>{language === "hi" ? hindi?.trim() || fallback || english : english || hindi}</>;
 }
