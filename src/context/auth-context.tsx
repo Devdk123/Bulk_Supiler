@@ -56,7 +56,11 @@ type AuthContextType = {
 const AuthContext = createContext<AuthContextType | undefined>(undefined);
 
 async function loadSupabaseBrowser() {
-  const { getSupabaseBrowser } = await import("@/lib/supabase-browser");
+  const { getSupabaseBrowser } = await withTimeout(
+    import("@/lib/supabase-browser"),
+    8000,
+    "Auth client loading timed out. Please retry."
+  );
   return getSupabaseBrowser();
 }
 
