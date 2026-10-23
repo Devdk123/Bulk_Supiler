@@ -125,6 +125,16 @@ test("static translation references resolve in both languages", async () => {
   assert.deepEqual(missing, [], `missing translation paths:\n${missing.join("\n")}`);
 });
 
+test("public wholesale copy avoids unsupported inventory, margin, and fulfilment claims", async () => {
+  for (const [language, resource] of [["English", en], ["Hindi", hi]]) {
+    const copy = JSON.stringify({ home: resource.home, login: resource.auth });
+    assert.doesNotMatch(copy, /50\s*\+\s*km|verified inventory|verified suppliers|fresh godown lots|retail margins|dispatch updates|download verified wholesale quotations/i, `${language} copy contains an unsupported claim`);
+    assert.equal(typeof getPath(resource, "auth.loadingLogin"), "string");
+  }
+  const loginPage = await read("src/app/login/page.tsx");
+  assert.match(loginPage, /t\("auth\.loadingLogin"\)/);
+});
+
 test("wholesale sheets show only known catalogue data and request quotes for quote-only products", async () => {
   const modal = await read("src/components/rate-card-modal.tsx");
   for (const key of ["rateCard.title", "rateCard.unspecified", "rateCard.priceRequest", "rateCard.notice"]) {
@@ -280,6 +290,16 @@ test("homepage featured products use the existing public catalogue API", async (
   assert.match(page, /<FeaturedProducts whatsappLink=\{whatsappLink\}/);
   assert.match(featured, /fetch\("\/api\/catalogue\?limit=6&offset=0"/);
   assert.match(featured, /home\.featuredLoadError/);
+});
+
+test("homepage brands come from public catalogue facets and link to exact brand filters", async () => {
+  const page = await readFile("src/app/page.tsx", "utf8");
+  const featured = await readFile("src/components/featured-products.tsx", "utf8");
+  assert.doesNotMatch(page, /const featuredBrands\s*=/);
+  assert.match(featured, /setBrands\(result\.brands \|\| \[\]\)/);
+  assert.match(featured, /brands\.map\(\(brand\)/);
+  assert.match(featured, /\/products\?brand=\$\{encodeURIComponent\(brand\.name\)\}/);
+  assert.match(featured, /home\.noBrands/);
 });
 
 test("catalogue deadlines abort Supabase reads instead of leaving timed-out requests running", async () => {

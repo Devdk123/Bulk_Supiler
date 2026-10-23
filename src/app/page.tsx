@@ -1,5 +1,4 @@
 import type { Metadata } from "next";
-import { Suspense } from "react";
 import Image from "next/image";
 import Link from "next/link";
 import {
@@ -88,45 +87,6 @@ const categories = [
     slug: "Other FMCG Essentials",
     tag: "Daily Goods",
     featured: false
-  }
-];
-
-const featuredBrands = [
-  {
-    name: "Jhaveri's Mast!",
-    category: "Masalas & Ground Spices",
-    highlight: "Authentic spice blends with verified aroma and batch consistency",
-    badge: "Spices"
-  },
-  {
-    name: "Kisan",
-    category: "Matchsticks & Essentials",
-    highlight: "Long-standing safety matches with reliable friction striker heads",
-    badge: "Matchsticks"
-  },
-  {
-    name: "Bharat Jyoti",
-    category: "Edible Oils",
-    highlight: "Wholesale cooking oils packaged in durable tins and retail bottles",
-    badge: "Cooking Oils"
-  },
-  {
-    name: "Bhola",
-    category: "FMCG Trade Goods",
-    highlight: "Consistent movement daily retail goods for grocery & general stores",
-    badge: "FMCG Staples"
-  },
-  {
-    name: "GrahShanti",
-    category: "Aromatic Dhoop",
-    highlight: "Long-lasting spiritual fragrances popular in regional retail counters",
-    badge: "Dhoop Batti"
-  },
-  {
-    name: "Sukoon",
-    category: "Devotional Agarbatti",
-    highlight: "Reliable quality incense packs with dependable wholesale retailer margins",
-    badge: "Agarbatti"
   }
 ];
 
@@ -341,58 +301,7 @@ export default function HomePage() {
         </div>
       </section>
 
-      {/* 3. SECTION B: FEATURED BRANDS */}
-      <section id="brands" className="border-b border-border bg-secondary/30 py-16 md:py-24 transition-colors">
-        <div className="container-page">
-          <SectionHeading
-            eyebrow={<TranslatedText id="home.brandEyebrow" />}
-            title={<TranslatedText id="home.brandHeading" />}
-            description={<TranslatedText id="home.brandDescription" />}
-            align="center"
-          />
-
-          <div className="mt-12 grid gap-5 sm:grid-cols-2 lg:grid-cols-3">
-            {featuredBrands.map((brand, index) => (
-              <Link
-                key={brand.name}
-                href={`/products?brand=${encodeURIComponent(brand.name)}`}
-                prefetch={false}
-                className="group flex flex-col justify-between rounded-3xl border border-border bg-card p-6 shadow-xs transition-all duration-300 hover:-translate-y-1 hover:border-primary/30 hover:shadow-md"
-              >
-                <div>
-                  <div className="flex items-center justify-between">
-                    <span className="rounded-full bg-fresh/10 px-3 py-1 text-xs font-bold text-fresh">
-                      <TranslatedText id={`home.brands.${index}.2`} />
-                    </span>
-                    <span className="text-[11px] font-semibold text-muted-foreground">
-                      <TranslatedText id="home.brandSupply" />
-                    </span>
-                  </div>
-
-                  <h3 className="mt-4 text-xl font-black tracking-tight text-foreground group-hover:text-primary dark:group-hover:text-accent transition-colors">
-                    {brand.name}
-                  </h3>
-                  <p className="mt-1 text-xs font-bold text-fresh">
-                    <TranslatedText id={`home.brands.${index}.0`} />
-                  </p>
-                  <p className="mt-2.5 text-xs leading-relaxed text-muted-foreground">
-                    <TranslatedText id={`home.brands.${index}.1`} />
-                  </p>
-                </div>
-
-                <div className="mt-5 flex items-center gap-1.5 text-xs font-bold text-primary dark:text-accent">
-                  <span><TranslatedText id="home.browseBrand" /> {brand.name}</span>
-                  <ChevronRight className="h-3.5 w-3.5 transition-transform group-hover:translate-x-1" />
-                </div>
-              </Link>
-            ))}
-          </div>
-        </div>
-      </section>
-
-      <Suspense fallback={<FeaturedProductsSkeleton />}>
-        <FeaturedProducts whatsappLink={whatsappLink} />
-      </Suspense>
+      <FeaturedProducts whatsappLink={whatsappLink} />
 
       {/* 5. INTERACTIVE WHOLESALE SAVINGS CALCULATOR */}
       <section className="border-b border-border bg-background py-16 md:py-24 transition-colors">
@@ -509,18 +418,5 @@ export default function HomePage() {
         </div>
       </section>
     </div>
-  );
-}
-function FeaturedProductsSkeleton() {
-  return (
-    <section aria-label="Loading featured products" className="border-b border-border bg-card py-16 md:py-24">
-      <div className="container-page">
-        <div className="h-8 w-72 max-w-full animate-pulse rounded-lg bg-secondary" />
-        <div className="mt-3 h-4 w-[32rem] max-w-full animate-pulse rounded bg-secondary" />
-        <div className="mt-12 grid gap-6 sm:grid-cols-2 lg:grid-cols-3">
-          {[0, 1, 2].map((item) => <div key={item} className="h-80 animate-pulse rounded-2xl bg-secondary/70" />)}
-        </div>
-      </div>
-    </section>
   );
 }

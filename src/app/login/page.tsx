@@ -10,8 +10,9 @@ import { useAuth } from "@/context/auth-context";
 import { useLanguage } from "@/context/language-context";
 
 export default function LoginPage() {
+  const { t } = useLanguage();
   return (
-    <Suspense fallback={<div className="flex min-h-[calc(100vh-16rem)] items-center justify-center px-4 py-12 text-sm text-muted-foreground">Loading sign in…</div>}>
+    <Suspense fallback={<div role="status" className="flex min-h-[calc(100vh-16rem)] items-center justify-center px-4 py-12 text-sm text-muted-foreground">{t("auth.loadingLogin")}</div>}>
       <LoginForm />
     </Suspense>
   );
