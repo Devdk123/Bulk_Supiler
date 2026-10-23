@@ -125,6 +125,18 @@ test("static translation references resolve in both languages", async () => {
   assert.deepEqual(missing, [], `missing translation paths:\n${missing.join("\n")}`);
 });
 
+test("wholesale sheets show only known catalogue data and request quotes for quote-only products", async () => {
+  const modal = await read("src/components/rate-card-modal.tsx");
+  for (const key of ["rateCard.title", "rateCard.unspecified", "rateCard.priceRequest", "rateCard.notice"]) {
+    assert.equal(typeof getPath(en, key), "string", `missing English translation: ${key}`);
+    assert.equal(typeof getPath(hi, key), "string", `missing Hindi translation: ${key}`);
+  }
+  assert.match(modal, /item\.quoteOnly \|\| !item\.price/);
+  assert.match(modal, /item\.packSize \|\| item\.packing \|\| item\.unit \|\| t\("rateCard\.unspecified"\)/);
+  assert.match(modal, /item\.moq \|\| t\("rateCard\.unspecified"\)/);
+  assert.doesNotMatch(modal, /Active Batch Rates|1 Carton|Carton \/ Master|subject to live batch availability/);
+});
+
 test("known catalogue category names use approved Hindi labels when database translations are absent", async () => {
   const { categoryTranslationKey } = await importTypeScript("src/lib/category-labels.ts");
   const entries = [
