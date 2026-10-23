@@ -83,9 +83,13 @@ export default function RegisterPage() {
     }
 
     if (result.error) {
-      setError(/Supabase configuration error:.*does not match/i.test(result.error)
-        ? t("auth.projectMismatch")
-        : result.error);
+      setError(result.error === "AUTH_REQUEST_TIMEOUT"
+        ? t("auth.requestTimeout")
+        : result.error === "AUTH_NETWORK_ERROR"
+          ? t("auth.networkError")
+          : /Supabase configuration error:.*does not match/i.test(result.error)
+          ? t("auth.projectMismatch")
+          : result.error);
     } else if (result.requiresVerification) {
       setSuccess(t("auth.verificationSent"));
     } else {

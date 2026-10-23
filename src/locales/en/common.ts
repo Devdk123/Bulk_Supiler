@@ -140,6 +140,8 @@ const en = {
     verificationSent: "Account registered! A verification link has been sent to your email. Please click the link to activate your account.",
     projectMismatch: "Supabase settings point to different projects. Ask the store administrator to use the matching project URL and public key, then redeploy.",
     loadingLogin: "Loading sign in…",
+    requestTimeout: "The account service is taking too long to respond. Check your connection and try again.",
+    networkError: "We couldn't reach the account service. Check your connection and try again. If this continues, the store administrator should verify the deployed Supabase settings.",
   },
   home: {
     heroEyebrow: "YOUR LOCAL WHOLESALE PARTNER",

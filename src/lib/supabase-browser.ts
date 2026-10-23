@@ -1,6 +1,7 @@
 import { createClient, SupabaseClient } from "@supabase/supabase-js";
 import { normalizeSupabaseUrl } from "@/lib/supabase";
 import { hasSupabaseProjectMismatch, SUPABASE_PROJECT_MISMATCH_MESSAGE } from "@/lib/supabase-project";
+import { createSupabaseAuthTimeoutFetch } from "@/lib/supabase-fetch";
 
 let browserClient: SupabaseClient | null = null;
 
@@ -32,6 +33,7 @@ export function getSupabaseBrowser(): SupabaseClient {
     if (hasSupabaseProjectMismatch(url, key)) throw new Error(SUPABASE_PROJECT_MISMATCH_MESSAGE);
 
     browserClient = createClient(url, key, {
+      global: { fetch: createSupabaseAuthTimeoutFetch(fetch.bind(globalThis)) },
       auth: {
         persistSession: true,
         autoRefreshToken: true,

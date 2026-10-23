@@ -61,8 +61,9 @@ async function loadSupabaseBrowser() {
 }
 
 function formatAuthError(message: string) {
+  if (/timed out|timeout|aborterror|aborted/i.test(message)) return "AUTH_REQUEST_TIMEOUT";
   if (/failed to fetch|networkerror|network request failed/i.test(message)) {
-    return "Could not reach Supabase Auth. Check that Vercel has the correct Supabase project URL and public key, and that the project is active.";
+    return "AUTH_NETWORK_ERROR";
   }
   return message;
 }
@@ -81,6 +82,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
           .from("profiles")
           .select("id, role, full_name, phone, business_name, city, state, pincode")
           .eq("id", userId)
+          .abortSignal(AbortSignal.timeout(4000))
           .maybeSingle(),
         4000,
         "Profile request timed out. You can still use your account; profile details can be retried."
@@ -202,7 +204,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
       }
       return { error: null };
     } catch (err) {
-      return { error: err instanceof Error ? err.message : "An unexpected error occurred." };
+      return { error: formatAuthError(err instanceof Error ? err.message : "An unexpected error occurred.") };
     }
   }, [fetchProfile]);
 
@@ -237,13 +239,14 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
 
       return { error: null, requiresVerification };
     } catch (err) {
-      if (err instanceof TypeError && /fetch/i.test(err.message)) {
-        return {
-          error:
-            "We couldn't reach the account service. Check your internet connection and try again. If this continues, the site's administrator should verify the deployed Supabase URL and public API key."
-        };
+      const message = err instanceof Error ? err.message : "Unable to register the account. Please try again.";
+      if (/timed out|timeout|aborterror|aborted/i.test(message)) {
+        return { error: "AUTH_REQUEST_TIMEOUT" };
       }
-      return { error: err instanceof Error ? err.message : "Unable to register the account. Please try again." };
+      if (err instanceof TypeError && /fetch/i.test(err.message)) {
+        return { error: "AUTH_NETWORK_ERROR" };
+      }
+      return { error: message };
     }
   }, []);
 

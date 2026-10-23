@@ -365,6 +365,39 @@ test("shared auth provider dynamically loads Supabase to keep the SDK out of its
   assert.match(auth, /withTimeout\(supabase\.auth\.getSession\(\),\s*5000/);
 });
 
+test("Supabase Auth requests abort after the deadline and timeouts are localized", async () => {
+  const { createSupabaseAuthTimeoutFetch } = await importTypeScript("src/lib/supabase-fetch.ts");
+  const authFetch = createSupabaseAuthTimeoutFetch((_input, init) => new Promise((resolve, reject) => {
+    const signal = init?.signal;
+    if (!signal) return reject(new Error("Auth request had no timeout signal"));
+    signal.addEventListener("abort", () => reject(signal.reason), { once: true });
+  }), 15);
+  await assert.rejects(authFetch("https://project.supabase.co/auth/v1/token"), (error) => error?.name === "TimeoutError");
+
+  let receivedInit;
+  const passThroughFetch = createSupabaseAuthTimeoutFetch((_input, init) => {
+    receivedInit = init;
+    return Promise.resolve(new Response("ok"));
+  }, 15);
+  await passThroughFetch("https://project.supabase.co/rest/v1/profiles");
+  assert.equal(receivedInit, undefined, "non-auth Supabase requests retain their existing timeout controls");
+
+  const browserClient = await read("src/lib/supabase-browser.ts");
+  const auth = await read("src/context/auth-context.tsx");
+  const login = await read("src/app/login/page.tsx");
+  const register = await read("src/app/register/page.tsx");
+  assert.match(browserClient, /global:\s*\{\s*fetch: createSupabaseAuthTimeoutFetch/);
+  assert.match(auth, /\.abortSignal\(AbortSignal\.timeout\(4000\)\)/);
+  assert.match(login, /t\("auth\.requestTimeout"\)/);
+  assert.match(register, /t\("auth\.requestTimeout"\)/);
+  assert.ok(getPath(en, "auth.requestTimeout"));
+  assert.ok(getPath(hi, "auth.requestTimeout"));
+  assert.match(login, /t\("auth\.networkError"\)/);
+  assert.match(register, /t\("auth\.networkError"\)/);
+  assert.ok(getPath(en, "auth.networkError"));
+  assert.ok(getPath(hi, "auth.networkError"));
+});
+
 test("assistant offers only localized interface languages and retains Hindi for Hinglish conversations", async () => {
   const { assistantLanguages } = await importTypeScript("src/lib/assistant-languages.ts");
   assert.deepEqual(assistantLanguages.map(({ code }) => code), ["en", "hi"]);
