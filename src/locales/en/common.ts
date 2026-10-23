@@ -573,7 +573,8 @@ const en = {
     track: "Track in My Account",
     another: "Start Another Enquiry",
     checkFields: "Unable to save enquiry. Please check the fields.",
-    networkError: "Network error. Your enquiry was not confirmed. Please retry."
+    networkError: "Network error. Your enquiry was not confirmed. Please retry.",
+    requestTimeout: "The enquiry service is taking too long to respond. Your request may already be saved; retry this enquiry safely and duplicate submissions will be detected."
   },
   assistant: {
     name: "Gayatri Sahayak",

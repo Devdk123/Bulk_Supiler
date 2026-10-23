@@ -240,10 +240,15 @@ test("service worker only caches static same-origin assets and serves offline sh
 test("ordering stays a server-confirmed enquiry flow without a direct-order endpoint", async () => {
   const orderRoute = await read("src/app/api/orders/route.ts");
   const enquiryRoute = await read("src/app/api/enquiries/route.ts");
+  const orderForm = await read("src/components/order-form.tsx");
   assert.match(orderRoute, /status:\s*410/);
   assert.match(orderRoute, /Direct orders are no longer accepted/);
   assert.match(enquiryRoute, /export async function POST/);
   assert.match(enquiryRoute, /client_request_id/);
+  assert.match(orderForm, /signal: AbortSignal\.timeout\(15_000\)/);
+  assert.match(orderForm, /timedOut \? t\("orderForm\.requestTimeout"\)/);
+  assert.ok(getPath(en, "orderForm.requestTimeout"));
+  assert.ok(getPath(hi, "orderForm.requestTimeout"));
 });
 
 test("assistant is server-side, database-grounded, bounded, and configured without browser keys", async () => {

@@ -224,7 +224,8 @@ export function OrderForm({
             variant_id: item.variant_id || null,
             quantity: Number(item.quantity) || 1
           }))
-        })
+        }),
+        signal: AbortSignal.timeout(15_000)
       });
 
       const data = await response.json();
@@ -247,8 +248,9 @@ export function OrderForm({
           whatsappNumber
         )
       );
-    } catch {
-      setFormError(t("orderForm.networkError"));
+    } catch (error) {
+      const timedOut = error instanceof Error && error.name === "TimeoutError";
+      setFormError(timedOut ? t("orderForm.requestTimeout") : t("orderForm.networkError"));
     } finally {
       setLoading(false);
     }
