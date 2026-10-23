@@ -307,6 +307,19 @@ test("homepage brands come from public catalogue facets and link to exact brand 
   assert.match(featured, /home\.noBrands/);
 });
 
+test("product detail image gallery supports keyboard-accessible image selection", async () => {
+  const page = await readFile("src/app/products/[slug]/page.tsx", "utf8");
+  const gallery = await readFile("src/components/product-image-gallery.tsx", "utf8");
+  assert.match(page, /<ProductImageGallery images=\{images\}/);
+  assert.match(gallery, /setSelectedIndex\(index\)/);
+  assert.match(gallery, /aria-pressed=\{selected\}/);
+  assert.match(gallery, /focus-visible:ring-2/);
+  assert.match(gallery, /t\("product\.imageGallery"\)/);
+  assert.match(gallery, /t\("product\.viewImage"\)/);
+  assert.ok(getPath(en, "product.imageGallery"));
+  assert.ok(getPath(hi, "product.imageGallery"));
+});
+
 test("catalogue deadlines abort Supabase reads instead of leaving timed-out requests running", async () => {
   const products = await read("src/lib/products.ts");
   const catalogue = await read("src/lib/catalogue.ts");

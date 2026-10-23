@@ -1,5 +1,4 @@
 import type { Metadata } from "next";
-import Image from "next/image";
 import Link from "next/link";
 import { notFound } from "next/navigation";
 import {
@@ -14,6 +13,7 @@ import { buildWhatsAppLink } from "@/lib/utils";
 import { TranslatedText } from "@/components/translated-text";
 import type { ReactNode } from "react";
 import { LocalizedCatalogueLabel, LocalizedProductDescription } from "@/components/localized-product-description";
+import { ProductImageGallery } from "@/components/product-image-gallery";
 
 export const revalidate = 60;
 
@@ -102,43 +102,8 @@ export default async function ProductDetailsPage({
         {/* Main Details Grid */}
         <div className="mt-8 grid gap-10 lg:grid-cols-[1fr_1.1fr] lg:gap-14">
           {/* Left: Product Images Gallery */}
-          <div className="space-y-4">
-            <div className="relative aspect-[4/3] w-full overflow-hidden rounded-3xl border border-border bg-card shadow-sm">
-              <Image
-                src={images[0].image_url || productImageUrl()}
-                alt={images[0].alt_text || product.name}
-                fill
-                priority
-                sizes="(min-width: 1024px) 45vw, 100vw"
-                unoptimized={images[0].image_url?.startsWith("https://") || false}
-                className="object-contain p-4"
-              />
-              {product.brandName ? (
-                <div className="absolute left-4 top-4 rounded-xl bg-card/90 px-3 py-1.5 text-xs font-bold uppercase tracking-wider text-primary shadow-xs backdrop-blur-xs">
-                  {product.brandName}
-                </div>
-              ) : null}
-            </div>
-
-            {images.length > 1 ? (
-              <div className="grid grid-cols-4 gap-3">
-                {images.map((image) => (
-                  <div
-                    key={image.id}
-                    className="relative aspect-square overflow-hidden rounded-xl border border-border bg-card"
-                  >
-                    <Image
-                      src={image.image_url || productImageUrl()}
-                      alt={image.alt_text || product.name}
-                      fill
-                      sizes="15vw"
-                      unoptimized={image.image_url?.startsWith("https://") || false}
-                      className="object-contain p-1"
-                    />
-                  </div>
-                ))}
-              </div>
-            ) : null}
+          <div>
+            <ProductImageGallery images={images} fallbackUrl={productImageUrl()} productName={product.name} brandName={product.brandName} />
           </div>
 
           {/* Right: Product Specs & Actions */}

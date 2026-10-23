@@ -449,6 +449,8 @@ const en = {
     addToQuote: "Add to quote", addedToQuote: "Added to quote",
   },
   product: {
+    imageGallery: "Product images",
+    viewImage: "View image",
     backCatalogue: "Back to Wholesale Catalogue",
     wholesaleQuote: "Wholesale Quote on Request",
     b2bRate: "Wholesale business price",

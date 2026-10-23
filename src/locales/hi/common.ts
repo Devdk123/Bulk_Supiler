@@ -449,6 +449,8 @@ const hi = {
     addToQuote: "कोटेशन में जोड़ें", addedToQuote: "कोटेशन में जोड़ा गया",
   },
   product: {
+    imageGallery: "उत्पाद की तस्वीरें",
+    viewImage: "तस्वीर देखें",
     backCatalogue: "थोक कैटलॉग पर लौटें",
     wholesaleQuote: "थोक भाव पूछें",
     b2bRate: "व्यावसायिक थोक भाव",
