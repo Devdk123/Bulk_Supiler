@@ -1,5 +1,5 @@
-const CACHE_NAME = "gayatri-static-v2";
-const SHELL = ["/offline.html", "/icons/gayatri-store-192.png", "/icons/gayatri-store-512.png", "/icons/gayatri-store-maskable.png"];
+const CACHE_NAME = "gayatri-static-v3";
+const SHELL = ["/offline.html", "/icons/gayatri-store-192.png", "/icons/gayatri-store-512.png", "/icons/gayatri-store-maskable.png", "/icons/gayatri-store-192.svg"];
 
 self.addEventListener("install", (event) => {
   event.waitUntil(caches.open(CACHE_NAME).then((cache) => cache.addAll(SHELL)));

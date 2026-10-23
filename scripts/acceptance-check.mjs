@@ -217,6 +217,10 @@ test("service worker only caches static same-origin assets and serves offline sh
   assert.match(worker, /request\.mode === "navigate"[\s\S]*?fetch\(request\)\.catch/);
   assert.match(worker, /url\.origin !== self\.location\.origin/);
   assert.match(worker, /const isStaticAsset = url\.pathname\.startsWith\("\/_next\/static\/"\)/);
+  assert.match(worker, /gayatri-static-v3/);
+  assert.match(worker, /"\/icons\/gayatri-store-192\.svg"/);
+  const offline = await read("public/offline.html");
+  assert.match(offline, /src="\/icons\/gayatri-store-192\.svg"/);
   assert.match(worker, /if \(!isStaticAsset\) return/);
   assert.doesNotMatch(worker, /cache\.put\([^\n]*(?:\/api\/|\/account|\/order)/);
   assert.match(manager, /registration\.waiting\?\.postMessage\(\{ type: "SKIP_WAITING" \}\)/);
